@@ -1,0 +1,49 @@
+%───────────────────────────────────────────────────────────────────────────────
+% PORTADA GENÉRICA
+% Usa los metadatos definidos en metadata.tex
+%───────────────────────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  % Título principal
+  {\fontsize{48}{60}\selectfont\bfseries
+   \docTitulo\par}
+  \vspace{0.8cm}
+
+  % Línea decorativa
+  {\color{defcolor}\rule{0.6\textwidth}{0.5pt}}\par
+  \vspace{1.2cm}
+
+  % Subtítulo
+  {\large
+   \docSubtitulo\par}
+  \vspace{2cm}
+
+  % Cita en caja
+  \begin{tcolorbox}[
+    enhanced, blanker,
+    colback=grayultralight,
+    colframe=defcolor,
+    width=0.75\textwidth,
+    halign=center,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    arc=2pt,
+    boxrule=0.3pt
+  ]
+  \itshape\small
+  \docCita
+  \end{tcolorbox}
+
+  \vfill
+
+  % Autor, estado y fecha
+  {\normalsize
+   \docAutor\par}
+  \medskip
+  {\normalsize
+   \docEstado\ --- \docFecha\par}
+  \smallskip
+  {\footnotesize\color{graymedium}
+   Compilado con \LaTeX}
+\end{titlepage}

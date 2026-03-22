@@ -1,0 +1,89 @@
+%───────────────────────────────────────────────────────────────────────────────
+% CONFIGURACIÓN DE LISTINGS CON LA PALETA CATPPUCCIN
+% Basada en la guía de estilo oficial: https://catppuccin.com/style-guide
+%───────────────────────────────────────────────────────────────────────────────
+\usepackage{listings}
+\usepackage{inconsolata}   % Buena fuente mono (opcional)
+
+% Estilo base para todos los lenguajes
+\lstdefinestyle{catppuccin-base}{
+  % Configuración general
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  tabsize=2,
+  captionpos=b,
+  xleftmargin=10pt,
+  xrightmargin=5pt,
+  aboveskip=10pt,
+  belowskip=10pt,
+  frame=lines,
+  framesep=5pt,
+  rulecolor=\color{CtpSurface0},
+  backgroundcolor=\color{CtpBase},
+  basicstyle=\ttfamily\small\color{CtpText},
+  numberstyle=\tiny\color{CtpOverlay1},          % Números de línea
+  % Resaltado de sintaxis según guía Catppuccin
+  keywordstyle=\color{CtpMauve}\bfseries,         % Palabras clave
+  stringstyle=\color{CtpGreen},                   % Strings
+  commentstyle=\color{CtpOverlay2}\itshape,       % Comentarios
+  identifierstyle=\color{CtpText},                 % Identificadores (por defecto)
+  % Tipos de keywords adicionales
+  keywordstyle=[2]\color{CtpRed},                  % Builtins / Symbols / Atoms
+  keywordstyle=[3]\color{CtpPeach},                 % Constantes / Números
+  keywordstyle=[4]\color{CtpSky},                   % Operadores
+  keywordstyle=[5]\color{CtpBlue},                  % Métodos / Funciones
+  keywordstyle=[6]\color{CtpYellow},                % Clases / Tipos
+  keywordstyle=[7]\color{CtpTeal},                  % Enum variants
+  keywordstyle=[8]\color{CtpRosewater},             % Macros
+  % Delimitadores y otros
+  morecomment=[s][\color{CtpOverlay2}]{/*}{*/},    % Comentarios bloque (ya definido)
+  morecomment=[l][\color{CtpOverlay2}]{\#},        % Comentarios línea para algunos lenguajes
+  morestring=[b][\color{CtpGreen}]",                % Strings con comillas dobles
+  morestring=[b][\color{CtpGreen}]',                % Strings con comillas simples
+  % Escape sequences (se manejan dentro de strings con estilo adicional)
+  % No hay soporte directo en listings, se puede simular con mathescape
+}
+
+% Estilo para Python (ejemplo de personalización)
+\lstdefinestyle{catppuccin-python}{
+  style=catppuccin-base,
+  language=Python,
+  morekeywords={self, cls, True, False, None, as, with, yield, await, async},
+  keywordstyle=[2]\color{CtpRed},                    % Builtins (ej: print, len)
+  keywordstyle=[3]\color{CtpPeach},                   % Números (no keywords, pero se hereda)
+  keywordstyle=[4]\color{CtpSky},                     % Operadores (no keywords, se hereda)
+  keywordstyle=[5]\color{CtpBlue},                    % Funciones (no keywords, se hereda)
+  keywordstyle=[6]\color{CtpYellow},                   % Clases (cuando se definen)
+  keywordstyle=[7]\color{CtpTeal},                     % Enum variants
+  keywordstyle=[8]\color{CtpRosewater},                % Macros (no aplica en Python)
+}
+
+% Estilo para C/C++ (ejemplo)
+\lstdefinestyle{catppuccin-cpp}{
+  style=catppuccin-base,
+  language=C++,
+  morekeywords={nullptr, constexpr, auto, decltype, noexcept, override, final},
+  keywordstyle=[2]\color{CtpRed},                    % Builtins
+  keywordstyle=[6]\color{CtpYellow},                  % Tipos (class, struct, enum)
+}
+
+% --- Definición del lenguaje Julia para listings ---
+\lstdefinelanguage{julia}{
+  keywords={abstract, baremodule, begin, break, catch, const, continue, do, else,
+            elseif, end, export, false, finally, for, function, global, if, import,
+            importall, let, local, macro, module, mutable, primitive, quote, return,
+            true, try, type, typealias, using, while},
+  morekeywords=[2]{true, false, nothing, Inf, NaN, missing, π, ℯ},
+  morekeywords=[3]{Int, Float64, String, Bool, Array, Vector, Matrix, Tuple, Dict, Set},
+  sensitive=true,
+  morecomment=[l]{\#},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  alsoletter={!?},
+  alsodigit={-},
+}
+
+% Estilo por defecto (aplica el base)
+\lstset{style=catppuccin-base}

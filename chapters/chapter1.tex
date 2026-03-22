@@ -1,0 +1,222 @@
+%═══════════════════════════════════════════════════════════════════════════════
+\chapter{Demostración de la plantilla Catppuccin}
+\label{ch:demo}
+%═══════════════════════════════════════════════════════════════════════════════
+
+Este capítulo ilustra el uso de la plantilla \texttt{latex-catppuccin-template}.
+Todos los elementos mostrados utilizan los colores de la paleta Catppuccin,
+adaptándose automáticamente al tema seleccionado (Latte, Frappé, Macchiato o Mocha).
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos teoremáticos}
+%───────────────────────────────────────────────────────────────────────────────
+
+La plantilla define varios entornos mediante el generador \texttt{generator.tex}.
+Cada uno tiene su propio color de marco y fondo.
+
+\begin{definicion}{Espacio de Hilbert}
+Un \textbf{espacio de Hilbert} es un espacio vectorial dotado de un producto
+interno que induce una norma completa.
+\end{definicion}
+
+\begin{teorema}{Teorema de representación de Riesz}
+Sea $\mathcal{H}$ un espacio de Hilbert. Para todo funcional lineal continuo
+$\varphi: \mathcal{H} \to \mathbb{R}$ existe un único $y \in \mathcal{H}$ tal que
+$\varphi(x) = \langle x, y \rangle$ para todo $x \in \mathcal{H}$.
+\end{teorema}
+
+\begin{proposicion}{Identidad de polarización}
+En un espacio de Hilbert, el producto interno se puede recuperar de la norma mediante:
+\[
+\langle x, y \rangle = \frac{1}{4}\left(\|x+y\|^2 - \|x-y\|^2\right).
+\]
+\end{proposicion}
+
+\begin{ejemplo}{Producto interno en $\mathbb{R}^n$}
+El producto interno euclídeo $\langle x, y \rangle = \sum_{i=1}^n x_i y_i$ convierte
+a $\mathbb{R}^n$ en un espacio de Hilbert.
+\end{ejemplo}
+
+\begin{observacion}{Completitud}
+La condición de completitud es esencial: no todo espacio con producto interno es
+de Hilbert; se requiere que toda sucesión de Cauchy converja.
+\end{observacion}
+
+\begin{fisicaconexion}{Espacios de Hilbert en mecánica cuántica}
+En mecánica cuántica, los estados de un sistema físico se representan mediante
+vectores en un espacio de Hilbert complejo. La evolución temporal está gobernada
+por operadores unitarios.
+\end{fisicaconexion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Ecuaciones destacadas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Puedes escribir ecuaciones con colores semánticos usando los comandos definidos
+en \texttt{config/equation-styles.tex} (si los has creado). Aquí un ejemplo con
+colores manuales usando \texttt{\textbackslash textcolor}.
+
+\begin{equation}
+\label{eq:demo}
+\textcolor{CtpBlue}{\int_{\Omega}} \textcolor{CtpPeach}{\nabla u \cdot \nabla v}
+\, \textcolor{CtpTeal}{dx} = \textcolor{CtpBlue}{\int_{\partial\Omega}}
+\textcolor{CtpPeach}{u \frac{\partial v}{\partial n}} \, \textcolor{CtpTeal}{dS}.
+\end{equation}
+
+Y una ecuación más compleja con varios elementos:
+
+\[
+\textcolor{CtpMauve}{\frac{\partial \rho}{\partial t}} +
+\textcolor{CtpSky}{\nabla \cdot (\rho \mathbf{u})} =
+\textcolor{CtpGreen}{0}.
+\]
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Algoritmos}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los algoritmos se escriben con el paquete \texttt{algorithm2e} y se envuelven
+automáticamente en una caja con los colores del tema. Las palabras clave,
+comentarios y números de línea están coloreados según la configuración de
+\texttt{config/algorithms.tex}.
+
+\begin{algorithm}[H]
+\caption{Método de descenso de gradiente}
+\label{alg:gradient}
+\LinesNumbered
+\KwIn{Función $f: \mathbb{R}^n \to \mathbb{R}$, gradiente $\nabla f$,
+      punto inicial $x_0$, tasa de aprendizaje $\eta$, tolerancia $\varepsilon$}
+\KwOut{Punto aproximado de mínimo $x^*$}
+$x \leftarrow x_0$\;
+\While{$\|\nabla f(x)\| > \varepsilon$}{
+  $x \leftarrow x - \eta \nabla f(x)$\;
+}
+\Return $x$\;
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Adam optimizador (paso básico)}
+\label{alg:adam}
+\LinesNumbered
+\KwIn{Gradiente $g$, parámetros $m$, $v$, $t$, $\beta_1$, $\beta_2$, $\eta$, $\varepsilon$}
+\KwOut{Actualización $\Delta\theta$, nuevos $m$, $v$, $t$}
+$m \leftarrow \beta_1 m + (1-\beta_1) g$\;
+$v \leftarrow \beta_2 v + (1-\beta_2) g^2$\;
+$\hat{m} \leftarrow m / (1-\beta_1^t)$\;
+$\hat{v} \leftarrow v / (1-\beta_2^t)$\;
+$\Delta\theta \leftarrow -\eta \hat{m} / (\sqrt{\hat{v}} + \varepsilon)$\;
+$t \leftarrow t+1$\;
+\Return $\Delta\theta$, $m$, $v$, $t$\;
+\end{algorithm}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Código fuente}
+%───────────────────────────────────────────────────────────────────────────────
+
+La plantilla incluye configuración para \texttt{listings} con la paleta Catppuccin.
+Aquí hay ejemplos en Python y C++.
+
+\begin{lstlisting}[language=Python, caption={Ejemplo en Python}]
+import numpy as np
+
+def relu(x):
+    return np.maximum(0, x)
+
+# Red neuronal de una capa
+class Perceptron:
+    def __init__(self, input_dim, output_dim):
+        self.W = np.random.randn(input_dim, output_dim) * 0.01
+        self.b = np.zeros(output_dim)
+
+    def forward(self, x):
+        return relu(x @ self.W + self.b)
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption={Ejemplo en C++}]
+#include <iostream>
+#include <vector>
+
+template<typename T>
+class Matrix {
+private:
+    std::vector<std::vector<T>> data;
+public:
+    Matrix(size_t rows, size_t cols) : data(rows, std::vector<T>(cols)) {}
+    
+    T& operator()(size_t i, size_t j) { return data[i][j]; }
+    
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
+        for (const auto& row : m.data) {
+            for (const auto& val : row) os << val << " ";
+            os << "\n";
+        }
+        return os;
+    }
+};
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Ejercicios}
+%───────────────────────────────────────────────────────────────────────────────
+
+La plantilla proporciona entornos para ejercicios teóricos y computacionales.
+
+\begin{ejercicio}
+Demuestre que la función de pérdida MSE para regresión lineal conduce a las
+ecuaciones normales.
+\end{ejercicio}
+
+\begin{ejercicio}
+Sea $f(x) = e^{-x^2}$. Calcule la transformada de Fourier de $f$.
+\end{ejercicio}
+
+\begin{ejerciciocomp}{Implementación de descenso de gradiente}
+Implemente el algoritmo \ref{alg:gradient} para la función
+$f(x) = x^2 + 2x + 1$ y verifique que converge al mínimo $x^* = -1$.
+\end{ejerciciocomp}
+
+\begin{ejerciciocomp}{Simulación de proceso OU}
+Simule la ecuación de Langevin $dx = -\theta x\,dt + \sigma dW$ usando
+el método de Euler-Maruyama y compare la distribución estacionaria con la
+teórica $\mathcal{N}(0, \sigma^2/(2\theta))$.
+\end{ejerciciocomp}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Estrella Polar (opcional)}
+%───────────────────────────────────────────────────────────────────────────────
+
+La sección \textbf{Estrella Polar} es opcional y aplica los conceptos del
+capítulo a problemas físicos concretos.
+
+\begin{estrella}{Reactor de fisión como proceso estocástico}
+La cinética puntual de un reactor nuclear puede modelarse mediante ecuaciones
+diferenciales estocásticas que describen la población de neutrones y precursores.
+La varianza del flujo neutrónico está relacionada con la reactividad a través
+de la fórmula de Campbell.
+\end{estrella}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Dificultad de las secciones}
+%───────────────────────────────────────────────────────────────────────────────
+
+Cada sección puede incluir una indicación de dificultad usando el comando
+\texttt{\textbackslash dificultad}. Por ejemplo:
+
+\dificultad{3}{2}
+
+Este comando muestra dos valores de dificultad (matemática y física) en una
+caja con borde sutil y estrellas.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Notas bibliográficas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Al final de cada capítulo, puedes incluir notas bibliográficas con el entorno
+\texttt{notasbib}. Este entorno produce una caja con fondo gris claro que
+contiene referencias y comentarios adicionales.
+
+\begin{notasbib}
+Para una introducción completa a los espacios de Hilbert, véase
+\cite{reed1980functional}. El teorema de representación de Riesz es fundamental
+en análisis funcional y ecuaciones en derivadas parciales.
+\end{notasbib}

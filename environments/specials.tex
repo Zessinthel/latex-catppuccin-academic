@@ -1,0 +1,67 @@
+% Dificultad (comando)
+\newcommand{\estrellita}[1]{%
+  \foreach \i in {1,...,5}{%
+    \ifnum\i>#1
+      {\small\ding{73}}% estrella vacía (☆)
+    \else
+      {\small\ding{72}}% estrella rellena (★)
+    \fi
+    \ifnum\i<5\thinspace\fi
+  }%
+}
+
+\newcommand{\dificultad}[2]{%
+  \begin{tcolorbox}[
+    enhanced,
+    breakable,
+    % interior hidden,           % comentado para ver el fondo
+    colframe=CtpLavender,            % borde
+    colback=CtpLavender!0,            % fondo
+    arc=0.5pt,
+    outer arc=0.5pt,
+    boxrule=0.5pt,                  
+    left=2pt,                    
+    right=2pt,
+    top=2pt,
+    bottom=2pt,
+    drop fuzzy shadow=black!5,
+    fontupper=\small
+  ]
+  \textbf{Nivel:}\quad
+  Matemática:~\estrellita{#1}\qquad
+  Física:~\estrellita{#2}
+  \end{tcolorbox}
+}
+
+% Notas bibliográficas
+\NewDocumentEnvironment{notasbib}{}
+{
+  \section*{Notas bibliográficas}
+  \addcontentsline{toc}{section}{\texorpdfstring{Notas bibliográficas}{Notas bibliograficas}}
+  \small
+  \begin{tcolorbox}[
+    basebox,
+    colback=grayultralight,
+    colframe=graymedium!30,
+    left=8pt,
+    right=8pt,
+    top=6pt,
+    bottom=6pt,
+  ]
+}
+{
+  \end{tcolorbox}
+  \normalsize
+}
+
+%───────────────────────────────────────────────────────────────────────────────
+% EJERCICIOS SIMPLES (SIN CAJA)
+%───────────────────────────────────────────────────────────────────────────────
+\newcounter{ejercicio}[chapter]
+\renewcommand{\theejercicio}{\thechapter.\arabic{ejercicio}}
+
+\newenvironment{ejercicio}{%
+  \refstepcounter{ejercicio}%
+  \par\medskip\noindent
+  \textbf{Ejercicio \theejercicio.}\quad
+}{\par\medskip}

@@ -1,0 +1,29 @@
+%───────────────────────────────────────────────────────────────────────────────
+% PÁGINAS PRELIMINARES: DEDICATORIA, EPÍGRAFE Y AGRADECIMIENTOS
+%───────────────────────────────────────────────────────────────────────────────
+\ifx\docDedicatoria\empty\else
+  \cleardoublepage
+  \vspace*{\fill}
+  \begin{center}
+    \itshape\large \docDedicatoria
+  \end{center}
+  \vspace*{\fill}
+  \newpage
+\fi
+
+\ifx\docEpigrafe\empty\else
+  \cleardoublepage
+  \vspace*{0.3\textheight}
+  \begin{flushright}
+    \itshape\large \docEpigrafe
+  \end{flushright}
+  \vspace*{\fill}
+  \newpage
+\fi
+
+\ifx\docAgradecimientos\empty\else
+  \chapter*{Agradecimientos}
+  \addcontentsline{toc}{chapter}{Agradecimientos}
+  \docAgradecimientos
+  \newpage
+\fi

@@ -1,0 +1,39 @@
+%───────────────────────────────────────────────────────────────────────────────
+% GENERADOR DE ENTORNOS (VERSIÓN CORREGIDA)
+% Uso: \crearEntorno{nombre}{color}{título}{conContador?}{opcionesAdicionales}
+%───────────────────────────────────────────────────────────────────────────────
+\newcommand{\crearEntorno}[5]{%
+  % #1: nombre del entorno (ej: definicion)
+  % #2: color semántico (ej: defcolor)
+  % #3: título base (ej: Definición)
+  % #4: 1 si tiene contador, 0 si no
+  % #5: opciones adicionales para tcolorbox (puede estar vacío)
+
+  \ifnum#4=1
+    \newcounter{#1counter}[chapter]
+    \expandafter\renewcommand\csname the#1counter\endcsname{%
+      \thechapter.\arabic{#1counter}%
+    }
+  \fi
+
+  \NewDocumentEnvironment{#1}{ m }{
+    \ifnum#4=1
+      \refstepcounter{#1counter}%
+    \fi
+    \begin{tcolorbox}[
+      basebox,
+      colframe=#2,
+      colback=#2light,
+      title={%
+        \ifnum#4=1
+          \unexpanded{#3 }\csname the#1counter\endcsname\unexpanded{ --- }##1%
+        \else
+          \unexpanded{#3 --- }##1%
+        \fi
+      },
+      #5
+    ]
+  }{
+    \end{tcolorbox}
+  }
+}

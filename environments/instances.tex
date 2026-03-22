@@ -1,0 +1,17 @@
+%───────────────────────────────────────────────────────────────────────────────
+% INSTANCIAS DE ENTORNOS
+%───────────────────────────────────────────────────────────────────────────────
+
+% Nivel 1: Fundamentos (con contador)
+\crearEntorno{definicion}{defcolor}{Definición}{1}{}
+\crearEntorno{teorema}{thmcolor}{Teorema}{1}{}
+\crearEntorno{proposicion}{propcolor}{Proposición}{1}{}
+
+% Nivel 2: Apoyo (con contador)
+\crearEntorno{ejemplo}{ejemcolor}{Ejemplo}{1}{}
+\crearEntorno{observacion}{obscolor}{Observación}{0}{}  % sin contador
+\crearEntorno{fisicaconexion}{fisicacolor}{[F] Conexión física}{0}{fonttitle=\bfseries\small, before upper={\small}}
+
+% Nivel 3: Especiales (con contador)
+\crearEntorno{estrella}{estrellacolor}{\texorpdfstring{$\bigstar$}{★} Estrella Polar}{1}{fonttitle=\bfseries\small, before upper={\small}}
+\crearEntorno{ejerciciocomp}{compcolor}{$\triangleright$ Ejercicio Computacional}{1}{fonttitle=\bfseries\small, before upper={\small}}

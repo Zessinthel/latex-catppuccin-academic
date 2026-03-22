@@ -1,0 +1,84 @@
+%───────────────────────────────────────────────────────────────────────────────
+% ESTILO PARA ALGORITMOS CON COLORES CATPPUCCIN 
+%───────────────────────────────────────────────────────────────────────────────
+
+% Definir comandos de estilo que toman un argumento
+\newcommand{\algkw}[1]{\textcolor{CtpMauve}{#1}}      % palabras clave
+\newcommand{\algarg}[1]{\textcolor{CtpText}{#1}}      % argumentos (KwIn, KwOut)
+\newcommand{\algcomment}[1]{\textcolor{CtpOverlay2}{#1}} % comentarios
+\newcommand{\algnum}[1]{\textcolor{CtpSky}{#1}}  % números de línea
+\newcommand{\algcap}[1]{\textcolor{CtpBlue}{#1}}      % caption
+
+% Aplicar los estilos a algorithm2e (¡sin la barra invertida!)
+\SetKwSty{algkw}
+\SetArgSty{algarg}
+\SetCommentSty{algcomment}
+\SetNlSty{algnum}{}{}
+\SetAlCapSty{algcap}
+
+
+% Caja decorativa (opcional)
+\tcolorboxenvironment{algorithm}{
+  colback=CtpBase!0,
+  colframe=CtpSurface0,
+  arc=0.5pt,
+  boxrule=0.5pt,
+  left=6pt,
+  right=6pt,
+  top=6pt,
+  bottom=6pt,
+  before skip=10pt,
+  after skip=10pt,
+  drop fuzzy shadow=black!5
+}
+
+% ── Color y grosor de líneas de algoritmos ────────────────────────────────────
+\setlength{\algoheightrule}{0.6pt}       % línea superior e inferior
+\setlength{\algotitleheightrule}{0.5pt}  % línea bajo el caption
+
+\makeatletter
+\newcommand{\algolinecolor}{CtpSky}    % <-- cambia el color aquí
+
+\def\@algocf@pre@ruled{%
+  {\color{\algolinecolor}\hrule width\algocf@ruledwidth
+   height\algoheightrule depth0pt}%
+  \kern\interspacetitleruled}
+
+\def\@algocf@post@ruled{%
+  \kern\interspacealgoruled
+  {\color{\algolinecolor}\hrule width\algocf@ruledwidth
+   height\algoheightrule}}
+
+\renewcommand{\algocf@caption@ruled}{%
+  \box\algocf@capbox
+  \kern\interspacetitleruled
+  {\color{\algolinecolor}\hrule width\algocf@ruledwidth
+   height\algotitleheightrule depth0pt}%
+  \kern\interspacealgoruled}
+\makeatother
+
+\makeatletter
+\renewcommand{\algocf@Vline}[1]{%
+  \strut\par\nointerlineskip%
+  \algocf@push{\skiprule}%
+  \hbox{{\color{\algolinecolor}\vrule}%
+    \vtop{\algocf@push{\skiptext}%
+      \vtop{\algocf@addskiptotal #1}\Hlne}}\vskip\skiphlne%
+  \algocf@pop{\skiprule}%
+  \nointerlineskip}
+\makeatother
+
+
+\makeatletter
+\renewcommand{\algocf@Vsline}[1]{%
+  \strut\par\nointerlineskip%
+  \algocf@bblockcode%
+  \algocf@push{\skiprule}%
+  \hbox{{\color{\algolinecolor}\vrule}%
+    \vtop{\algocf@push{\skiptext}%
+      \vtop{\algocf@addskiptotal #1}}}%
+  \algocf@pop{\skiprule}%
+  \algocf@eblockcode%
+}
+\makeatother
+

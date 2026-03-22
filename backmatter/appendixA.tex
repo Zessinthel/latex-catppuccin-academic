@@ -1,0 +1,198 @@
+%═══════════════════════════════════════════════════════════════════════════════
+\chapter{Demostración de la plantilla en apéndices}
+\label{ap:demo}
+%═══════════════════════════════════════════════════════════════════════════════
+
+Este apéndice ilustra el uso de la plantilla \texttt{latex-catppuccin-template}
+en material complementario. Todos los elementos mostrados utilizan los colores
+de la paleta Catppuccin, adaptándose automáticamente al tema seleccionado.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos teoremáticos}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los mismos entornos definidos para el cuerpo principal están disponibles aquí.
+
+\begin{definicion}{Convergencia débil}
+Una sucesión $\{x_n\}$ en un espacio de Hilbert $\mathcal{H}$ converge
+débilmente a $x$ si $\langle x_n, y \rangle \to \langle x, y \rangle$ para todo
+$y \in \mathcal{H}$.
+\end{definicion}
+
+\begin{teorema}{Banach–Alaoglu}
+La bola unitaria cerrada en el dual de un espacio normado es compacta en la
+topología débil-*.
+\end{teorema}
+
+\begin{proposicion}{Desigualdad de Bessel}
+Sea $\{e_n\}$ una sucesión ortonormal en un espacio de Hilbert. Entonces
+$\sum_n |\langle x, e_n \rangle|^2 \leq \|x\|^2$ para todo $x$.
+\end{proposicion}
+
+\begin{ejemplo}{Sucesión ortonormal en $L^2[0,1]$}
+Las funciones $e_n(x) = \sqrt{2}\sin(n\pi x)$ forman una base ortonormal
+para $L^2[0,1]$.
+\end{ejemplo}
+
+\begin{observacion}{Topologías débiles}
+La convergencia débil es estrictamente más débil que la convergencia en norma
+en espacios de dimensión infinita.
+\end{observacion}
+
+\begin{fisicaconexion}{Estados coherentes}
+En óptica cuántica, los estados coherentes minimizan las relaciones de
+incertidumbre y forman un sistema sobrecompleto en el espacio de Fock.
+\end{fisicaconexion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Ecuaciones destacadas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Puedes incluir ecuaciones con colores semánticos usando los comandos
+\texttt{\textbackslash textcolor} con los nombres de la paleta.
+
+\begin{equation}
+\label{eq:demo2}
+\textcolor{CtpBlue}{\mathcal{F}[f](\xi)} =
+\textcolor{CtpPeach}{\int_{-\infty}^{\infty}}
+\textcolor{CtpGreen}{f(x) e^{-2\pi i x \xi}} \, \textcolor{CtpTeal}{dx}.
+\end{equation}
+
+\begin{align}
+\textcolor{CtpMauve}{\nabla \cdot \mathbf{E}} &= \textcolor{CtpSky}{\frac{\rho}{\varepsilon_0}}, \\
+\textcolor{CtpMauve}{\nabla \times \mathbf{E}} &= \textcolor{CtpSky}{-\frac{\partial \mathbf{B}}{\partial t}}.
+\end{align}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Algoritmos}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los algoritmos mantienen el mismo estilo que en el cuerpo principal.
+
+\begin{algorithm}[H]
+\caption{Método de Euler–Maruyama para SDEs}
+\label{alg:em}
+\LinesNumbered
+\KwIn{Ecuación $dX_t = \mu(X_t,t)dt + \sigma(X_t,t)dW_t$,
+      condición inicial $X_0$, paso $\Delta t$, tiempo final $T$}
+\KwOut{Trayectoria $\{X_k\}_{k=0}^{N}$ con $N = T/\Delta t$}
+$X \leftarrow X_0$\;
+\For{$k = 0$ \KwTo $N-1$}{
+  $t \leftarrow k\Delta t$\;
+  $\xi \leftarrow \mathcal{N}(0,1)$\tcp*{ruido gaussiano}
+  $X \leftarrow X + \mu(X,t)\Delta t + \sigma(X,t)\sqrt{\Delta t}\,\xi$\;
+}
+\Return trayectoria\;
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Denoising score matching (un paso)}
+\label{alg:dsm}
+\LinesNumbered
+\KwIn{Dato $\mathbf{x}_0$, tiempo $t$, red de score $\mathbf{s}_\theta$,
+      schedule $\{\bar\alpha_t\}$}
+\KwOut{Pérdida $\mathcal{L}$}
+$\varepsilon \leftarrow \mathcal{N}(\mathbf{0}, \mathbf{I})$\;
+$\mathbf{x}_t \leftarrow \sqrt{\bar\alpha_t}\,\mathbf{x}_0 + \sqrt{1-\bar\alpha_t}\,\varepsilon$\;
+$\hat{\varepsilon} \leftarrow \mathbf{s}_\theta(\mathbf{x}_t, t)$\;
+$\mathcal{L} \leftarrow \|\hat{\varepsilon} - \varepsilon\|^2$\;
+\Return $\mathcal{L}$\;
+\end{algorithm}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Código fuente}
+%───────────────────────────────────────────────────────────────────────────────
+
+La configuración de \texttt{listings} también se aplica en los apéndices.
+
+\begin{lstlisting}[language=Python, caption={Red neuronal con PyTorch}]
+import torch
+import torch.nn as nn
+
+class ScoreNet(nn.Module):
+    def __init__(self, dim, hidden=128):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(dim, hidden),
+            nn.ReLU(),
+            nn.Linear(hidden, hidden),
+            nn.ReLU(),
+            nn.Linear(hidden, dim)
+        )
+    
+    def forward(self, x, t):
+        # t es el tiempo, se puede incorporar como embedding
+        return self.net(x)
+\end{lstlisting}
+
+\begin{lstlisting}[language=julia, style=catppuccin-base, caption={Simulación de proceso OU en Julia}]
+using Random, Plots
+
+function euler_maruyama(drift, diffusion, x0, dt, T)
+    N = Int(T / dt)
+    x = zeros(N+1)
+    x[1] = x0
+    for i in 1:N
+        t = (i-1)*dt
+        x[i+1] = x[i] + drift(x[i], t)*dt + diffusion(x[i], t)*sqrt(dt)*randn()
+    end
+    return x
+end
+
+# Ejemplo: dx = -x dt + dW
+drift(x, t) = -x
+diffusion(x, t) = 1.0
+x = euler_maruyama(drift, diffusion, 0.0, 0.01, 10.0)
+plot(x)
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Ejercicios}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los entornos de ejercicio están disponibles para plantear problemas.
+
+\begin{ejercicio}
+Demuestre que el método de Euler–Maruyama tiene orden de convergencia fuerte
+$1/2$ para SDEs con coeficientes regulares.
+\end{ejercicio}
+
+\begin{ejercicio}
+Verifique que la función de score para una distribución gaussiana
+$\mathcal{N}(\mu, \sigma^2)$ es $\nabla_x \log p(x) = -(x-\mu)/\sigma^2$.
+\end{ejercicio}
+
+\begin{ejerciciocomp}{Implementación de DDPM}
+Implemente el algoritmo de difusión denoising probabilistic model (DDPM)
+para el dataset MNIST. Use una red U-Net pequeña y el schedule coseno.
+Reporte muestras generadas después de 50 épocas.
+\end{ejerciciocomp}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Estrella Polar (opcional)}
+%───────────────────────────────────────────────────────────────────────────────
+
+La sección \textbf{Estrella Polar} también puede aparecer en apéndices si es
+relevante.
+
+\begin{estrella}{Espectro de potencias del reactor}
+La densidad espectral de potencia de las fluctuaciones neutrónicas en un
+reactor crítico puede derivarse a partir de la ecuación de Langevin. El resultado
+es una lorentziana con ancho proporcional a la constante de decaimiento de los
+precursores.
+\end{estrella}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Dificultad y notas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Incluimos un ejemplo del comando \texttt{\textbackslash dificultad} y del
+entorno \texttt{notasbib}.
+
+\dificultad{2}{3}
+
+\begin{notasbib}
+Para una revisión exhaustiva de los métodos numéricos para SDEs, véase
+\cite{kloeden1992numerical}. El algoritmo de score matching se analiza en
+\cite{hyvarinen2005estimation} y su versión denoising en \cite{vincent2011connection}.
+\end{notasbib}

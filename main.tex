@@ -1,0 +1,58 @@
+\documentclass[12pt, oneside]{book}
+
+% =============================================================================
+% BASIC PACKAGES AND CONFIGURATION
+% =============================================================================
+\input{config/packages.tex}
+\input{config/geometry.tex}
+
+% =============================================================================
+% METADATOS
+% =============================================================================
+\input{metadata.tex} 
+
+
+
+% =============================================================================
+% THEME (CHOOSE ONE)
+% =============================================================================
+% Custom theme 
+\input{themes/catppuccin-palette.tex}
+% =============================================================================
+% MACROS AND ENVIRONMENTS
+% =============================================================================
+\input{config/macros.tex}
+\input{config/tcolorbox-config.tex} 
+\input{environments/generator.tex}
+\input{environments/instances.tex}
+\input{environments/specials.tex}
+%\input{config/hyperref.tex}
+
+% =============================================================================
+% CONFIGURACIONES ADICIONALES
+% =============================================================================
+\input{config/titles-config.tex}       % títulos con color
+\input{config/listings-catppuccin.tex} % listings con estilo Catppuccin
+\input{config/algorithms.tex}
+
+% =============================================================================
+% DOCUMENT
+% =============================================================================
+\begin{document}
+
+\input{frontmatter/titlepage.tex}
+\input{frontmatter/preliminary.tex}   % Dedicatoria, epígrafe, agradecimientos
+\input{frontmatter/preface.tex}
+
+\tableofcontents
+
+\include{chapters/chapter1}
+
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\include{backmatter/appendixA}
+
+
+\end{document}
