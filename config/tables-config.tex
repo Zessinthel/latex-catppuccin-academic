@@ -1,0 +1,100 @@
+%───────────────────────────────────────────────────────────────────────────────
+% TABLES-CONFIG.TEX — Estilo global de tablas con paleta Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Requiere: booktabs, array, tabularx, longtable, multirow, siunitx,
+%           colortbl, xparse, etoolbox
+% colortbl se carga en packages.tex
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Espaciado global de booktabs ────────────────────────────────────────────
+\setlength{\heavyrulewidth}{0.08em}
+\setlength{\lightrulewidth}{0.04em}
+\setlength{\cmidrulewidth}{0.03em}
+\renewcommand{\arraystretch}{1.25}
+
+% ─── Alineación vertical: m (middle) en lugar de p (top) ────────────────────
+% Por defecto, tabularx usa p{} (alineación al tope) para las columnas X.
+% Esto causa desalineación vertical cuando se mezclan columnas l/c/r con X.
+% Redefinimos para que X use m{} (centrado vertical):
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+
+% ─── Nuevos tipos de columna ─────────────────────────────────────────────────
+% L/C/R: columnas de ancho fijo con wrapping y centrado vertical
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}m{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}m{#1}}
+
+% Y/Z: columnas proporcionales para tabularx (centrada / derecha)
+% X ya existe en tabularx (izquierda, proporcional, ahora con m{})
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{Z}{>{\raggedleft\arraybackslash}X}
+
+% ─── Colores para tablas ─────────────────────────────────────────────────────
+\colorlet{tableheadcolor}{CtpBlue!12}
+\colorlet{tableheadtext}{CtpText}
+\colorlet{tablerowalt}{CtpSurface0!30}
+\colorlet{tablerule}{CtpOverlay0!50}
+
+% Aplicar color a reglas de booktabs (después de \begin{document})
+\AtBeginDocument{\arrayrulecolor{tablerule}}
+
+% ─── Comando: encabezado de columna ─────────────────────────────────────────
+\newcommand{\thead}[1]{%
+  \bfseries\color{tableheadtext}#1%
+}
+
+% Comando para colorear la fila de encabezado completa
+\newcommand{\headerrow}{\rowcolor{tableheadcolor}}
+
+% ─── Entorno: tabla con overflow controlado ──────────────────────────────────
+% Reescala tablas anchas para que quepan en \textwidth.
+% Uso:
+%   \begin{fittable}
+%     \begin{tabular}{llllll}  ...  \end{tabular}
+%   \end{fittable}
+%
+\newsavebox{\fittablebox}
+\NewDocumentEnvironment{fittable}{}{%
+  \begin{lrbox}{\fittablebox}%
+}{%
+  \end{lrbox}%
+  \ifdim\wd\fittablebox>\textwidth
+    \resizebox{\textwidth}{!}{\usebox{\fittablebox}}%
+  \else
+    \usebox{\fittablebox}%
+  \fi
+}
+
+% ─── Entorno: tabla flotante con caption ─────────────────────────────────────
+% Uso:
+%   \begin{acadtable}[htbp]{tab:label}{Caption text}
+%     \begin{tabularx}{\textwidth}{lYY}  ...  \end{tabularx}
+%   \end{acadtable}
+%
+\NewDocumentEnvironment{acadtable}{ O{htbp} m m }{%
+  \begin{table}[#1]%
+    \centering
+    \caption{#3}\label{#2}%
+}{%
+  \end{table}%
+}
+
+% ─── Caption: renombrar "Cuadro" → "Tabla" en español ───────────────────────
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+
+% ─── Notas al pie de tabla ───────────────────────────────────────────────────
+\newcommand{\tablenote}[2]{%
+  \par\vspace{2pt}%
+  {\footnotesize\textsuperscript{#1}\,#2}%
+}
+
+%───────────────────────────────────────────────────────────────────────────────
+% NOTA: tabularx NO se puede envolver en \NewDocumentEnvironment porque
+% internamente escanea el body buscando \end{tabularx} de forma literal.
+% Usar directamente:
+%   \begin{tabularx}{\textwidth}{l Y Y Z}
+%     ...
+%   \end{tabularx}
+%
+% Las columnas Y (centrada) y Z (derecha) se expanden proporcionalmente.
+%───────────────────────────────────────────────────────────────────────────────

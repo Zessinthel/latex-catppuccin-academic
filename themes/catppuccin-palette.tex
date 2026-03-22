@@ -1,16 +1,25 @@
 %───────────────────────────────────────────────────────────────────────────────
-% CATPPUCCIN THEME: LATTE (claro, suave)
+% CATPPUCCIN THEME — Paleta principal con soporte claro/oscuro
 % https://catppuccin.com/palette/
 %───────────────────────────────────────────────────────────────────────────────
+% Descomentar UNA sola línea para elegir el flavor:
+
 \usepackage[Latte,styleAll]{catppuccinpalette}
 %\usepackage[Frappe,styleAll]{catppuccinpalette}
 %\usepackage[Macchiato,styleAll]{catppuccinpalette}
 %\usepackage[Mocha,styleAll]{catppuccinpalette}
 
+% ─── Detectar si el tema es claro u oscuro ───────────────────────────────────
+% Latte = claro (fondo blanco, texto negro)
+% Frappé/Macchiato/Mocha = oscuro (fondo oscuro, texto claro)
+%
+% Toggle: \darkthemetrue o \darkthemefalse
+% Se puede forzar manualmente después de cargar este archivo.
+\newif\ifdarktheme
+\darkthemefalse        % Latte: claro
+%\darkthemetrue        % Descomentar para Frappé/Macchiato/Mocha
 
-
-
-% Asignar colores semánticos usando los colores Ctp predefinidos
+% ─── Colores semánticos ──────────────────────────────────────────────────────
 \colorlet{defcolor}{CtpBlue}
 \colorlet{thmcolor}{CtpMauve}
 \colorlet{propcolor}{CtpGreen}
@@ -20,25 +29,44 @@
 \colorlet{estrellacolor}{CtpYellow}
 \colorlet{compcolor}{CtpPink}
 
-% Versiones claras (97% blanco + color)
-\colorlet{defcolorlight}{white!97!defcolor}
-\colorlet{thmcolorlight}{white!97!thmcolor}
-\colorlet{propcolorlight}{white!97!propcolor}
-\colorlet{ejemcolorlight}{white!97!ejemcolor}
-\colorlet{obscolorlight}{white!97!obscolor}
-\colorlet{fisicacolorlight}{white!97!fisicacolor}
-\colorlet{estrellacolorlight}{white!97!estrellacolor}
-\colorlet{compcolorlight}{white!97!compcolor}
+% ─── Versiones "light" (fondo de cajas) ──────────────────────────────────────
+% En tema claro: 97% blanco + color → fondo muy tenue
+% En tema oscuro: 95% CtpBase + color → fondo apenas tintado sobre oscuro
+\ifdarktheme
+  \colorlet{defcolorlight}{CtpBase!95!defcolor}
+  \colorlet{thmcolorlight}{CtpBase!95!thmcolor}
+  \colorlet{propcolorlight}{CtpBase!95!propcolor}
+  \colorlet{ejemcolorlight}{CtpBase!95!ejemcolor}
+  \colorlet{obscolorlight}{CtpBase!95!obscolor}
+  \colorlet{fisicacolorlight}{CtpBase!95!fisicacolor}
+  \colorlet{estrellacolorlight}{CtpBase!95!estrellacolor}
+  \colorlet{compcolorlight}{CtpBase!95!compcolor}
+\else
+  \colorlet{defcolorlight}{white!97!defcolor}
+  \colorlet{thmcolorlight}{white!97!thmcolor}
+  \colorlet{propcolorlight}{white!97!propcolor}
+  \colorlet{ejemcolorlight}{white!97!ejemcolor}
+  \colorlet{obscolorlight}{white!97!obscolor}
+  \colorlet{fisicacolorlight}{white!97!fisicacolor}
+  \colorlet{estrellacolorlight}{white!97!estrellacolor}
+  \colorlet{compcolorlight}{white!97!compcolor}
+\fi
 
-% Grises neutros (usando colores de Catppuccin Latte)
+% ─── Grises neutros ─────────────────────────────────────────────────────────
 \colorlet{graymedium}{CtpOverlay0}
 \colorlet{graylight}{CtpSurface0}
 \colorlet{grayultralight}{CtpBase}
 
-% Colores para enlaces
+% ─── Colores para enlaces ────────────────────────────────────────────────────
 \colorlet{linkcolor}{CtpBlue}
 \colorlet{citecolor}{CtpGreen}
 \colorlet{urlcolor}{CtpPeach}
 
-\pagecolor{white}
-\AtBeginDocument{\color{black}}
+% ─── Fondo de página y color de texto base ───────────────────────────────────
+\ifdarktheme
+  \pagecolor{CtpBase}
+  \AtBeginDocument{\color{CtpText}}
+\else
+  \pagecolor{white}
+  \AtBeginDocument{\color{black}}
+\fi

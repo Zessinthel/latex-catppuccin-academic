@@ -1,26 +1,122 @@
+% =============================================================================
+% PACKAGES.TEX — Paquetes para texto académico de física computacional
+% =============================================================================
+% Orden de carga importa. Agrupados por función; las dependencias de orden
+% están indicadas con (→ debe ir después de X).
+% =============================================================================
+
+% ─── Encoding y lenguaje ─────────────────────────────────────────────────────
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-noshorthands]{babel}
 \deactivatequoting
-\usepackage{pifont}
-\usepackage{listings}
-\usepackage[many]{tcolorbox}
-\tcbuselibrary{theorems, breakable, skins, hooks}
+\usepackage{csquotes}              % comillas correctas con babel
+
+% ─── Tipografía ──────────────────────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{inconsolata}           % fuente mono para listings
+
+% ─── Matemáticas ─────────────────────────────────────────────────────────────
 \usepackage{amsmath, amssymb, amsthm, mathtools}
 \usepackage{bm}
-\usepackage{graphicx}
+\usepackage{physics}               % \abs, \norm, \tr, \grad, \div, \curl,
+                                   % \laplacian, \dv, \pdv, \bra, \ket, etc.
+\usepackage{cancel}                % cancelar términos en derivaciones
+% \usepackage{tensor}              % descomentar si se usa notación indicial
+
+% ─── Unidades y números ──────────────────────────────────────────────────────
+\usepackage{siunitx}
+\sisetup{
+  output-decimal-marker = {,},     % separador decimal = coma (español)
+  per-mode              = symbol,  % m/s en lugar de m s^{-1}
+  separate-uncertainty  = true,    % ±
+  group-minimum-digits  = 4,       % 1000 sin separador, 10 000 con
+}
+
+% ─── Tablas ──────────────────────────────────────────────────────────────────
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{colortbl}              % \rowcolor, \cellcolor, \arrayrulecolor
+
+% ─── Figuras y flotantes ─────────────────────────────────────────────────────
+\usepackage{graphicx}              % \includegraphics (png, jpg, pdf)
 \usepackage{caption}
-\usepackage{float}
-\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+\usepackage{subcaption}            % subfiguras
+\usepackage{float}                 % posicionamiento [H]
+\usepackage{wrapfig}               % figuras embebidas en texto
+\usepackage{placeins}              % \FloatBarrier
+
+% ─── Listas ──────────────────────────────────────────────────────────────────
 \usepackage{enumitem}
+\usepackage{pifont}
+
+% ─── Código fuente ───────────────────────────────────────────────────────────
+\usepackage{listings}              % (configuración en listings-catppuccin.tex)
+
+% ─── Algoritmos ──────────────────────────────────────────────────────────────
+\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+
+% ─── Cajas decorativas ───────────────────────────────────────────────────────
+\usepackage[many]{tcolorbox}
+\tcbuselibrary{theorems, breakable, skins, hooks}
+
+% ─── TikZ y diagramas ───────────────────────────────────────────────────────
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds}
+\usetikzlibrary{
+  arrows.meta,
+  positioning,
+  shapes.geometric,
+  fit,
+  backgrounds,
+  calc,
+  decorations.pathreplacing,
+  patterns,
+  matrix,
+}
 \usepackage{pgffor}
-\usepackage[numbers]{natbib}
-\usepackage{microtype}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz-cd}
+
+% ─── Espaciado y layout ─────────────────────────────────────────────────────
 \usepackage{parskip}
 \usepackage{setspace}
 \usepackage{fancyhdr}
-\usepackage{hyperref}  % loaded without options
+
+% ─── Bibliografía ────────────────────────────────────────────────────────────
+\usepackage[numbers]{natbib}
+
+% ─── Notas al pie ────────────────────────────────────────────────────────────
+\usepackage[bottom, hang]{footmisc}
+
+% ─── Estructura del documento ────────────────────────────────────────────────
+\usepackage{appendix}
+\usepackage{pdfpages}
+
+% ─── Programación LaTeX ──────────────────────────────────────────────────────
+\usepackage{etoolbox}
+\usepackage{xparse}
+
+% ─── Hipervínculos (cargar PENÚLTIMO) ────────────────────────────────────────
+\usepackage{hyperref}
+\usepackage{bookmark}              % (→ después de hyperref)
+
+% ─── Referencias inteligentes (cargar ÚLTIMO) ────────────────────────────────
+\usepackage[spanish,noabbrev]{cleveref}
+\crefname{equation}{ec.}{ecs.}
+\Crefname{equation}{Ecuación}{Ecuaciones}
+\crefname{figure}{fig.}{figs.}
+\Crefname{figure}{Figura}{Figuras}
+\crefname{table}{tabla}{tablas}
+\Crefname{table}{Tabla}{Tablas}
+\crefname{chapter}{cap.}{caps.}
+\Crefname{chapter}{Capítulo}{Capítulos}
+\crefname{section}{sec.}{secs.}
+\Crefname{section}{Sección}{Secciones}
+\crefname{algorithm}{alg.}{algs.}
+\Crefname{algorithm}{Algoritmo}{Algoritmos}
+\crefname{appendix}{ap.}{aps.}
+\Crefname{appendix}{Apéndice}{Apéndices}

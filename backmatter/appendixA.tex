@@ -1,198 +1,443 @@
 %═══════════════════════════════════════════════════════════════════════════════
-\chapter{Demostración de la plantilla en apéndices}
-\label{ap:demo}
+\chapter{Galería de código fuente}
+\label{ap:codigo}
 %═══════════════════════════════════════════════════════════════════════════════
 
-Este apéndice ilustra el uso de la plantilla \texttt{latex-catppuccin-template}
-en material complementario. Todos los elementos mostrados utilizan los colores
-de la paleta Catppuccin, adaptándose automáticamente al tema seleccionado.
+Este apéndice presenta ejemplos de código en los diez lenguajes configurados
+en la plantilla. Cada estilo mapea las categorías sintácticas del lenguaje a
+la paleta Catppuccin según la tabla del \cref{sec:codigo-breve}. Los estilos
+se invocan con \verb|style=python|, \verb|style=rust|, etc.
+
+\dificultad{1}{1}
 
 %───────────────────────────────────────────────────────────────────────────────
-\section{Entornos teoremáticos}
+\section{Python}
 %───────────────────────────────────────────────────────────────────────────────
 
-Los mismos entornos definidos para el cuerpo principal están disponibles aquí.
+\begin{lstlisting}[style=python, caption={Descenso de gradiente con momentum de Nesterov}]
+import numpy as np
+from typing import Callable, Tuple
 
-\begin{definicion}{Convergencia débil}
-Una sucesión $\{x_n\}$ en un espacio de Hilbert $\mathcal{H}$ converge
-débilmente a $x$ si $\langle x_n, y \rangle \to \langle x, y \rangle$ para todo
-$y \in \mathcal{H}$.
-\end{definicion}
+class SGDMomentum:
+    """SGD optimizer with Nesterov momentum."""
 
-\begin{teorema}{Banach–Alaoglu}
-La bola unitaria cerrada en el dual de un espacio normado es compacta en la
-topología débil-*.
-\end{teorema}
+    def __init__(self, lr: float = 1e-3, momentum: float = 0.9):
+        self.lr = lr
+        self.momentum = momentum
+        self.velocity = None
 
-\begin{proposicion}{Desigualdad de Bessel}
-Sea $\{e_n\}$ una sucesión ortonormal en un espacio de Hilbert. Entonces
-$\sum_n |\langle x, e_n \rangle|^2 \leq \|x\|^2$ para todo $x$.
-\end{proposicion}
+    def step(self, params: np.ndarray, grad: np.ndarray) -> np.ndarray:
+        if self.velocity is None:
+            self.velocity = np.zeros_like(params)
+        # Nesterov momentum update
+        self.velocity = self.momentum * self.velocity - self.lr * grad
+        return params + self.momentum * self.velocity - self.lr * grad
 
-\begin{ejemplo}{Sucesión ortonormal en $L^2[0,1]$}
-Las funciones $e_n(x) = \sqrt{2}\sin(n\pi x)$ forman una base ortonormal
-para $L^2[0,1]$.
-\end{ejemplo}
-
-\begin{observacion}{Topologías débiles}
-La convergencia débil es estrictamente más débil que la convergencia en norma
-en espacios de dimensión infinita.
-\end{observacion}
-
-\begin{fisicaconexion}{Estados coherentes}
-En óptica cuántica, los estados coherentes minimizan las relaciones de
-incertidumbre y forman un sistema sobrecompleto en el espacio de Fock.
-\end{fisicaconexion}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Ecuaciones destacadas}
-%───────────────────────────────────────────────────────────────────────────────
-
-Puedes incluir ecuaciones con colores semánticos usando los comandos
-\texttt{\textbackslash textcolor} con los nombres de la paleta.
-
-\begin{equation}
-\label{eq:demo2}
-\textcolor{CtpBlue}{\mathcal{F}[f](\xi)} =
-\textcolor{CtpPeach}{\int_{-\infty}^{\infty}}
-\textcolor{CtpGreen}{f(x) e^{-2\pi i x \xi}} \, \textcolor{CtpTeal}{dx}.
-\end{equation}
-
-\begin{align}
-\textcolor{CtpMauve}{\nabla \cdot \mathbf{E}} &= \textcolor{CtpSky}{\frac{\rho}{\varepsilon_0}}, \\
-\textcolor{CtpMauve}{\nabla \times \mathbf{E}} &= \textcolor{CtpSky}{-\frac{\partial \mathbf{B}}{\partial t}}.
-\end{align}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Algoritmos}
-%───────────────────────────────────────────────────────────────────────────────
-
-Los algoritmos mantienen el mismo estilo que en el cuerpo principal.
-
-\begin{algorithm}[H]
-\caption{Método de Euler–Maruyama para SDEs}
-\label{alg:em}
-\LinesNumbered
-\KwIn{Ecuación $dX_t = \mu(X_t,t)dt + \sigma(X_t,t)dW_t$,
-      condición inicial $X_0$, paso $\Delta t$, tiempo final $T$}
-\KwOut{Trayectoria $\{X_k\}_{k=0}^{N}$ con $N = T/\Delta t$}
-$X \leftarrow X_0$\;
-\For{$k = 0$ \KwTo $N-1$}{
-  $t \leftarrow k\Delta t$\;
-  $\xi \leftarrow \mathcal{N}(0,1)$\tcp*{ruido gaussiano}
-  $X \leftarrow X + \mu(X,t)\Delta t + \sigma(X,t)\sqrt{\Delta t}\,\xi$\;
-}
-\Return trayectoria\;
-\end{algorithm}
-
-\begin{algorithm}[H]
-\caption{Denoising score matching (un paso)}
-\label{alg:dsm}
-\LinesNumbered
-\KwIn{Dato $\mathbf{x}_0$, tiempo $t$, red de score $\mathbf{s}_\theta$,
-      schedule $\{\bar\alpha_t\}$}
-\KwOut{Pérdida $\mathcal{L}$}
-$\varepsilon \leftarrow \mathcal{N}(\mathbf{0}, \mathbf{I})$\;
-$\mathbf{x}_t \leftarrow \sqrt{\bar\alpha_t}\,\mathbf{x}_0 + \sqrt{1-\bar\alpha_t}\,\varepsilon$\;
-$\hat{\varepsilon} \leftarrow \mathbf{s}_\theta(\mathbf{x}_t, t)$\;
-$\mathcal{L} \leftarrow \|\hat{\varepsilon} - \varepsilon\|^2$\;
-\Return $\mathcal{L}$\;
-\end{algorithm}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Código fuente}
-%───────────────────────────────────────────────────────────────────────────────
-
-La configuración de \texttt{listings} también se aplica en los apéndices.
-
-\begin{lstlisting}[language=Python, caption={Red neuronal con PyTorch}]
-import torch
-import torch.nn as nn
-
-class ScoreNet(nn.Module):
-    def __init__(self, dim, hidden=128):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(dim, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, dim)
-        )
-    
-    def forward(self, x, t):
-        # t es el tiempo, se puede incorporar como embedding
-        return self.net(x)
+def train(model: Callable, X: np.ndarray, y: np.ndarray,
+          epochs: int = 100) -> list:
+    optimizer = SGDMomentum(lr=0.01)
+    losses = []
+    for epoch in range(epochs):
+        y_hat = model(X)
+        loss = np.mean((y_hat - y) ** 2)
+        losses.append(loss)
+        if loss < 1e-6:
+            print(f"Converged at epoch {epoch}")
+            break
+    return losses
 \end{lstlisting}
 
-\begin{lstlisting}[language=julia, style=catppuccin-base, caption={Simulación de proceso OU en Julia}]
-using Random, Plots
+%───────────────────────────────────────────────────────────────────────────────
+\section{C}
+%───────────────────────────────────────────────────────────────────────────────
 
-function euler_maruyama(drift, diffusion, x0, dt, T)
-    N = Int(T / dt)
-    x = zeros(N+1)
-    x[1] = x0
-    for i in 1:N
-        t = (i-1)*dt
-        x[i+1] = x[i] + drift(x[i], t)*dt + diffusion(x[i], t)*sqrt(dt)*randn()
-    end
-    return x
+\begin{lstlisting}[style=c, caption={Producto matriz-vector}]
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+void matvec(const double *A, const double *x, double *y,
+            size_t m, size_t n) {
+    memset(y, 0, m * sizeof(double));
+    for (size_t i = 0; i < m; i++)
+        for (size_t j = 0; j < n; j++)
+            y[i] += A[i * n + j] * x[j];
+}
+
+double norm2(const double *v, size_t n) {
+    double s = 0.0;
+    for (size_t i = 0; i < n; i++)
+        s += v[i] * v[i];
+    return sqrt(s);
+}
+
+int main(void) {
+    double A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    double x[] = {1.0, 1.0, 1.0};
+    double y[2];
+    matvec(A, x, y, 2, 3);
+    printf("||y|| = %.6f\n", norm2(y, 2));
+    return EXIT_SUCCESS;
+}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{C++}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[style=cpp, caption={Integrador de Monte Carlo con templates}]
+#include <iostream>
+#include <vector>
+#include <random>
+#include <functional>
+
+template<typename T>
+class MonteCarloIntegrator {
+private:
+    std::mt19937 rng_;
+    std::uniform_real_distribution<T> dist_;
+public:
+    explicit MonteCarloIntegrator(unsigned seed = 42)
+        : rng_(seed), dist_(0.0, 1.0) {}
+
+    T integrate(std::function<T(T)> f, T a, T b, size_t N) {
+        T sum = 0.0;
+        for (size_t i = 0; i < N; ++i) {
+            T x = a + (b - a) * dist_(rng_);
+            sum += f(x);
+        }
+        return (b - a) * sum / static_cast<T>(N);
+    }
+};
+
+int main() {
+    MonteCarloIntegrator<double> mc;
+    auto result = mc.integrate(
+        [](double x) { return std::sin(x); },
+        0.0, M_PI, 1'000'000
+    );
+    std::cout << "Result: " << result << std::endl;
+    return 0;
+}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Rust}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[style=rust, caption={Solucionador RK4 con traits}]
+trait OdeSolver {
+    fn step(&self, f: &dyn Fn(f64, &[f64]) -> Vec<f64>,
+            t: f64, y: &[f64], dt: f64) -> Vec<f64>;
+}
+
+struct RungeKutta4;
+
+impl OdeSolver for RungeKutta4 {
+    fn step(&self, f: &dyn Fn(f64, &[f64]) -> Vec<f64>,
+            t: f64, y: &[f64], dt: f64) -> Vec<f64> {
+        let n = y.len();
+        let k1 = f(t, y);
+        let y2: Vec<f64> = (0..n).map(|i| y[i] + 0.5*dt*k1[i]).collect();
+        let k2 = f(t + 0.5*dt, &y2);
+        let y3: Vec<f64> = (0..n).map(|i| y[i] + 0.5*dt*k2[i]).collect();
+        let k3 = f(t + 0.5*dt, &y3);
+        let y4: Vec<f64> = (0..n).map(|i| y[i] + dt*k3[i]).collect();
+        let k4 = f(t + dt, &y4);
+        (0..n).map(|i| {
+            y[i] + dt/6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i])
+        }).collect()
+    }
+}
+
+fn main() {
+    let rk4 = RungeKutta4;
+    let harmonic = |_t: f64, y: &[f64]| -> Vec<f64> {
+        vec![y[1], -y[0]]
+    };
+    let mut y = vec![1.0, 0.0];
+    for i in 0..1000 {
+        y = rk4.step(&harmonic, i as f64 * 0.01, &y, 0.01);
+    }
+    println!("y(10) = {:.6}, y'(10) = {:.6}", y[0], y[1]);
+}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Go}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[style=go, caption={Problema de Basilea con goroutines}]
+package main
+
+import (
+    "fmt"
+    "math"
+    "sync"
+)
+
+type Result struct {
+    Index int
+    Value float64
+}
+
+func partialSum(start, end int, ch chan<- Result, wg *sync.WaitGroup) {
+    defer wg.Done()
+    sum := 0.0
+    for k := start; k < end; k++ {
+        sum += 1.0 / math.Pow(float64(k), 2)
+    }
+    ch <- Result{Index: start, Value: sum}
+}
+
+func main() {
+    const N = 1_000_000
+    const workers = 8
+    chunk := N / workers
+
+    ch := make(chan Result, workers)
+    var wg sync.WaitGroup
+
+    for i := 0; i < workers; i++ {
+        wg.Add(1)
+        s := i*chunk + 1
+        e := s + chunk
+        if i == workers-1 { e = N + 1 }
+        go partialSum(s, e, ch, &wg)
+    }
+    go func() { wg.Wait(); close(ch) }()
+
+    total := 0.0
+    for r := range ch { total += r.Value }
+    fmt.Printf("pi ~ %.10f\n", math.Sqrt(6.0*total))
+}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Julia}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[style=julia, caption={Euler--Maruyama con dispatch múltiple}]
+using Random, LinearAlgebra, Statistics
+
+abstract type AbstractSDE end
+
+struct OrnsteinUhlenbeck <: AbstractSDE
+    theta::Float64
+    mu::Float64
+    sigma::Float64
 end
 
-# Ejemplo: dx = -x dt + dW
-drift(x, t) = -x
-diffusion(x, t) = 1.0
-x = euler_maruyama(drift, diffusion, 0.0, 0.01, 10.0)
-plot(x)
+drift(sde::OrnsteinUhlenbeck, x, t) = sde.theta * (sde.mu - x)
+diffusion(sde::OrnsteinUhlenbeck, x, t) = sde.sigma
+
+function euler_maruyama(sde::AbstractSDE, x0::Float64,
+                        dt::Float64, T::Float64; seed::Int=42)
+    rng = MersenneTwister(seed)
+    N = Int(T / dt)
+    x = zeros(N + 1)
+    x[1] = x0
+    @inbounds for i in 1:N
+        dW = sqrt(dt) * randn(rng)
+        x[i+1] = x[i] + drift(sde, x[i], (i-1)*dt)*dt +
+                         diffusion(sde, x[i], (i-1)*dt)*dW
+    end
+    return range(0.0, T; length=N+1), x
+end
+
+ou = OrnsteinUhlenbeck(2.0, 0.0, 1.0)
+t, x = euler_maruyama(ou, 1.0, 1e-3, 10.0)
+@info "Stationary variance" exact=ou.sigma^2/(2*ou.theta) numerical=var(x[end-1000:end])
 \end{lstlisting}
 
 %───────────────────────────────────────────────────────────────────────────────
-\section{Ejercicios}
+\section{MATLAB}
 %───────────────────────────────────────────────────────────────────────────────
 
-Los entornos de ejercicio están disponibles para plantear problemas.
+\begin{lstlisting}[style=matlab, caption={Elementos finitos 1D}]
+function [u, x] = fem1d(N, f_rhs, a, b)
+% FEM1D  Solves -u''(x) = f(x) on [a,b], u(a)=u(b)=0
+%        Linear finite elements with N elements.
 
-\begin{ejercicio}
-Demuestre que el método de Euler–Maruyama tiene orden de convergencia fuerte
-$1/2$ para SDEs con coeficientes regulares.
-\end{ejercicio}
+h = (b - a) / N;
+x = linspace(a, b, N+1)';
+K = sparse(N+1, N+1);
+F = zeros(N+1, 1);
 
-\begin{ejercicio}
-Verifique que la función de score para una distribución gaussiana
-$\mathcal{N}(\mu, \sigma^2)$ es $\nabla_x \log p(x) = -(x-\mu)/\sigma^2$.
-\end{ejercicio}
+for e = 1:N
+    Ke = (1/h) * [1 -1; -1 1];
+    xm = (x(e) + x(e+1)) / 2;
+    Fe = h/2 * [f_rhs(xm); f_rhs(xm)];
+    idx = [e, e+1];
+    K(idx, idx) = K(idx, idx) + Ke;
+    F(idx) = F(idx) + Fe;
+end
 
-\begin{ejerciciocomp}{Implementación de DDPM}
-Implemente el algoritmo de difusión denoising probabilistic model (DDPM)
-para el dataset MNIST. Use una red U-Net pequeña y el schedule coseno.
-Reporte muestras generadas después de 50 épocas.
-\end{ejerciciocomp}
+interior = 2:N;
+u = zeros(N+1, 1);
+u(interior) = K(interior, interior) \ F(interior);
 
-%───────────────────────────────────────────────────────────────────────────────
-\section{Estrella Polar (opcional)}
-%───────────────────────────────────────────────────────────────────────────────
-
-La sección \textbf{Estrella Polar} también puede aparecer en apéndices si es
-relevante.
-
-\begin{estrella}{Espectro de potencias del reactor}
-La densidad espectral de potencia de las fluctuaciones neutrónicas en un
-reactor crítico puede derivarse a partir de la ecuación de Langevin. El resultado
-es una lorentziana con ancho proporcional a la constante de decaimiento de los
-precursores.
-\end{estrella}
+u_exact = @(x) sin(pi*x) / pi^2;
+err = sqrt(h * sum((u - u_exact(x)).^2));
+fprintf('L2 error: %.2e (h = %.2e)\n', err, h);
+end
+\end{lstlisting}
 
 %───────────────────────────────────────────────────────────────────────────────
-\section{Dificultad y notas}
+\section{Fortran}
 %───────────────────────────────────────────────────────────────────────────────
 
-Incluimos un ejemplo del comando \texttt{\textbackslash dificultad} y del
-entorno \texttt{notasbib}.
+\begin{lstlisting}[style=fortran, caption={Factorización LU con pivoteo parcial}]
+module linear_algebra
+  implicit none
+  integer, parameter :: dp = selected_real_kind(15, 307)
+contains
+  subroutine lu_factor(A, n, ipiv, info)
+    integer, intent(in)     :: n
+    real(dp), intent(inout) :: A(n, n)
+    integer, intent(out)    :: ipiv(n), info
+    integer  :: i, j, k, imax
+    real(dp) :: maxval, temp
 
-\dificultad{2}{3}
+    info = 0
+    do k = 1, n
+      maxval = abs(A(k, k));  imax = k
+      do i = k + 1, n
+        if (abs(A(i, k)) > maxval) then
+          maxval = abs(A(i, k));  imax = i
+        end if
+      end do
+      ipiv(k) = imax
+      if (maxval < epsilon(1.0_dp)) then
+        info = k;  return
+      end if
+      if (imax /= k) then
+        do j = 1, n
+          temp = A(k,j); A(k,j) = A(imax,j); A(imax,j) = temp
+        end do
+      end if
+      do i = k + 1, n
+        A(i,k) = A(i,k) / A(k,k)
+        do j = k + 1, n
+          A(i,j) = A(i,j) - A(i,k) * A(k,j)
+        end do
+      end do
+    end do
+  end subroutine lu_factor
+end module linear_algebra
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Assembler (x86-64)}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[style=asm, caption={Producto punto con SSE}]
+; dot_product_sse(float *a, float *b, int n) -> float
+; System V AMD64: rdi=a, rsi=b, edx=n; returns in xmm0
+section .text
+global dot_product_sse
+
+dot_product_sse:
+    xorps   xmm0, xmm0
+    test    edx, edx
+    jle     .done
+    mov     ecx, edx
+    shr     ecx, 2
+    jz      .remainder
+.loop4:
+    movups  xmm1, [rdi]
+    movups  xmm2, [rsi]
+    mulps   xmm1, xmm2
+    addps   xmm0, xmm1
+    add     rdi, 16
+    add     rsi, 16
+    dec     ecx
+    jnz     .loop4
+    ; horizontal reduction
+    movaps  xmm1, xmm0
+    shufps  xmm1, xmm1, 0x4E
+    addps   xmm0, xmm1
+    movaps  xmm1, xmm0
+    shufps  xmm1, xmm1, 0xB1
+    addss   xmm0, xmm1
+.remainder:
+    and     edx, 3
+    jz      .done
+.loop1:
+    movss   xmm1, [rdi]
+    mulss   xmm1, [rsi]
+    addss   xmm0, xmm1
+    add     rdi, 4
+    add     rsi, 4
+    dec     edx
+    jnz     .loop1
+.done:
+    ret
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Mathematica}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[style=mathematica, caption={EDP de calor: simbólica + numérica}]
+(* 1D heat equation: du/dt = k * d^2u/dx^2 *)
+
+k = 0.01;  L = Pi;
+
+uExact[x_, t_, nTerms_] := Module[{n},
+    Sum[(2/(n*Pi)) * Sin[n*x] * Exp[-k*n^2*t],
+        {n, 1, nTerms, 2}]
+]
+
+sol = NDSolve[{
+    D[u[x,t], t] == k * D[u[x,t], {x,2}],
+    u[0,t] == 0,  u[L,t] == 0,
+    u[x,0] == If[x < L/2, 2*x/L, 2*(1 - x/L)]
+}, u, {x, 0, L}, {t, 0, 10}];
+
+error = NIntegrate[
+    (u[x,5] /. sol[[1]] - uExact[x, 5, 50])^2,
+    {x, 0, L}] // Sqrt;
+
+Print["L2 error at t=5: ", ScientificForm[error, 3]]
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section*{Referencia rápida de estilos}
+\addcontentsline{toc}{section}{Referencia rápida de estilos}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{acadtable}{tab:estilos-listings}{Estilos de listings disponibles}
+  \begin{tabularx}{\textwidth}{l l Y}
+    \toprule
+    \headerrow
+    \thead{Estilo} & \thead{Lenguaje} & \thead{Uso} \\
+    \midrule
+    \texttt{python}      & Python         & \verb|style=python| \\
+    \rowcolor{tablerowalt}
+    \texttt{c}           & C              & \verb|style=c| \\
+    \texttt{cpp}         & C++            & \verb|style=cpp| \\
+    \rowcolor{tablerowalt}
+    \texttt{rust}        & Rust           & \verb|style=rust| \\
+    \texttt{go}          & Go             & \verb|style=go| \\
+    \rowcolor{tablerowalt}
+    \texttt{julia}       & Julia          & \verb|style=julia| \\
+    \texttt{matlab}      & MATLAB/Octave  & \verb|style=matlab| \\
+    \rowcolor{tablerowalt}
+    \texttt{fortran}     & Fortran (2008) & \verb|style=fortran| \\
+    \texttt{asm}         & x86-64 (Intel) & \verb|style=asm| \\
+    \rowcolor{tablerowalt}
+    \texttt{mathematica} & Wolfram        & \verb|style=mathematica| \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
 
 \begin{notasbib}
-Para una revisión exhaustiva de los métodos numéricos para SDEs, véase
-\cite{kloeden1992numerical}. El algoritmo de score matching se analiza en
-\cite{hyvarinen2005estimation} y su versión denoising en \cite{vincent2011connection}.
+La configuración de \texttt{listings} sigue la guía de estilo oficial de
+Catppuccin (\url{https://catppuccin.com/style-guide}). Los lenguajes Rust
+y Go se definen desde cero con \verb|\lstdefinelanguage| porque el paquete
+\texttt{listings} no los incluye nativamente.
+Para resaltado más avanzado (funciones definidas por el usuario, type
+inference), considerar \texttt{minted} con Pygments como alternativa.
 \end{notasbib}

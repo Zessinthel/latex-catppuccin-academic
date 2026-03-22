@@ -1,0 +1,94 @@
+%───────────────────────────────────────────────────────────────────────────────
+% PGFPLOTS-CONFIG.TEX — Estilos de gráficas con paleta Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Requiere: pgfplots (cargado en packages.tex), tema Catppuccin cargado.
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Cycle list Catppuccin ───────────────────────────────────────────────────
+% 8 colores distinguibles, en orden de contraste visual decreciente.
+% Se usa automáticamente en cualquier \addplot sin color explícito.
+\pgfplotscreateplotcyclelist{catppuccin}{
+  {CtpBlue,    mark=*,          thick},
+  {CtpPeach,   mark=square*,    thick},
+  {CtpGreen,   mark=triangle*,  thick},
+  {CtpMauve,   mark=diamond*,   thick},
+  {CtpRed,     mark=pentagon*,  thick},
+  {CtpTeal,    mark=o,          thick},
+  {CtpYellow,  mark=square,     thick},
+  {CtpPink,    mark=triangle,   thick},
+}
+
+% ─── Estilo global de ejes ───────────────────────────────────────────────────
+\pgfplotsset{
+  % Aplicar cycle list por defecto
+  cycle list name=catppuccin,
+  % Colores de ejes, ticks y grid
+  every axis/.append style={
+    axis line style = {CtpOverlay0},
+    tick style       = {CtpOverlay0},
+    label style      = {color=CtpText},
+    tick label style = {color=CtpSubtext0},
+    title style      = {color=CtpText, font=\bfseries},
+    legend style     = {
+      draw=CtpSurface0,
+      fill=CtpBase,
+      text=CtpText,
+      font=\small,
+      rounded corners=1pt,
+    },
+    grid style = {
+      CtpSurface1,
+      line width=0.3pt,
+      dashed,
+    },
+  },
+  % Estilo para barras de error
+  every error bar/.append style={
+    thin,
+    CtpOverlay0,
+  },
+}
+
+% ─── Estilos con nombre (para uso explícito) ─────────────────────────────────
+
+% Gráfica limpia para publicación
+\pgfplotsset{
+  catppuccin-clean/.style={
+    grid=major,
+    xlabel style={font=\small},
+    ylabel style={font=\small},
+    tick label style={font=\footnotesize},
+    legend pos=north east,
+    legend cell align=left,
+  },
+}
+
+% Gráfica con fondo coloreado (para presentaciones o notas)
+\pgfplotsset{
+  catppuccin-filled/.style={
+    catppuccin-clean,
+    axis background/.style={fill=CtpMantle},
+  },
+}
+
+% Mapa de calor / colormap Catppuccin
+% Gradiente: Base → Blue → Mauve → Red → Yellow
+\pgfplotsset{
+  colormap={catppuccin-heat}{
+    rgb255=(30,30,46)       % CtpBase (Mocha-like dark, funciona en ambos)
+    rgb255=(137,180,250)    % CtpBlue
+    rgb255=(203,166,247)    % CtpMauve
+    rgb255=(243,139,168)    % CtpRed
+    rgb255=(249,226,175)    % CtpYellow
+  },
+}
+
+% Colormap divergente (para residuos, errores con signo)
+% Azul → Base → Rojo
+\pgfplotsset{
+  colormap={catppuccin-diverge}{
+    rgb255=(137,180,250)    % CtpBlue
+    rgb255=(205,214,244)    % CtpText (neutro claro)
+    rgb255=(243,139,168)    % CtpRed
+  },
+}

@@ -1,8 +1,21 @@
+%───────────────────────────────────────────────────────────────────────────────
+% HYPERREF.TEX — Configuración de hipervínculos
+%───────────────────────────────────────────────────────────────────────────────
+% Debe cargarse DESPUÉS del tema (usa colores semánticos definidos allí).
+% hyperref y bookmark ya están cargados en packages.tex.
+%───────────────────────────────────────────────────────────────────────────────
+
 \hypersetup{
-  colorlinks=true,
-  linkcolor={CtpMauve},
-  citecolor=citecolor,
-  urlcolor=urlcolor,
-  pdfborder={0 0 0},
-  breaklinks=true,
+  colorlinks  = true,
+  linkcolor   = linkcolor,       % referencias internas (\ref, \cref, TOC)
+  citecolor   = citecolor,       % citas bibliográficas
+  urlcolor    = urlcolor,        % URLs externas
+  pdfborder   = {0 0 0},
+  breaklinks  = true,
+  % ── Metadatos PDF (usan macros de metadata.tex) ───────────────────────────
+  pdftitle    = {\docTitulo},
+  pdfauthor   = {\docAutor},
+  pdfsubject  = {\docSubject},
+  pdfkeywords = {\docKeywords},
+  pdfcreator  = {LaTeX + Catppuccin template},
 }

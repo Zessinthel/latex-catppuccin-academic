@@ -1,31 +1,57 @@
 % =============================================================================
-% math macros
+% MACROS.TEX — Macros propios (complementan al paquete physics)
+% =============================================================================
+%
+% El paquete physics ya provee:
+%   \abs, \norm, \tr, \grad, \div (divergencia), \curl, \laplacian,
+%   \dv, \pdv, \bra, \ket, \braket, \ip (producto interno),
+%   \op (producto exterior), \comm (conmutador), \acomm,
+%   \rank, \erf, \Res, \Re, \Im, \pv, etc.
+%
+% Aquí solo definimos lo que physics NO cubre.
 % =============================================================================
 
+% ─── Conjuntos numéricos ─────────────────────────────────────────────────────
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\N}{\mathbb{N}}
-\newcommand{\norm}[1]{\left\|#1\right\|}
-\newcommand{\abs}[1]{\left|#1\right|}
-\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+
+% ─── Transpuesta ─────────────────────────────────────────────────────────────
 \newcommand{\T}{^\top}
+
+% ─── Optimización ────────────────────────────────────────────────────────────
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% ─── Aprendizaje automático / estadística ────────────────────────────────────
 \newcommand{\Loss}{\mathcal{L}}
 \newcommand{\D}{\mathcal{D}}
 \newcommand{\Params}{\Theta}
 \newcommand{\params}{\theta}
-\newcommand{\argmin}{\operatorname*{arg\,min}}
-\newcommand{\argmax}{\operatorname*{arg\,max}}
-\DeclareMathOperator{\tr}{tr}
-\DeclareMathOperator{\rank}{rango}
+\DeclareMathOperator{\KL}{KL}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
 
-% =============================================================================
-% physics macros
-% =============================================================================
-
+% ─── Física: notación específica ─────────────────────────────────────────────
+\newcommand{\Lap}{\laplacian}                   % alias → \laplacian de physics
+\newcommand{\Div}{\divergence}                  % alias → \divergence de physics
 \newcommand{\keff}{k_{\mathrm{eff}}}
-\newcommand{\Lap}{\nabla^2}
-\newcommand{\Div}{\nabla\cdot}
-\newcommand{\score}{\nabla_{\bm{x}}\log p}
+\newcommand{\score}{\grad_{\bm{x}}\log p}
 \newcommand{\Ep}[1]{\langle #1 \rangle}
-\newcommand{\SDE}[3]{d#1 = #2\,dt + #3\,dW}
 \newcommand{\FP}{\mathcal{L}_{\mathrm{FP}}}
+
+% ─── Ecuaciones diferenciales estocásticas ───────────────────────────────────
+\newcommand{\SDE}[3]{d#1 = #2\,dt + #3\,dW}
+
+% ─── Símbolos auxiliares ─────────────────────────────────────────────────────
 \newcommand{\OK}{\ensuremath{\checkmark}}
+
+% =============================================================================
+% NOTA: si necesitas \rank como \DeclareMathOperator{rango} en lugar de
+% la versión de physics, descomenta:
+% \let\rank\relax
+% \DeclareMathOperator{\rank}{rango}
+% =============================================================================

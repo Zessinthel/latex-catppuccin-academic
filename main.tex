@@ -9,31 +9,40 @@
 % =============================================================================
 % METADATOS
 % =============================================================================
-\input{metadata.tex} 
-
-
+\input{metadata.tex}
 
 % =============================================================================
 % THEME (CHOOSE ONE)
 % =============================================================================
-% Custom theme 
-\input{themes/catppuccin-palette.tex}
+% Descomentar UNA sola línea:
+\input{themes/catppuccin-palette.tex}    % Latte (claro) por defecto
+%\input{themes/catppuccin-latte.tex}     % Frappé
+%\input{themes/custom-theme.tex}         % Tema personalizado sin Catppuccin
+
+% =============================================================================
+% HYPERREF (después del tema, usa colores Ctp*)
+% =============================================================================
+\input{config/hyperref.tex}
+
 % =============================================================================
 % MACROS AND ENVIRONMENTS
 % =============================================================================
 \input{config/macros.tex}
-\input{config/tcolorbox-config.tex} 
+\input{config/tcolorbox-config.tex}
 \input{environments/generator.tex}
 \input{environments/instances.tex}
 \input{environments/specials.tex}
-%\input{config/hyperref.tex}
 
 % =============================================================================
-% CONFIGURACIONES ADICIONALES
+% CONFIGURACIONES ADICIONALES (después del tema)
 % =============================================================================
-\input{config/titles-config.tex}       % títulos con color
-\input{config/listings-catppuccin.tex} % listings con estilo Catppuccin
+\input{config/titles-config.tex}
+\input{config/listings-catppuccin.tex}
 \input{config/algorithms.tex}
+\input{config/tables-config.tex}
+\input{config/equation-styles.tex}
+\input{config/pgfplots-config.tex}
+\input{config/captions-config.tex}
 
 % =============================================================================
 % DOCUMENT
@@ -41,18 +50,18 @@
 \begin{document}
 
 \input{frontmatter/titlepage.tex}
-\input{frontmatter/preliminary.tex}   % Dedicatoria, epígrafe, agradecimientos
+\input{frontmatter/preliminary.tex}
 \input{frontmatter/preface.tex}
 
 \tableofcontents
 
 \include{chapters/chapter1}
 
-
 \bibliographystyle{plainnat}
 \bibliography{references}
 
+\begin{appendices}
 \include{backmatter/appendixA}
-
+\end{appendices}
 
 \end{document}

@@ -1,0 +1,142 @@
+%───────────────────────────────────────────────────────────────────────────────
+% EQUATION-STYLES.TEX — Coloreado semántico de ecuaciones (taxonomía híbrida)
+%───────────────────────────────────────────────────────────────────────────────
+%
+% Sistema de "syntax highlighting" para matemáticas que combina tres ejes:
+%
+%   1. ROL SINTÁCTICO (estable entre contextos)
+%      Operador, función, diferencial, dominio — siempre tienen el mismo color.
+%
+%   2. ESTATUS EPISTÉMICO (la dimensión que la tipografía NO codifica)
+%      Incógnita vs dato/parámetro fijo vs constante universal.
+%      En f(x;θ): en física x es incógnita y θ dato; en ML es al revés.
+%      El color hace explícita esta inversión.
+%
+%   3. TIPO MATEMÁTICO (refuerzo sutil de la tipografía)
+%      Vector, tensor/matriz — la tipografía (bold, doble barra) ya lo indica,
+%      el color refuerza cuando el contexto lo amerita.
+%
+% Regla de uso: si el símbolo tiene un rol sintáctico claro (operador, función,
+% diferencial, dominio), usa ese macro. Si no, pregúntate: ¿es conocido o
+% desconocido? Usa \eqk o \equ. Si además quieres reforzar que es vector o
+% tensor, usa \eqvec o \eqten. Si ningún color aporta información, déjalo
+% sin colorear — el sistema es opt-in, no obligatorio.
+%
+% Toggle global: \eqcolorstrue / \eqcolorsfalse
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Toggle global ───────────────────────────────────────────────────────────
+\newif\ifeqcolors
+\eqcolorstrue                         % \eqcolorsfalse para versión B/N
+
+% ═════════════════════════════════════════════════════════════════════════════
+% MAPA SEMÁNTICO → COLOR
+% ═════════════════════════════════════════════════════════════════════════════
+%
+% ── Eje 1: Rol sintáctico (estable) ──────────────────────────────────────────
+%
+%   Macro      Color       Cubre
+%   ─────      ─────       ─────
+%   \eqop      Blue        Operadores: ∫, ∑, ∏, ∂, ∇, ∇², ∇×, lím, Ĥ
+%   \eqfn      Green       Funciones/mapas: f(·), L(θ), σ(·), V(r), ReLU
+%   \eqdm      Teal        Diferenciales/medidas: dx, dt, dW, dS, dΩ
+%   \eqdom     Sapphire    Dominios/conjuntos: Ω, ∂Ω, ℝⁿ, H, S²
+%
+\colorlet{eqop}{CtpBlue}
+\colorlet{eqfn}{CtpGreen}
+\colorlet{eqdm}{CtpTeal}
+\colorlet{eqdom}{CtpSapphire}
+
+% ── Eje 2: Estatus epistémico ────────────────────────────────────────────────
+%
+%   Macro      Color       Cubre
+%   ─────      ─────       ─────
+%   \equ       Peach       Incógnita / buscado / aprendido
+%                          Lo que se quiere encontrar, optimizar, resolver.
+%                          Física: estado x, campo ψ, distribución p(x).
+%                          ML: pesos θ, predicción ŷ, política π(a|s).
+%
+%   \eqk       Mauve       Conocido / dato / fijado
+%                          Lo que se asume dado o se mide.
+%                          Física: parámetros θ, condiciones de frontera.
+%                          ML: datos x, labels y, hiperparámetros η.
+%
+%   \eqcon     Lavender    Constante universal / estructural
+%                          Invariante del contexto: ℏ, k_B, π, c, ε₀, i.
+%                          También factores numéricos fijos (1/2, 2π).
+%
+\colorlet{equ}{CtpPeach}
+\colorlet{eqk}{CtpMauve}
+\colorlet{eqcon}{CtpLavender}
+
+% ── Eje 3: Tipo matemático (refuerzo sutil) ─────────────────────────────────
+%
+%   Macro      Color       Cubre
+%   ─────      ─────       ─────
+%   \eqvec     Red         Campos vectoriales: u, E, B, J, f
+%                          (la tipografía bold ya lo indica; el color refuerza)
+%
+%   \eqten     Rosewater   Tensores / matrices: σ_ij, g_μν, W, Σ
+%                          (para cuando distinguir rango es importante)
+%
+\colorlet{eqvec}{CtpRed}
+\colorlet{eqten}{CtpRosewater}
+
+% ═════════════════════════════════════════════════════════════════════════════
+% MACROS
+% ═════════════════════════════════════════════════════════════════════════════
+\makeatletter
+
+% ─── Comando interno ─────────────────────────────────────────────────────────
+\newcommand{\@eqc}[2]{%
+  \ifeqcolors\textcolor{#1}{#2}\else#2\fi
+}
+
+% ── Eje 1: Rol sintáctico ───────────────────────────────────────────────────
+\newcommand{\eqop}[1]{\@eqc{eqop}{#1}}       % operador
+\newcommand{\eqfn}[1]{\@eqc{eqfn}{#1}}       % función / mapa
+\newcommand{\eqdm}[1]{\@eqc{eqdm}{#1}}        % diferencial / medida
+\newcommand{\eqdom}[1]{\@eqc{eqdom}{#1}}      % dominio / conjunto
+
+% ── Eje 2: Estatus epistémico ───────────────────────────────────────────────
+\newcommand{\equ}[1]{\@eqc{equ}{#1}}          % incógnita / buscado
+\newcommand{\eqk}[1]{\@eqc{eqk}{#1}}          % conocido / dato
+\newcommand{\eqcon}[1]{\@eqc{eqcon}{#1}}      % constante universal
+
+% ── Eje 3: Tipo matemático (refuerzo) ───────────────────────────────────────
+\newcommand{\eqvec}[1]{\@eqc{eqvec}{#1}}      % vector
+\newcommand{\eqten}[1]{\@eqc{eqten}{#1}}      % tensor / matriz
+
+% ═════════════════════════════════════════════════════════════════════════════
+% MACROS COMPUESTOS
+% ═════════════════════════════════════════════════════════════════════════════
+
+% Derivada parcial coloreada
+% Uso: \eqpdv{ρ}{t}  →  ∂ρ/∂t con operador + incógnita/variable
+% El primer argumento se colorea como incógnita, el segundo como conocido
+% (la variable independiente es la coordenada, un dato del problema).
+\newcommand{\eqpdv}[2]{%
+  \eqop{\frac{\partial \equ{#1}}{\partial \eqk{#2}}}%
+}
+
+% Gradiente coloreado
+% Uso: \eqgrad{u}  →  ∇u
+\newcommand{\eqgrad}[1]{%
+  \eqop{\nabla}\equ{#1}%
+}
+
+% Divergencia coloreada
+% Uso: \eqdvg{\mathbf{u}}  →  ∇·u
+% (nombre \eqdvg para no colisionar con \eqdiv si se usa \div de physics)
+\newcommand{\eqdvg}[1]{%
+  \eqop{\nabla \cdot} \equ{#1}%
+}
+
+% SDE coloreada
+% Uso: \eqSDE{X}{-\theta X}{\sigma}
+% Estado = incógnita, drift = función, coeficiente difusión = conocido
+\newcommand{\eqSDE}[3]{%
+  \eqdm{d}\equ{#1} = \eqfn{#2}\,\eqdm{dt} + \eqk{#3}\,\eqdm{dW}%
+}
+
+\makeatother

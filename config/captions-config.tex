@@ -1,0 +1,50 @@
+%───────────────────────────────────────────────────────────────────────────────
+% CAPTIONS-CONFIG.TEX — Estilo de captions con paleta Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Requiere: caption, subcaption (cargados en packages.tex), tema cargado.
+%───────────────────────────────────────────────────────────────────────────────
+
+\captionsetup{
+  font        = small,
+  labelfont   = {bf, color=CtpBlue},         % "Figura 1.1" en bold + azul
+  textfont    = {color=CtpSubtext0},          % texto del caption en gris suave
+  format      = hang,                        % sangría francesa
+  labelsep    = endash,                      % "Figura 1.1 –" en lugar de ":"
+  skip        = 8pt,                         % espacio entre flotante y caption
+  justification = justified,
+}
+
+% ─── Subfiguras ──────────────────────────────────────────────────────────────
+\captionsetup[sub]{
+  font        = footnotesize,
+  labelfont   = {bf, color=CtpSapphire},     % "(a)" en sapphire
+  textfont    = {color=CtpSubtext0},
+  labelsep    = space,
+  skip        = 4pt,
+}
+
+% ─── Tablas (override si se quiere diferente de figuras) ─────────────────────
+\captionsetup[table]{
+  position    = above,                       % caption arriba de la tabla
+  labelfont   = {bf, color=CtpMauve},        % "Tabla 1.1" en mauve
+  skip        = 6pt,
+}
+
+% ─── Algoritmos ──────────────────────────────────────────────────────────────
+% algorithm2e maneja su propio caption; el color se configura en algorithms.tex
+% con \SetAlCapSty. No se necesita nada aquí.
+
+% ─── Listings ────────────────────────────────────────────────────────────────
+\captionsetup[lstlisting]{
+  labelfont   = {bf, color=CtpGreen},        % "Código 1.1" en verde
+  textfont    = {color=CtpSubtext0},
+  format      = hang,
+  labelsep    = endash,
+  skip        = 6pt,
+}
+
+% ─── Renombrar labels en español ─────────────────────────────────────────────
+% "Cuadro" → "Tabla" ya se hace en tables-config.tex
+% "Código fuente" para listings:
+\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Índice de códigos}
