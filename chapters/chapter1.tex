@@ -4,9 +4,10 @@
 %═══════════════════════════════════════════════════════════════════════════════
 
 Este capítulo ilustra todas las capacidades de la plantilla
-\texttt{latex-catppuccin-academic}. Los colores se adaptan automáticamente
+\texttt{latex\-catppuccin\-academic}. Los colores se adaptan automáticamente
 al tema seleccionado (Latte, Frappé, Macchiato o Mocha); para cambiar de
-tema basta modificar una línea en \texttt{themes/catppuccin-palette.tex}.
+tema basta modificar una línea en
+\texttt{themes/\allowbreak catppuccin\-palette.tex}.
 
 La plantilla está diseñada para textos académicos de física computacional:
 notas de clase, tesis, reportes técnicos y artículos. Cada elemento visual
@@ -19,7 +20,8 @@ paleta Catppuccin de forma coherente.
 \label{sec:entornos}
 %═══════════════════════════════════════════════════════════════════════════════
 
-La plantilla define entornos mediante el generador \texttt{environments/generator.tex}.
+La plantilla define entornos mediante el generador
+\texttt{environments/\allowbreak generator.tex}.
 Cada entorno tiene su propio color de marco y fondo, organizados en tres niveles:
 fundamentos (definición, teorema, proposición), apoyo (ejemplo, observación,
 conexión física), y especiales (estrella polar, ejercicio computacional).
@@ -97,9 +99,11 @@ $\eta \in \{0.01, 0.1, 0.5, 1.0\}$.
 %═══════════════════════════════════════════════════════════════════════════════
 
 La plantilla define un sistema de coloreado semántico para ecuaciones
-(\texttt{config/equation-styles.tex}) que combina tres ejes: rol sintáctico,
-estatus epistémico y tipo matemático. Los colores se desactivan globalmente
-con \verb|\eqcolorsfalse| para versiones de impresión en blanco y negro.
+que combina tres ejes: rol sintáctico, estatus epistémico y tipo matemático
+(véase \texttt{config/\allowbreak equation\-styles.tex}).
+Los colores se desactivan globalmente con
+\texttt{\textbackslash eqcolorsfalse} para versiones de impresión en
+blanco y negro.
 
 %───────────────────────────────────────────────────────────────────────────────
 \subsection{Eje 1: Rol sintáctico}
@@ -120,10 +124,10 @@ un \eqop{operador}, un \eqdm{dx} siempre es un diferencial, una
 \, \eqdm{dS}.
 \end{equation}
 
-Aquí $u$ y $v$ son las incógnitas (\verb|\equ|, melocotón),
-$\Omega$ es el dominio (\verb|\eqdom|, zafiro),
-las integrales son operadores (\verb|\eqop|, azul),
-y $dx$, $dS$ son medidas (\verb|\eqdm|, turquesa).
+Aquí $u$ y $v$ son las incógnitas (\texttt{\textbackslash equ}, melocotón),
+$\Omega$ es el dominio (\texttt{\textbackslash eqdom}, zafiro),
+las integrales son operadores (\texttt{\textbackslash eqop}, azul),
+y $dx$, $dS$ son medidas (\texttt{\textbackslash eqdm}, turquesa).
 
 %───────────────────────────────────────────────────────────────────────────────
 \subsection{Eje 2: Estatus epistémico}
@@ -191,9 +195,9 @@ Ecuaciones de Maxwell:
 \end{align}
 
 Los campos vectoriales $\mathbf{E}$, $\mathbf{B}$, $\mathbf{J}$ usan
-\verb|\eqvec| (rojo), las constantes $\varepsilon_0$, $\mu_0$ usan
-\verb|\eqcon| (lavanda), los operadores diferenciales usan \verb|\eqop|
-(azul), y la densidad de carga $\rho$ es un dato \verb|\eqk| (malva).
+\texttt{\textbackslash eqvec} (rojo), las constantes $\varepsilon_0$, $\mu_0$ usan
+\texttt{\textbackslash eqcon} (lavanda), los operadores diferenciales usan \texttt{\textbackslash eqop}
+(azul), y la densidad de carga $\rho$ es un dato \texttt{\textbackslash eqk} (malva).
 
 %───────────────────────────────────────────────────────────────────────────────
 \subsection{Los tres ejes juntos: Schrödinger}
@@ -222,14 +226,14 @@ y $\hbar^2/2m$ es una \eqcon{constante} universal.
 
 Los macros compuestos combinan roles para patrones frecuentes.
 
-Proceso de Ornstein--Uhlenbeck con \verb|\eqSDE|:
+Proceso de Ornstein--Uhlenbeck con \texttt{\textbackslash eqSDE}:
 
 \begin{equation}
 \label{eq:ou}
 \eqSDE{X_t}{-\eqk{\theta} \equ{X_t}}{\sigma}.
 \end{equation}
 
-Ecuación de Fokker--Planck con \verb|\eqpdv|:
+Ecuación de Fokker--Planck con \texttt{\textbackslash eqpdv}:
 
 \begin{equation}
 \label{eq:fokker-planck}
@@ -259,7 +263,7 @@ Score matching (lectura de ML: $\theta$ es incógnita, $x$ es dato):
 \right].
 \end{equation}
 
-Ecuaciones de campo de Einstein con \verb|\eqten|:
+Ecuaciones de campo de Einstein con \texttt{\textbackslash eqten}:
 
 \begin{equation}
 \label{eq:einstein}
@@ -272,7 +276,7 @@ Ecuaciones de campo de Einstein con \verb|\eqten|:
 \subsection{Toggle: versión sin color}
 %───────────────────────────────────────────────────────────────────────────────
 
-Con \verb|\eqcolorsfalse| en un grupo local, la misma ecuación se renderiza
+Con \texttt{\textbackslash eqcolorsfalse} en un grupo local, la misma ecuación se renderiza
 sin color (útil para impresión):
 
 {%
@@ -296,16 +300,18 @@ sin color (útil para impresión):
 \label{sec:tablas}
 %═══════════════════════════════════════════════════════════════════════════════
 
-La configuración de tablas (\texttt{config/tables-config.tex}) proporciona
-tres mecanismos contra el desbordamiento, tipos de columna extendidos, y
-estilo Catppuccin con encabezados coloreados y filas alternadas.
+La configuración de tablas
+(\texttt{config/\allowbreak tables\-config.tex})
+proporciona tres mecanismos contra el desbordamiento, tipos de columna
+extendidos, y estilo Catppuccin con encabezados coloreados y filas alternadas.
 
 %───────────────────────────────────────────────────────────────────────────────
 \subsection{Tabla adaptativa con \texttt{tabularx}}
 %───────────────────────────────────────────────────────────────────────────────
 
 Las columnas \texttt{X} (izquierda), \texttt{Y} (centrada) y \texttt{Z}
-(derecha) se expanden proporcionalmente para llenar \verb|\textwidth|.
+(derecha) se expanden proporcionalmente para llenar
+\texttt{\textbackslash textwidth}.
 
 \begin{acadtable}{tab:metodos}{Comparación de métodos de optimización}
   \begin{tabularx}{\textwidth}{l Y Y Y}
@@ -353,7 +359,7 @@ no intente parsearlos.
 %───────────────────────────────────────────────────────────────────────────────
 
 El entorno \texttt{fittable} mide el ancho de una tabla y la reescala
-\textit{solo} si excede \verb|\textwidth|. Es la solución de mínimo esfuerzo
+\textit{solo} si excede \texttt{\textbackslash textwidth}. Es la solución de mínimo esfuerzo
 para tablas anchas existentes.
 
 \begin{acadtable}{tab:wide}{Propiedades termofísicas (reescalada automáticamente)}
@@ -460,9 +466,11 @@ $X \leftarrow X_0$\;
 \label{sec:pgfplots}
 %═══════════════════════════════════════════════════════════════════════════════
 
-La configuración \texttt{config/pgfplots-config.tex} define un cycle list
-de 8 colores Catppuccin, estilos de ejes (\texttt{catppuccin-clean} y
-\texttt{catppuccin-filled}), y colormaps secuencial/divergente.
+La configuración de \texttt{pgfplots}
+(\texttt{config/\allowbreak pgfplots\-config.tex})
+define un cycle list de 8 colores Catppuccin, estilos de ejes
+(\texttt{catppuccin\-clean} y \texttt{catppuccin\-filled}),
+y colormaps secuencial/divergente.
 
 %───────────────────────────────────────────────────────────────────────────────
 \subsection{Curvas con cycle list automático}
@@ -682,7 +690,8 @@ de 8 colores Catppuccin, estilos de ejes (\texttt{catppuccin-clean} y
 \label{sec:codigo-breve}
 %═══════════════════════════════════════════════════════════════════════════════
 
-La configuración de \texttt{listings} (\texttt{config/listings-catppuccin.tex})
+La configuración de \texttt{listings}
+(\texttt{config/\allowbreak listings\-catppuccin.tex})
 mapea las categorías sintácticas de cada lenguaje a la paleta Catppuccin:
 keywords en malva, builtins en rojo, strings en verde, comentarios en gris
 itálico, tipos en amarillo, funciones en azul, módulos en turquesa, y
@@ -756,7 +765,7 @@ $\sigma = 1$, $\Delta t = 10^{-3}$, $T = 100$.
 \subsection{Indicador de dificultad}
 %───────────────────────────────────────────────────────────────────────────────
 
-El comando \verb|\dificultad{mat}{fis}| produce una caja con estrellas:
+El comando \texttt{\textbackslash dificultad\{mat\}\{fis\}} produce una caja con estrellas:
 
 \dificultad{3}{2}
 
