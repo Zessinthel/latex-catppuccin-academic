@@ -12,6 +12,10 @@
 *.synctex.gz
 *.synctex.gz.sum.synctex
 
+# biblatex / biber
+*.bcf
+*.run.xml
+
 # Compiled output
 *.pdf
 
@@ -24,3 +28,5 @@
 # OS files
 .DS_Store
 Thumbs.db
+*.dvi
+*.ps

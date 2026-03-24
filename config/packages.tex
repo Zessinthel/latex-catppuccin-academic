@@ -87,7 +87,14 @@
 \usepackage{fancyhdr}
 
 % ─── Bibliografía ────────────────────────────────────────────────────────────
-\usepackage[numbers]{natbib}
+\usepackage[backend=biber,
+            style=numeric,           % estilo numérico (como plainnat)
+            sorting=none,            % orden de aparición
+            refsection=chapter,      % bibliografía independiente por capítulo
+            natbib=true,             % compatibilidad con comandos \citet, \citep
+            hyperref=true,
+            backref=true,            % opcional: muestra página de cita
+            ]{biblatex}
 
 % ─── Notas al pie ────────────────────────────────────────────────────────────
 \usepackage[bottom, hang]{footmisc}
