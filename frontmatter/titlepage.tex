@@ -1,6 +1,6 @@
 %───────────────────────────────────────────────────────────────────────────────
-% PORTADA GENÉRICA
-% Usa los metadatos definidos en metadata.tex
+% PORTADA GENÉRICA CON CATPPUCCIN
+% Usa metadatos de metadata.tex y colores del tema Catppuccin
 %───────────────────────────────────────────────────────────────────────────────
 \begin{titlepage}
   \centering
@@ -20,10 +20,10 @@
    \docSubtitulo\par}
   \vspace{2cm}
 
-  % Cita en caja
+  % Cita en caja (fondo sutil con surface0)
   \begin{tcolorbox}[
     enhanced, blanker,
-    colback=grayultralight,
+    colback=surface0,          
     colframe=defcolor,
     width=0.75\textwidth,
     halign=center,
@@ -44,6 +44,6 @@
   {\normalsize
    \docEstado\ --- \docFecha\par}
   \smallskip
-  {\footnotesize\color{graymedium}
+  {\footnotesize\color{overlay0}          
    Compilado con \LaTeX}
 \end{titlepage}

@@ -29,11 +29,11 @@
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \newcolumntype{Z}{>{\raggedleft\arraybackslash}X}
 
-% ─── Colores para tablas ─────────────────────────────────────────────────────
-\colorlet{tableheadcolor}{CtpBlue!12}
-\colorlet{tableheadtext}{CtpText}
-\colorlet{tablerowalt}{CtpSurface0!30}
-\colorlet{tablerule}{CtpOverlay0!50}
+% ─── Colores para tablas (usando nombres temáticos de Catppuccin) ────────────
+\colorlet{tableheadcolor}{CtpBlue!12}      % antes CtpBlue!12
+\colorlet{tableheadtext}{maintext}           % antes CtpText
+\colorlet{tablerowalt}{surface0!30}          % antes CtpSurface0!30
+\colorlet{tablerule}{overlay0!50}            % antes CtpOverlay0!50
 
 % Aplicar color a reglas de booktabs (después de \begin{document})
 \AtBeginDocument{\arrayrulecolor{tablerule}}

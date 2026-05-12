@@ -1,13 +1,13 @@
 %───────────────────────────────────────────────────────────────────────────────
-% ESTILO PARA ALGORITMOS CON COLORES CATPPUCCIN 
+% ESTILO PARA ALGORITMOS CON COLORES TEMÁTICOS CATPPUCCIN 
 %───────────────────────────────────────────────────────────────────────────────
 
 % Definir comandos de estilo que toman un argumento
-\newcommand{\algkw}[1]{\textcolor{CtpMauve}{#1}}      % palabras clave
-\newcommand{\algarg}[1]{\textcolor{CtpText}{#1}}      % argumentos (KwIn, KwOut)
-\newcommand{\algcomment}[1]{\textcolor{CtpOverlay2}{#1}} % comentarios
-\newcommand{\algnum}[1]{\textcolor{CtpSky}{#1}}  % números de línea
-\newcommand{\algcap}[1]{\textcolor{CtpBlue}{#1}}      % caption
+\newcommand{\algkw}[1]{\textcolor{keywordcolor}{#1}}      % palabras clave (antes CtpMauve)
+\newcommand{\algarg}[1]{\textcolor{maintext}{#1}}          % argumentos (antes CtpText)
+\newcommand{\algcomment}[1]{\textcolor{commentcolor}{#1}}  % comentarios (antes CtpOverlay2)
+\newcommand{\algnum}[1]{\textcolor{operatorcolor}{#1}}     % números de línea (antes CtpSky)
+\newcommand{\algcap}[1]{\textcolor{linkcolor}{#1}}         % caption (antes CtpBlue)
 
 % Aplicar los estilos a algorithm2e (¡sin la barra invertida!)
 \SetKwSty{algkw}
@@ -16,11 +16,10 @@
 \SetNlSty{algnum}{}{}
 \SetAlCapSty{algcap}
 
-
 % Caja decorativa (opcional)
 \tcolorboxenvironment{algorithm}{
-  colback=CtpBase!0,
-  colframe=CtpSurface0,
+  colback=background!0,          % fondo transparente (antes CtpBase!0)
+  colframe=surface0,             % marco sutil (antes CtpSurface0)
   arc=0pt,
   boxrule=0pt,
   left=6pt,
@@ -37,7 +36,8 @@
 \setlength{\algotitleheightrule}{0.5pt}  % línea bajo el caption
 
 \makeatletter
-\newcommand{\algolinecolor}{CtpSky}    % <-- cambia el color aquí
+% Usamos operatorcolor (CtpSky) para las líneas, o puedes definir uno específico
+\newcommand{\algolinecolor}{operatorcolor}    % antes CtpSky
 
 \def\@algocf@pre@ruled{%
   {\color{\algolinecolor}\hrule width\algocf@ruledwidth
@@ -57,6 +57,7 @@
   \kern\interspacealgoruled}
 \makeatother
 
+% Línea vertical izquierda (para entorno ruled con vlined)
 \makeatletter
 \renewcommand{\algocf@Vline}[1]{%
   \strut\par\nointerlineskip%
@@ -67,7 +68,6 @@
   \algocf@pop{\skiprule}%
   \nointerlineskip}
 \makeatother
-
 
 \makeatletter
 \renewcommand{\algocf@Vsline}[1]{%
@@ -81,4 +81,3 @@
   \algocf@eblockcode%
 }
 \makeatother
-

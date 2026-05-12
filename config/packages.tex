@@ -12,6 +12,8 @@
 \deactivatequoting
 \usepackage{csquotes}              % comillas correctas con babel
 
+
+
 % ─── Tipografía ──────────────────────────────────────────────────────────────
 \usepackage{microtype}
 \usepackage{inconsolata}           % fuente mono para listings
@@ -23,6 +25,9 @@
                                    % \laplacian, \dv, \pdv, \bra, \ket, etc.
 \usepackage{cancel}                % cancelar términos en derivaciones
 % \usepackage{tensor}              % descomentar si se usa notación indicial
+\usepackage{stmaryrd}
+\usepackage{qtree}
+\usepackage{forest}
 
 % ─── Unidades y números ──────────────────────────────────────────────────────
 \usepackage{siunitx}
@@ -71,6 +76,7 @@
   shapes.geometric,
   fit,
   backgrounds,
+  automata,
   calc,
   decorations.pathreplacing,
   patterns,
@@ -86,6 +92,7 @@
 \usepackage{setspace}
 \usepackage{fancyhdr}
 
+
 % ─── Bibliografía ────────────────────────────────────────────────────────────
 \usepackage[backend=biber,
             style=numeric,           % estilo numérico (como plainnat)
@@ -95,6 +102,7 @@
             hyperref=true,
             backref=true,            % opcional: muestra página de cita
             ]{biblatex}
+
 
 % ─── Notas al pie ────────────────────────────────────────────────────────────
 \usepackage[bottom, hang]{footmisc}

@@ -75,20 +75,15 @@
 % Gradiente: Base → Blue → Mauve → Red → Yellow
 \pgfplotsset{
   colormap={catppuccin-heat}{
-    rgb255=(30,30,46)       % CtpBase (Mocha-like dark, funciona en ambos)
-    rgb255=(137,180,250)    % CtpBlue
-    rgb255=(203,166,247)    % CtpMauve
-    rgb255=(243,139,168)    % CtpRed
-    rgb255=(249,226,175)    % CtpYellow
+    color=(CtpBase)
+    color=(CtpBlue)
+    color=(CtpMauve)
+    color=(CtpRed)
+    color=(CtpYellow)
   },
-}
-
-% Colormap divergente (para residuos, errores con signo)
-% Azul → Base → Rojo
-\pgfplotsset{
   colormap={catppuccin-diverge}{
-    rgb255=(137,180,250)    % CtpBlue
-    rgb255=(205,214,244)    % CtpText (neutro claro)
-    rgb255=(243,139,168)    % CtpRed
+    color=(CtpBlue)
+    color=(CtpText)
+    color=(CtpRed)
   },
 }

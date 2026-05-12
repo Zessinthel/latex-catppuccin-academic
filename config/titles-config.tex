@@ -1,25 +1,24 @@
 %───────────────────────────────────────────────────────────────────────────────
-% TÍTULOS DE CAPÍTULO Y SECCIÓN CON COLORES CATPPUCCIN
+% TÍTULOS DE CAPÍTULO Y SECCIÓN CON COLORES TEMÁTICOS CATPPUCCIN
 %───────────────────────────────────────────────────────────────────────────────
 \usepackage{titlesec}
 
 % Capítulo
 \titleformat{\chapter}[display]
-  {\normalfont\Huge\bfseries\color{CtpPink}} % color del número?
-  {\chaptertitlename\ \thechapter}{20pt}{\Huge\color{CtpPink}}
-% Si prefieres otro color, ajusta.
+  {\normalfont\Huge\bfseries\color{chaptercolor}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge\color{chaptercolor}}
 
 % Sección
 \titleformat{\section}
-  {\normalfont\Large\bfseries\color{CtpLavender}}
+  {\normalfont\Large\bfseries\color{sectioncolor}}
   {\thesection}{1em}{}
 
 % Subsección
 \titleformat{\subsection}
-  {\normalfont\large\bfseries\color{CtpSky}}
+  {\normalfont\large\bfseries\color{subsectioncolor}}
   {\thesubsection}{1em}{}
 
 % Subsubsección
 \titleformat{\subsubsection}
-  {\normalfont\normalsize\bfseries\color{CtpGreen}}
+  {\normalfont\normalsize\bfseries\color{subsubsectioncolor}}
   {\thesubsubsection}{1em}{}
