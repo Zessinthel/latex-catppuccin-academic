@@ -25,7 +25,8 @@ Todos los entornos teoremáticos se crean con la macro
 \texttt{\textbackslash crearEntorno} definida en
 \texttt{environments/generator.tex}~\cite{tcolorbox2024b}:
 \begin{lstlisting}[style=latex, frame=none, numbers=none]
-\crearEntorno{nombre}{color}{Título}{conContador}{opcionesAdicionales}
+\crearEntorno{nombre}{color}{Titulo}
+{conContador}{opcionesAdicionales}
 \end{lstlisting}
 El parámetro \texttt{color} es un alias semántico del dominio \texttt{env-*}
 definido en la paleta. El fondo de la caja (\texttt{color-back}) se genera
@@ -66,13 +67,13 @@ contrato de lectura.
 
 \begin{definicion}{Espacio métrico}
 \label{def:espacio-metrico}
-Un \textbf{espacio métrico} es un par $(X, d)$ donde $X$ es un conjunto
-y $d : X \times X \to \mathbb{R}_{\geq 0}$ es una \textit{métrica} que
-satisface para todo $x, y, z \in X$:
+Un \textbf{espacio métrico} es un par $(\eqdom{X}, \eqfn{d})$ donde $\eqdom{X}$ es un conjunto
+y $\eqfn{d} : \eqdom{X} \eqop{\times} \eqdom{X} \eqop{\to} \mathbb{R}_{\geq 0}$ es una \textit{métrica} que
+satisface para todo $\eqk{x}, \eqk{y}, \eqk{z} \in \eqdom{X}$:
 \begin{enumerate}[label=(\roman*), leftmargin=2em]
-  \item $d(x,y) = 0 \iff x = y$ \hfill (identidad)
-  \item $d(x,y) = d(y,x)$ \hfill (simetría)
-  \item $d(x,z) \leq d(x,y) + d(y,z)$ \hfill (desigualdad triangular)
+  \item $\eqfn{d}(\eqk{x},\eqk{y}) = 0 \iff \eqk{x} = \eqk{y}$ \hfill (identidad)
+  \item $\eqfn{d}(\eqk{x},\eqk{y}) = \eqfn{d}(\eqk{y},\eqk{x})$ \hfill (simetría)
+  \item $\eqfn{d}(\eqk{x},\eqk{z}) \leq \eqfn{d}(\eqk{x},\eqk{y}) + \eqfn{d}(\eqk{y},\eqk{z})$ \hfill (desigualdad triangular)
 \end{enumerate}
 \end{definicion}
 
@@ -87,13 +88,13 @@ que aquí hay un resultado que merece atención sostenida.
 
 \begin{teorema}{Completitud de los espacios $L^p$}
 \label{thm:lp-completo}
-Sea $(X, \mathcal{M}, \mu)$ un espacio de medida y $1 \leq p < \infty$.
-El espacio $L^p(X, \mu)$ dotado de la norma
+Sea $(\eqdom{X}, \eqdom{\mathcal{M}}, \eqk{\mu})$ un espacio de medida y $1 \leq \eqk{p} < \infty$.
+El espacio $\eqdom{L^p}(\eqdom{X}, \eqk{\mu})$ dotado de la norma
 \[
-  \|f\|_p = \left(\int_X |f|^p \, d\mu\right)^{1/p}
+  \|\equ{f}\|_{\eqk{p}} = \left(\eqop{\int}_{\eqdom{X}} |\equ{f}|^{\eqk{p}} \, \eqdm{d\mu}\right)^{1/\eqk{p}}
 \]
-es un espacio de Banach. En particular, $L^2(X,\mu)$ es un espacio de
-Hilbert con producto interior $\langle f, g \rangle = \int_X f\bar{g}\,d\mu$.
+es un espacio de Banach. En particular, $\eqdom{L^2}(\eqdom{X},\eqk{\mu})$ es un espacio de
+Hilbert con producto interior $\langle \equ{f}, \equ{g} \rangle = \eqop{\int}_{\eqdom{X}} \equ{f}\,\overline{\equ{g}}\,\eqdm{d\mu}$.
 \end{teorema}
 
 \begin{observacion}{Teorema vs.\ Proposición}
@@ -114,11 +115,11 @@ El verde evoca una afirmación positiva --- algo que se sostiene.
 
 \begin{proposicion}{Continuidad de la norma}
 \label{prop:norma-continua}
-Sea $(X, \|\cdot\|)$ un espacio normado. La función $\|\cdot\| : X \to \mathbb{R}$
+Sea $(\eqdom{X}, \|\cdot\|)$ un espacio normado. La función $\|\cdot\| : \eqdom{X} \to \mathbb{R}$
 es continua respecto a la topología inducida por la norma. Más aún, es
-Lipschitz con constante $1$: para todo $x, y \in X$,
+Lipschitz con constante $1$: para todo $\eqk{x}, \eqk{y} \in \eqdom{X}$,
 \[
-  \big|\|x\| - \|y\|\big| \leq \|x - y\|.
+  \big|\|\eqk{x}\| - \|\eqk{y}\|\big| \leq \|\eqk{x} - \eqk{y}\|.
 \]
 \end{proposicion}
 
@@ -144,12 +145,12 @@ ejemplo borderline) o por qué el resultado no es trivial.
 \label{ex:l2-hilbert}
 El espacio de sucesiones de cuadrado sumable
 \[
-  \ell^2 = \left\{(x_n)_{n=1}^\infty \subset \mathbb{R} \;\middle|\;
-  \sum_{n=1}^\infty x_n^2 < \infty\right\}
+  \eqdom{\ell^2} = \left\{(\equ{x}_n)_{n=1}^\infty \subset \mathbb{R} \;\middle|\;
+  \eqop{\sum}_{n=1}^\infty \equ{x}_n^2 < \infty\right\}
 \]
 es un espacio de Hilbert~\cite{reed1980} con producto interior
-$\langle x, y \rangle = \sum_{n=1}^\infty x_n y_n$.
-La base ortonormal canónica $\{e_n\}_{n=1}^\infty$, donde $e_n$ tiene
+$\langle \equ{x}, \equ{y} \rangle = \eqop{\sum}_{n=1}^\infty \equ{x}_n \equ{y}_n$.
+La base ortonormal canónica $\{\eqk{e}_n\}_{n=1}^\infty$, donde $\eqk{e}_n$ tiene
 un $1$ en la posición $n$ y ceros en el resto, es una base de Schauder
 de $\ell^2$ pero \textit{no} es una base algebraica (Hamel): ningún
 conjunto finito genera el espacio.
@@ -168,9 +169,9 @@ una primera lectura sin perder el hilo.
 
 \begin{observacion}{Convergencia débil vs. fuerte en $L^2$}
 En espacios de Hilbert de dimensión infinita, la convergencia débil
-no implica convergencia en norma. La sucesión $e_n \rightharpoonup 0$
-débilmente en $\ell^2$ (porque $\langle e_n, x \rangle = x_n \to 0$
-para todo $x \in \ell^2$), pero $\|e_n\| = 1$ para todo $n$. Este fenómeno
+no implica convergencia en norma. La sucesión $\eqk{e}_n \rightharpoonup 0$
+débilmente en $\eqdom{\ell^2}$ (porque $\langle \eqk{e}_n, \equ{x} \rangle = \equ{x}_n \to 0$
+para todo $\equ{x} \in \eqdom{\ell^2}$), pero $\|\eqk{e}_n\| = 1$ para todo $n$. Este fenómeno
 no tiene análogo en dimensión finita y es fuente frecuente de errores en
 argumentos de compacidad.
 \end{observacion}
@@ -187,11 +188,11 @@ No es un ejemplo --- es un puente entre dos lenguajes.
 \begin{fisicaconexion}{Completitud de $L^2$ y mecánica cuántica}
 El \cref{thm:lp-completo} para $p=2$ es el fundamento del formalismo
 de Hilbert en mecánica cuántica. El espacio de estados de una partícula
-cuántica es $L^2(\mathbb{R}^3)$: las funciones de onda $\psi(\mathbf{r})$
-son elementos de $L^2$, y la norma $\|\psi\|_2^2 = \int |\psi|^2 \, d^3r$
+cuántica es $\eqdom{L^2}(\eqdom{\mathbb{R}^3})$: las funciones de onda $\equ{\psi}(\eqvec{\mathbf{r}})$
+son elementos de $\eqdom{L^2}$, y la norma $\|\equ{\psi}\|_2^2 = \eqop{\int} |\equ{\psi}|^2 \, \eqdm{d^3r}$
 es la probabilidad total (normalizada a 1). La completitud garantiza que
 los límites de sucesiones de Cauchy de estados físicos son también estados
-físicos --- sin ella, la evolución temporal $\psi(t) = e^{-i\hat{H}t/\hbar}\psi_0$
+físicos --- sin ella, la evolución temporal $\equ{\psi}(t) = e^{-\eqcon{i}\eqop{\hat{H}}t/\eqcon{\hbar}}\eqk{\psi_0}$
 podría salir del espacio.
 \end{fisicaconexion}
 
@@ -216,15 +217,15 @@ sumo uno por capítulo, y muchos capítulos no lo necesitan.
 
 \begin{estrella}{Teorema espectral en espacios de Hilbert}
 \label{star:espectral}
-Sea $A : \mathcal{H} \to \mathcal{H}$ un operador autoadjunto acotado
+Sea $\eqop{A} : \eqdom{\mathcal{H}} \to \eqdom{\mathcal{H}}$ un operador autoadjunto acotado
 en un espacio de Hilbert separable. Existe una medida espectral
-$E : \mathcal{B}(\mathbb{R}) \to \mathcal{L}(\mathcal{H})$ tal que
+$\eqfn{E} : \mathcal{B}(\mathbb{R}) \to \mathcal{L}(\eqdom{\mathcal{H}})$ tal que
 \[
-  A = \int_{\sigma(A)} \lambda \, dE(\lambda),
+  \eqop{A} = \eqop{\int}_{\sigma(\eqop{A})} \equ{\lambda} \, \eqdm{dE}(\equ{\lambda}),
 \]
 donde la integral converge en la topología de operadores. Todo cálculo
-funcional $f(A)$ se define de forma consistente como
-$f(A) = \int f(\lambda)\,dE(\lambda)$.
+funcional $\eqfn{f}(\eqop{A})$ se define de forma consistente como
+$\eqfn{f}(\eqop{A}) = \eqop{\int} \eqfn{f}(\equ{\lambda})\,\eqdm{dE}(\equ{\lambda})$.
 \end{estrella}
 
 \subsection{Ejercicio Computacional}
@@ -240,13 +241,13 @@ involucra código, datos o computación explícita.
 \begin{ejerciciocomp}{Verificación de la desigualdad triangular}
 \label{comp:triangular}
 Implementa en Python o Julia una función que, dado un conjunto finito de
-puntos en $\mathbb{R}^n$ y una función $d : \mathbb{R}^n \times \mathbb{R}^n
-\to \mathbb{R}$, verifique si $d$ es una métrica en el sentido de la
+puntos en $\mathbb{R}^n$ y una función $\eqfn{d} : \eqdom{\mathbb{R}^n} \eqop{\times} \eqdom{\mathbb{R}^n}
+\eqop{\to} \mathbb{R}$, verifique si $\eqfn{d}$ es una métrica en el sentido de la
 \cref{def:espacio-metrico}. Prueba con:
 \begin{enumerate}[label=(\alph*), leftmargin=2em]
-  \item $d_2(x,y) = \|x-y\|_2$ (distancia euclídea, debe pasar)
-  \item $d_\infty(x,y) = \|x-y\|_\infty$ (norma infinito, debe pasar)
-  \item $d(x,y) = \|x-y\|_2^2$ (cuadrado de la euclídea, debe fallar)
+  \item $\eqfn{d_2}(\eqk{x},\eqk{y}) = \|\eqk{x}-\eqk{y}\|_2$ (distancia euclídea, debe pasar)
+  \item $\eqfn{d_\infty}(\eqk{x},\eqk{y}) = \|\eqk{x}-\eqk{y}\|_\infty$ (norma infinito, debe pasar)
+  \item $\eqfn{d}(\eqk{x},\eqk{y}) = \|\eqk{x}-\eqk{y}\|_2^2$ (cuadrado de la euclídea, debe fallar)
 \end{enumerate}
 ¿En qué caso falla el tercer candidato y con qué contraejemplo concreto?
 \end{ejerciciocomp}
@@ -262,7 +263,7 @@ toma un valor entre 1 y 5. Se coloca al inicio de una sección o subsección
 para calibrar las expectativas del lector:
 
 \begin{lstlisting}[style=latex, frame=none, numbers=none]
-\dificultad{3}{2}   
+\dificultad{3}{2}   % matemática: ★★★☆☆  física: ★★☆☆☆
 \end{lstlisting}
 
 \dificultad{3}{2}
@@ -296,7 +297,7 @@ La solución es usar los entornos no-flotantes \texttt{boxfig} y
   \begin{boxfig}{fig:gauss}{Densidad $\mathcal{N}(0,1)$}
     \includegraphics[width=\linewidth]{figs/gauss.pdf}
   \end{boxfig}
-  La densidad de probabilidad es $p(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2/2}$.
+  La densidad de probabilidad es $\eqfn{p}(\equ{x}) = \frac{1}{\sqrt{2\eqcon{\pi}}} e^{-\equ{x}^2/2}$.
 \end{ejemplo}
 
 \begin{definicion}{Media muestral}
@@ -306,8 +307,8 @@ La solución es usar los entornos no-flotantes \texttt{boxfig} y
       \headerrow
       \thead{Propiedad} & \thead{Valor} \\
       \midrule
-      Sesgo   & Insesgado: $\mathbb{E}[\bar{X}] = \mu$ \\
-      Varianza & $\mathrm{Var}(\bar{X}) = \sigma^2/n$ \\
+      Sesgo   & Insesgado: $\eqop{\mathbb{E}}[\equ{\bar{X}}] = \eqk{\mu}$ \\
+      Varianza & $\eqop{\mathrm{Var}}(\equ{\bar{X}}) = \eqk{\sigma}^2/\eqk{n}$ \\
       \bottomrule
     \end{tabularx}
   \end{boxtab}
