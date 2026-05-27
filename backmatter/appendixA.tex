@@ -1,443 +1,407 @@
-%═══════════════════════════════════════════════════════════════════════════════
-\chapter{Galería de código fuente}
-\label{ap:codigo}
-%═══════════════════════════════════════════════════════════════════════════════
-
-Este apéndice presenta ejemplos de código en los diez lenguajes configurados
-en la plantilla. Cada estilo mapea las categorías sintácticas del lenguaje a
-la paleta Catppuccin según la tabla del \cref{sec:codigo-breve}. Los estilos
-se invocan con \verb|style=python|, \verb|style=rust|, etc.
-
-\dificultad{1}{1}
-
 %───────────────────────────────────────────────────────────────────────────────
-\section{Python}
+\chapter{Style Guide de Catppuccin Académico}
+\label{ap:styleguide}
 %───────────────────────────────────────────────────────────────────────────────
 
-\begin{lstlisting}[style=python, caption={Descenso de gradiente con momentum de Nesterov}]
-import numpy as np
-from typing import Callable, Tuple
-
-class SGDMomentum:
-    """SGD optimizer with Nesterov momentum."""
-
-    def __init__(self, lr: float = 1e-3, momentum: float = 0.9):
-        self.lr = lr
-        self.momentum = momentum
-        self.velocity = None
-
-    def step(self, params: np.ndarray, grad: np.ndarray) -> np.ndarray:
-        if self.velocity is None:
-            self.velocity = np.zeros_like(params)
-        # Nesterov momentum update
-        self.velocity = self.momentum * self.velocity - self.lr * grad
-        return params + self.momentum * self.velocity - self.lr * grad
-
-def train(model: Callable, X: np.ndarray, y: np.ndarray,
-          epochs: int = 100) -> list:
-    optimizer = SGDMomentum(lr=0.01)
-    losses = []
-    for epoch in range(epochs):
-        y_hat = model(X)
-        loss = np.mean((y_hat - y) ** 2)
-        losses.append(loss)
-        if loss < 1e-6:
-            print(f"Converged at epoch {epoch}")
-            break
-    return losses
-\end{lstlisting}
+Este apéndice es el documento normativo del sistema de color del template.
+Define la arquitectura, las reglas de decisión, el inventario completo de
+aliases y el protocolo de extensión. Todo color nuevo que se añada al
+template debe pasar por este documento primero.
 
 %───────────────────────────────────────────────────────────────────────────────
-\section{C}
+\section{Arquitectura de tres capas}
+\label{ap:sec:arquitectura}
 %───────────────────────────────────────────────────────────────────────────────
 
-\begin{lstlisting}[style=c, caption={Producto matriz-vector}]
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+\begin{definicion}{Las tres capas del sistema de color}
+\label{ap:def:tres-capas}
+El sistema de color opera en tres niveles de abstracción con una regla
+de visibilidad estricta:
 
-void matvec(const double *A, const double *x, double *y,
-            size_t m, size_t n) {
-    memset(y, 0, m * sizeof(double));
-    for (size_t i = 0; i < m; i++)
-        for (size_t j = 0; j < n; j++)
-            y[i] += A[i * n + j] * x[j];
-}
+\textbf{Nivel 0 — Paleta cruda (\texttt{Ctp*}):} Valores hexadecimales
+absolutos del flavor activo. Existen 26 colores: \texttt{CtpRosewater},
+\texttt{CtpFlamingo}, \texttt{CtpPink}, \texttt{CtpMauve}, \texttt{CtpRed},
+\texttt{CtpMaroon}, \texttt{CtpPeach}, \texttt{CtpYellow}, \texttt{CtpGreen},
+\texttt{CtpTeal}, \texttt{CtpSky}, \texttt{CtpSapphire}, \texttt{CtpBlue},
+\texttt{CtpLavender}, \texttt{CtpText}, \texttt{CtpSubtext1},
+\texttt{CtpSubtext0}, \texttt{CtpOverlay2}, \texttt{CtpOverlay1},
+\texttt{CtpOverlay0}, \texttt{CtpSurface2}, \texttt{CtpSurface1},
+\texttt{CtpSurface0}, \texttt{CtpBase}, \texttt{CtpMantle},
+\texttt{CtpCrust}.
 
-double norm2(const double *v, size_t n) {
-    double s = 0.0;
-    for (size_t i = 0; i < n; i++)
-        s += v[i] * v[i];
-    return sqrt(s);
-}
+\textbf{Nivel 1 — Aliases estructurales:} Roles de UI genéricos sin
+semántica de dominio. Ejemplos: \texttt{background}, \texttt{surface0},
+\texttt{overlay0}, \texttt{maintext}. Describen propiedades visuales de
+elementos de interfaz.
 
-int main(void) {
-    double A[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    double x[] = {1.0, 1.0, 1.0};
-    double y[2];
-    matvec(A, x, y, 2, 3);
-    printf("||y|| = %.6f\n", norm2(y, 2));
-    return EXIT_SUCCESS;
-}
-\end{lstlisting}
+\textbf{Nivel 2 — Aliases semánticos:} Roles de dominio del documento.
+Ejemplos: \texttt{env-def}, \texttt{doc-chapter}, \texttt{code-keyword}.
+Describen la intención del elemento en el documento.
+\end{definicion}
 
-%───────────────────────────────────────────────────────────────────────────────
-\section{C++}
-%───────────────────────────────────────────────────────────────────────────────
+La regla de visibilidad es \textbf{absoluta}:
 
-\begin{lstlisting}[style=cpp, caption={Integrador de Monte Carlo con templates}]
-#include <iostream>
-#include <vector>
-#include <random>
-#include <functional>
+\begin{estrella}{Invariante de capas}
+\label{ap:star:invariante}
+\texttt{Ctp*} solo aparece en \texttt{themes/catppuccin-palette.tex}.\\
+Los archivos de \texttt{config/} consumen aliases semánticos.\\
+Los archivos de contenido (\texttt{chapters/}, \texttt{environments/})
+consumen comandos del template.
 
-template<typename T>
-class MonteCarloIntegrator {
-private:
-    std::mt19937 rng_;
-    std::uniform_real_distribution<T> dist_;
-public:
-    explicit MonteCarloIntegrator(unsigned seed = 42)
-        : rng_(seed), dist_(0.0, 1.0) {}
-
-    T integrate(std::function<T(T)> f, T a, T b, size_t N) {
-        T sum = 0.0;
-        for (size_t i = 0; i < N; ++i) {
-            T x = a + (b - a) * dist_(rng_);
-            sum += f(x);
-        }
-        return (b - a) * sum / static_cast<T>(N);
-    }
-};
-
-int main() {
-    MonteCarloIntegrator<double> mc;
-    auto result = mc.integrate(
-        [](double x) { return std::sin(x); },
-        0.0, M_PI, 1'000'000
-    );
-    std::cout << "Result: " << result << std::endl;
-    return 0;
-}
-\end{lstlisting}
+Cuando este invariante se mantiene, cambiar el flavor del documento
+entero es descomentar una línea en \texttt{catppuccin-palette.tex}.
+Cuando se viola, el cambio de flavor requiere buscar y editar en
+múltiples archivos.
+\end{estrella}
 
 %───────────────────────────────────────────────────────────────────────────────
-\section{Rust}
+\section{Árbol de decisión para asignar colores}
+\label{ap:sec:decision}
 %───────────────────────────────────────────────────────────────────────────────
 
-\begin{lstlisting}[style=rust, caption={Solucionador RK4 con traits}]
-trait OdeSolver {
-    fn step(&self, f: &dyn Fn(f64, &[f64]) -> Vec<f64>,
-            t: f64, y: &[f64], dt: f64) -> Vec<f64>;
-}
+Cuando se necesita un color nuevo en cualquier archivo de config o de
+contenido, la secuencia de preguntas es:
 
-struct RungeKutta4;
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=2em]
+  \item \textbf{¿Estoy en \texttt{catppuccin-palette.tex}?}
+    Si sí, puedo usar \texttt{Ctp*} libremente para definir aliases.
+    Si no, nunca uso \texttt{Ctp*}: avanzo al paso 2.
 
-impl OdeSolver for RungeKutta4 {
-    fn step(&self, f: &dyn Fn(f64, &[f64]) -> Vec<f64>,
-            t: f64, y: &[f64], dt: f64) -> Vec<f64> {
-        let n = y.len();
-        let k1 = f(t, y);
-        let y2: Vec<f64> = (0..n).map(|i| y[i] + 0.5*dt*k1[i]).collect();
-        let k2 = f(t + 0.5*dt, &y2);
-        let y3: Vec<f64> = (0..n).map(|i| y[i] + 0.5*dt*k2[i]).collect();
-        let k3 = f(t + 0.5*dt, &y3);
-        let y4: Vec<f64> = (0..n).map(|i| y[i] + dt*k3[i]).collect();
-        let k4 = f(t + dt, &y4);
-        (0..n).map(|i| {
-            y[i] + dt/6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i])
-        }).collect()
-    }
-}
+  \item \textbf{¿Ya existe un alias semántico para este rol?}
+    Buscar en la paleta con el prefijo del dominio (\texttt{env-},
+    \texttt{code-}, \texttt{tikz-}, etc.). Si existe, lo consumo.
+    Si no existe, avanzo al paso 3.
 
-fn main() {
-    let rk4 = RungeKutta4;
-    let harmonic = |_t: f64, y: &[f64]| -> Vec<f64> {
-        vec![y[1], -y[0]]
-    };
-    let mut y = vec![1.0, 0.0];
-    for i in 0..1000 {
-        y = rk4.step(&harmonic, i as f64 * 0.01, &y, 0.01);
-    }
-    println!("y(10) = {:.6}, y'(10) = {:.6}", y[0], y[1]);
-}
-\end{lstlisting}
+  \item \textbf{¿El color tiene semántica de dominio o es infraestructura?}
+    Si es semántica de dominio (``el borde de un estado aceptador de
+    autómata'', ``el color de una keyword''), añado un alias semántico
+    nuevo en la paleta bajo el prefijo correspondiente.
+    Si es infraestructura genérica (``un fondo de superficie'', ``texto
+    secundario''), uso un alias estructural existente (\texttt{surface0},
+    \texttt{subtext0}).
+
+  \item \textbf{¿Es un cambio independiente de otros elementos?}
+    Si el color de este elemento siempre cambia junto con otro, comparten
+    alias. Si pueden cambiar independientemente, tienen aliases separados.
+\end{enumerate}
+
+\begin{observacion}{La regla de granularidad mínima}
+Un elemento nuevo merece su propio alias semántico si y solo si su
+cambio de color es \textit{independiente} de otros elementos. Si el
+label de figura y el label de tabla siempre deben ser del mismo color,
+comparten \texttt{caption-label}. Si pueden diferir (como es el caso en
+este template), tienen \texttt{caption-fig} y \texttt{caption-tab}
+separados.
+\end{observacion}
 
 %───────────────────────────────────────────────────────────────────────────────
-\section{Go}
+\section{Convención de nombres}
+\label{ap:sec:nombres}
 %───────────────────────────────────────────────────────────────────────────────
 
-\begin{lstlisting}[style=go, caption={Problema de Basilea con goroutines}]
-package main
+\begin{definicion}{Convención kebab-case}
+\label{ap:def:kebab}
+Todos los aliases siguen la convención:
+\[
+  \texttt{\{dominio\}-\{elemento\}[-\{variante\}]}
+\]
+en kebab-case. El dominio identifica la categoría; el elemento describe
+el rol dentro del dominio; la variante (\texttt{frame}, \texttt{back},
+\texttt{text}) solo aparece cuando el elemento tiene múltiples roles de
+color. Los aliases estructurales (Nivel 1) no llevan prefijo de dominio.
+\end{definicion}
 
-import (
-    "fmt"
-    "math"
-    "sync"
-)
-
-type Result struct {
-    Index int
-    Value float64
-}
-
-func partialSum(start, end int, ch chan<- Result, wg *sync.WaitGroup) {
-    defer wg.Done()
-    sum := 0.0
-    for k := start; k < end; k++ {
-        sum += 1.0 / math.Pow(float64(k), 2)
-    }
-    ch <- Result{Index: start, Value: sum}
-}
-
-func main() {
-    const N = 1_000_000
-    const workers = 8
-    chunk := N / workers
-
-    ch := make(chan Result, workers)
-    var wg sync.WaitGroup
-
-    for i := 0; i < workers; i++ {
-        wg.Add(1)
-        s := i*chunk + 1
-        e := s + chunk
-        if i == workers-1 { e = N + 1 }
-        go partialSum(s, e, ch, &wg)
-    }
-    go func() { wg.Wait(); close(ch) }()
-
-    total := 0.0
-    for r := range ch { total += r.Value }
-    fmt.Printf("pi ~ %.10f\n", math.Sqrt(6.0*total))
-}
-\end{lstlisting}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Julia}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{lstlisting}[style=julia, caption={Euler--Maruyama con dispatch múltiple}]
-using Random, LinearAlgebra, Statistics
-
-abstract type AbstractSDE end
-
-struct OrnsteinUhlenbeck <: AbstractSDE
-    theta::Float64
-    mu::Float64
-    sigma::Float64
-end
-
-drift(sde::OrnsteinUhlenbeck, x, t) = sde.theta * (sde.mu - x)
-diffusion(sde::OrnsteinUhlenbeck, x, t) = sde.sigma
-
-function euler_maruyama(sde::AbstractSDE, x0::Float64,
-                        dt::Float64, T::Float64; seed::Int=42)
-    rng = MersenneTwister(seed)
-    N = Int(T / dt)
-    x = zeros(N + 1)
-    x[1] = x0
-    @inbounds for i in 1:N
-        dW = sqrt(dt) * randn(rng)
-        x[i+1] = x[i] + drift(sde, x[i], (i-1)*dt)*dt +
-                         diffusion(sde, x[i], (i-1)*dt)*dW
-    end
-    return range(0.0, T; length=N+1), x
-end
-
-ou = OrnsteinUhlenbeck(2.0, 0.0, 1.0)
-t, x = euler_maruyama(ou, 1.0, 1e-3, 10.0)
-@info "Stationary variance" exact=ou.sigma^2/(2*ou.theta) numerical=var(x[end-1000:end])
-\end{lstlisting}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{MATLAB}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{lstlisting}[style=matlab, caption={Elementos finitos 1D}]
-function [u, x] = fem1d(N, f_rhs, a, b)
-% FEM1D  Solves -u''(x) = f(x) on [a,b], u(a)=u(b)=0
-%        Linear finite elements with N elements.
-
-h = (b - a) / N;
-x = linspace(a, b, N+1)';
-K = sparse(N+1, N+1);
-F = zeros(N+1, 1);
-
-for e = 1:N
-    Ke = (1/h) * [1 -1; -1 1];
-    xm = (x(e) + x(e+1)) / 2;
-    Fe = h/2 * [f_rhs(xm); f_rhs(xm)];
-    idx = [e, e+1];
-    K(idx, idx) = K(idx, idx) + Ke;
-    F(idx) = F(idx) + Fe;
-end
-
-interior = 2:N;
-u = zeros(N+1, 1);
-u(interior) = K(interior, interior) \ F(interior);
-
-u_exact = @(x) sin(pi*x) / pi^2;
-err = sqrt(h * sum((u - u_exact(x)).^2));
-fprintf('L2 error: %.2e (h = %.2e)\n', err, h);
-end
-\end{lstlisting}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Fortran}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{lstlisting}[style=fortran, caption={Factorización LU con pivoteo parcial}]
-module linear_algebra
-  implicit none
-  integer, parameter :: dp = selected_real_kind(15, 307)
-contains
-  subroutine lu_factor(A, n, ipiv, info)
-    integer, intent(in)     :: n
-    real(dp), intent(inout) :: A(n, n)
-    integer, intent(out)    :: ipiv(n), info
-    integer  :: i, j, k, imax
-    real(dp) :: maxval, temp
-
-    info = 0
-    do k = 1, n
-      maxval = abs(A(k, k));  imax = k
-      do i = k + 1, n
-        if (abs(A(i, k)) > maxval) then
-          maxval = abs(A(i, k));  imax = i
-        end if
-      end do
-      ipiv(k) = imax
-      if (maxval < epsilon(1.0_dp)) then
-        info = k;  return
-      end if
-      if (imax /= k) then
-        do j = 1, n
-          temp = A(k,j); A(k,j) = A(imax,j); A(imax,j) = temp
-        end do
-      end if
-      do i = k + 1, n
-        A(i,k) = A(i,k) / A(k,k)
-        do j = k + 1, n
-          A(i,j) = A(i,j) - A(i,k) * A(k,j)
-        end do
-      end do
-    end do
-  end subroutine lu_factor
-end module linear_algebra
-\end{lstlisting}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Assembler (x86-64)}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{lstlisting}[style=asm, caption={Producto punto con SSE}]
-; dot_product_sse(float *a, float *b, int n) -> float
-; System V AMD64: rdi=a, rsi=b, edx=n; returns in xmm0
-section .text
-global dot_product_sse
-
-dot_product_sse:
-    xorps   xmm0, xmm0
-    test    edx, edx
-    jle     .done
-    mov     ecx, edx
-    shr     ecx, 2
-    jz      .remainder
-.loop4:
-    movups  xmm1, [rdi]
-    movups  xmm2, [rsi]
-    mulps   xmm1, xmm2
-    addps   xmm0, xmm1
-    add     rdi, 16
-    add     rsi, 16
-    dec     ecx
-    jnz     .loop4
-    ; horizontal reduction
-    movaps  xmm1, xmm0
-    shufps  xmm1, xmm1, 0x4E
-    addps   xmm0, xmm1
-    movaps  xmm1, xmm0
-    shufps  xmm1, xmm1, 0xB1
-    addss   xmm0, xmm1
-.remainder:
-    and     edx, 3
-    jz      .done
-.loop1:
-    movss   xmm1, [rdi]
-    mulss   xmm1, [rsi]
-    addss   xmm0, xmm1
-    add     rdi, 4
-    add     rsi, 4
-    dec     edx
-    jnz     .loop1
-.done:
-    ret
-\end{lstlisting}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section{Mathematica}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{lstlisting}[style=mathematica, caption={EDP de calor: simbólica + numérica}]
-(* 1D heat equation: du/dt = k * d^2u/dx^2 *)
-
-k = 0.01;  L = Pi;
-
-uExact[x_, t_, nTerms_] := Module[{n},
-    Sum[(2/(n*Pi)) * Sin[n*x] * Exp[-k*n^2*t],
-        {n, 1, nTerms, 2}]
-]
-
-sol = NDSolve[{
-    D[u[x,t], t] == k * D[u[x,t], {x,2}],
-    u[0,t] == 0,  u[L,t] == 0,
-    u[x,0] == If[x < L/2, 2*x/L, 2*(1 - x/L)]
-}, u, {x, 0, L}, {t, 0, 10}];
-
-error = NIntegrate[
-    (u[x,5] /. sol[[1]] - uExact[x, 5, 50])^2,
-    {x, 0, L}] // Sqrt;
-
-Print["L2 error at t=5: ", ScientificForm[error, 3]]
-\end{lstlisting}
-
-%───────────────────────────────────────────────────────────────────────────────
-\section*{Referencia rápida de estilos}
-\addcontentsline{toc}{section}{Referencia rápida de estilos}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{acadtable}{tab:estilos-listings}{Estilos de listings disponibles}
-  \begin{tabularx}{\textwidth}{l l Y}
+\begin{acadtable}[H]{ap:tab:dominios}{Dominios activos y sus prefijos}
+  \begin{tabularx}{\textwidth}{l l X}
     \toprule
     \headerrow
-    \thead{Estilo} & \thead{Lenguaje} & \thead{Uso} \\
+    \thead{Prefijo} & \thead{Dominio} & \thead{Cubre} \\
     \midrule
-    \texttt{python}      & Python         & \verb|style=python| \\
-    \rowcolor{tablerowalt}
-    \texttt{c}           & C              & \verb|style=c| \\
-    \texttt{cpp}         & C++            & \verb|style=cpp| \\
-    \rowcolor{tablerowalt}
-    \texttt{rust}        & Rust           & \verb|style=rust| \\
-    \texttt{go}          & Go             & \verb|style=go| \\
-    \rowcolor{tablerowalt}
-    \texttt{julia}       & Julia          & \verb|style=julia| \\
-    \texttt{matlab}      & MATLAB/Octave  & \verb|style=matlab| \\
-    \rowcolor{tablerowalt}
-    \texttt{fortran}     & Fortran (2008) & \verb|style=fortran| \\
-    \texttt{asm}         & x86-64 (Intel) & \verb|style=asm| \\
-    \rowcolor{tablerowalt}
-    \texttt{mathematica} & Wolfram        & \verb|style=mathematica| \\
+    (sin prefijo)    & Infraestructura     & Fondos, superficies, texto base \\
+    \texttt{doc-}    & Documento           & Jerarquía de títulos \\
+    \texttt{link-}   & Hipervínculos       & Referencias, URLs, citas \\
+    \texttt{env-}    & Entornos            & Definición, teorema, ejemplo, etc. \\
+    \texttt{eq-}     & Ecuaciones          & Coloreado semántico de matemáticas \\
+    \texttt{code-}   & Código fuente       & Listings, syntax highlighting \\
+    \texttt{alg-}    & Algoritmos          & algorithm2e, pseudocódigo \\
+    \texttt{plot-}   & Gráficas            & pgfplots, series, ejes \\
+    \texttt{tikz-}   & Diagramas TikZ      & Nodos, aristas, autómatas \\
+    \texttt{table-}  & Tablas              & Encabezados, filas, reglas \\
+    \texttt{caption-}& Captions            & Labels por tipo de flotante \\
+    \texttt{fb-}     & Feedback            & Éxito, error, advertencia, info \\
+    \texttt{diff-}   & Diffs               & Cambios insertados/eliminados \\
+    \texttt{rainbow-}& Secuencia           & N colores distinguibles ordenados \\
+    \texttt{frontmatter-} & Portada        & Elementos de la página de título \\
     \bottomrule
   \end{tabularx}
 \end{acadtable}
 
+%───────────────────────────────────────────────────────────────────────────────
+\section{Inventario completo de aliases}
+\label{ap:sec:inventario}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{Infraestructura visual (Nivel 1)}
+\label{ap:subsec:infraestructura}
+
+\begin{acadtable}[H]{ap:tab:infra}{Aliases estructurales: fondos, superficies y tipografía}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Fundamento Style Guide} \\
+    \midrule
+    \texttt{background}   & Base      & Background Pane \\
+    \texttt{secondarybg}  & Mantle    & Secondary Panes \\
+    \texttt{crustbg}      & Crust     & Secondary Panes (más oscuro) \\
+    \texttt{surface0/1/2} & Surface 0/1/2 & Surface Elements \\
+    \texttt{overlay0/1/2} & Overlay 0/1/2 & Overlays \\
+    \texttt{maintext}     & Text      & Body Copy \\
+    \texttt{subtext0/1}   & Subtext 0/1 & Sub-Headlines, Labels \\
+    \texttt{subtletext}   & Overlay 1 & Subtle — texto terciario \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Estructura del documento (\texttt{doc-})}
+
+\begin{acadtable}[H]{ap:tab:doc}{Aliases de jerarquía de títulos}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Razón} \\
+    \midrule
+    \texttt{doc-chapter}       & Pink      & Máximo contraste; warm; ancla el capítulo \\
+    \texttt{doc-section}       & Sky       & Cool; segundo nivel; contrasta con Pink \\
+    \texttt{doc-subsection}    & Lavender  & Suave; tercer nivel \\
+    \texttt{doc-subsubsection} & Peach     & Warm suave; cuarto nivel \\
+    \texttt{doc-paragraph}     & Subtext0  & Casi texto; diferencia mínima \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Hipervínculos (\texttt{link-})}
+
+Mapeo directo del Catppuccin Style Guide: Links=Blue, Followed=Lavender, Hover=Sky.
+
+\begin{acadtable}[H]{ap:tab:link}{Aliases de hipervínculos}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Uso en hyperref} \\
+    \midrule
+    \texttt{link-internal} & Blue     & \texttt{linkcolor}: refs internas, TOC \\
+    \texttt{link-external} & Peach    & \texttt{urlcolor}: URLs externas \\
+    \texttt{link-cite}     & Green    & \texttt{citecolor}: citas bibliográficas \\
+    \texttt{link-visited}  & Lavender & Followed Links \\
+    \texttt{link-hover}    & Sky      & On Hover Links \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Entornos teoremáticos (\texttt{env-})}
+
+Cada entorno tiene \texttt{env-X} (frame) y \texttt{env-X-back} (fondo,
+generado por \texttt{\textbackslash createback\{env-X\}}).
+
+\begin{acadtable}[H]{ap:tab:env}{Aliases de entornos teoremáticos}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Entorno y razón} \\
+    \midrule
+    \texttt{env-def}  & Blue     & Definición: epistémico, fundacional \\
+    \texttt{env-thm}  & Mauve    & Teorema: el más prominente del sistema \\
+    \texttt{env-prop} & Green    & Proposición: verdad demostrada \\
+    \texttt{env-ex}   & Peach    & Ejemplo: warm, invita a leer \\
+    \texttt{env-obs}  & Overlay0 & Observación: secundaria, no compite \\
+    \texttt{env-phys} & Sapphire & Conexión física: evoca ciencia \\
+    \texttt{env-star} & Yellow   & Estrella Polar: máxima prominencia \\
+    \texttt{env-comp} & Pink     & Ejercicio Computacional: activo \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Matemáticas semánticas (\texttt{eq-})}
+
+Tres ejes ortogonales. Ver \cref{ch:ecuaciones} para la documentación completa.
+
+\begin{acadtable}[H]{ap:tab:eq}{Aliases de coloreado semántico de ecuaciones}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Macro} & \thead{Color Ctp} & \thead{Eje y rol} \\
+    \midrule
+    \texttt{eq-op}      & \texttt{\textbackslash eqop}  & Blue      & Sintáctico: operadores \\
+    \texttt{eq-fn}      & \texttt{\textbackslash eqfn}  & Green     & Sintáctico: funciones/mapas \\
+    \texttt{eq-dm}      & \texttt{\textbackslash eqdm}  & Teal      & Sintáctico: diferenciales \\
+    \texttt{eq-dom}     & \texttt{\textbackslash eqdom} & Sapphire  & Sintáctico: dominios/conjuntos \\
+    \midrule
+    \texttt{eq-unknown} & \texttt{\textbackslash equ}   & Peach     & Epistémico: incógnita \\
+    \texttt{eq-known}   & \texttt{\textbackslash eqk}   & Mauve     & Epistémico: dato/fijado \\
+    \texttt{eq-const}   & \texttt{\textbackslash eqcon} & Lavender  & Epistémico: constante universal \\
+    \midrule
+    \texttt{eq-vec}     & \texttt{\textbackslash eqvec} & Red       & Tipo: vector/campo \\
+    \texttt{eq-ten}     & \texttt{\textbackslash eqten} & Rosewater & Tipo: tensor/matriz \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Código fuente (\texttt{code-})}
+
+Mapeo directo del Catppuccin Style Guide: Language Defaults (Code Editors).
+
+\begin{acadtable}[H]{ap:tab:code}{Aliases de syntax highlighting}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Clase sintáctica} \\
+    \midrule
+    \texttt{code-keyword} & Mauve    & Keywords del lenguaje \\
+    \texttt{code-string}  & Green    & Strings y literales \\
+    \texttt{code-comment} & Overlay2 & Comentarios \\
+    \texttt{code-operator}& Sky      & Operadores \\
+    \texttt{code-type}    & Yellow   & Tipos / clases / interfaces \\
+    \texttt{code-fn}      & Blue     & Funciones / métodos \\
+    \texttt{code-mod}     & Teal     & Módulos / namespaces / enums \\
+    \texttt{code-macro}   & Rosewater& Macros / decoradores / pragmas \\
+    \texttt{code-builtin} & Red      & Builtins / atoms / symbols \\
+    \texttt{code-const}   & Peach    & Constantes / números \\
+    \texttt{code-param}   & Maroon   & Parámetros \\
+    \texttt{code-delim}   & Overlay2 & Delimitadores (\texttt{\{\}[]()}) \\
+    \texttt{code-bg}      & Base     & Fondo del bloque \\
+    \texttt{code-border}  & Surface0 & Frame / regla \\
+    \texttt{code-linenum} & Overlay1 & Números de línea \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Algoritmos, plots, TikZ, tablas, captions y feedback}
+
+Las tablas de aliases para los dominios \texttt{alg-}, \texttt{plot-},
+\texttt{tikz-}, \texttt{table-}, \texttt{caption-} y \texttt{fb-}
+se presentan en las secciones correspondientes de los capítulos:
+\cref{ch:codigo} (algoritmos), \cref{ch:figuras} (plots y captions),
+\cref{ch:diagramas} (TikZ), \cref{ch:tablas} (tablas).
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Protocolo de extensión}
+\label{ap:sec:extension}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Protocolo para añadir un dominio nuevo}
+\label{ap:def:extension}
+Cuando el template necesita soporte para un paquete o tipo de elemento
+nuevo, el protocolo es exactamente este — no más, no menos:
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=2em]
+  \item Añadir una sección comentada en \texttt{themes/catppuccin-palette.tex}
+    con los \texttt{\textbackslash colorlet} del nuevo dominio.
+  \item Si los entornos necesitan fondos, llamar
+    \texttt{\textbackslash createback\{alias\}} para cada uno.
+  \item Crear \texttt{config/\{dominio\}.tex} consumiendo únicamente
+    los aliases recién definidos. Nunca \texttt{Ctp*}.
+  \item Registrar \texttt{\textbackslash input\{config/\{dominio\}.tex\}}
+    en \texttt{main.tex} en el paso 8 (configs de dominio).
+\end{enumerate}
+\end{definicion}
+
+El ejemplo canónico para un dominio \texttt{circuitikz} hipotético:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% En themes/catppuccin-palette.tex:
+% - Circuitos (circuitikz) 
+% Roles: pasivos, activos, fuentes, cables, labels
+\colorlet{circ-passive}{CtpBlue}    % resistencias, capacitores
+\colorlet{circ-active}{CtpGreen}    % transistores, diodos
+\colorlet{circ-source}{CtpYellow}   % fuentes de voltaje/corriente
+\colorlet{circ-wire}{CtpOverlay1}   % cables y conexiones
+\colorlet{circ-label}{CtpSubtext0}  % labels de componentes
+
+% En config/circuitikz.tex:
+% Nunca Ctp* aqui
+\ctikzset{
+  resistors/scale=0.8,
+  color=circ-wire,
+}
+\tikzset{
+  component/.style={color=circ-passive, fill=circ-passive!10},
+  source/.style   ={color=circ-source},
+}
+
+% En main.tex (paso 8):
+\input{config/circuitikz.tex}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{El mecanismo \textbackslash createback}
+\label{ap:sec:createback}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{\textbackslash createback}
+\label{ap:def:createback}
+El macro \texttt{\textbackslash createback\{alias\}} genera
+\texttt{\{alias\}-back} como variante de fondo clara para
+\texttt{tcolorbox}. La luminosidad se adapta automáticamente al flavor:
+\begin{itemize}[leftmargin=2em]
+  \item Tema claro (Latte):
+    \texttt{\{alias\}-back} = \texttt{white!97!\{alias\}}
+  \item Tema oscuro (Frappé, Macchiato, Mocha):
+    \texttt{\{alias\}-back} = \texttt{CtpBase!95!\{alias\}}
+\end{itemize}
+\end{definicion}
+
+Esto garantiza que todos los entornos teoremáticos tengan fondos
+consistentes sin importar el flavor. El toggle \texttt{\textbackslash ifdarktheme}
+se establece manualmente en \texttt{catppuccin-palette.tex} junto a la
+línea de \texttt{\textbackslash usepackage[Flavor]}.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Fundamento en el Style Guide oficial de Catppuccin}
+\label{ap:sec:fundamento}
+%───────────────────────────────────────────────────────────────────────────────
+
+Las asignaciones de este template no son arbitrarias. Cada color de dominio
+tiene una correspondencia directa con las categorías del Style Guide oficial
+de Catppuccin. La siguiente tabla traza esa correspondencia para los dominios
+de mayor visibilidad:
+
+\begin{acadtable}[H]{ap:tab:sg-mapping}{Correspondencia con el Style Guide oficial}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias del template} & \thead{Categoría Style Guide} & \thead{Descripción SG} \\
+    \midrule
+    \texttt{link-internal}   & Links, URLs      & ``Blue for links'' \\
+    \texttt{link-visited}    & Followed Links   & ``Lavender for followed links'' \\
+    \texttt{link-hover}      & On Hover Links   & ``Sky for hover'' \\
+    \texttt{code-keyword}    & Keyword          & ``Mauve for keywords'' \\
+    \texttt{code-string}     & Strings          & ``Green for strings'' \\
+    \texttt{code-comment}    & Comments         & ``Overlay 2 for comments'' \\
+    \texttt{code-operator}   & Operators        & ``Sky for operators'' \\
+    \texttt{code-type}       & Classes, Types   & ``Yellow for types'' \\
+    \texttt{code-fn}         & Methods          & ``Blue for methods'' \\
+    \texttt{fb-success}      & Success          & ``Green for success'' \\
+    \texttt{fb-warning}      & Warnings         & ``Yellow for warnings'' \\
+    \texttt{fb-error}        & Errors           & ``Red for errors'' \\
+    \texttt{fb-info}         & Information      & ``Teal for information'' \\
+    \texttt{env-thm}         & Highest priority & ``Mauve for most prominent'' \\
+    \texttt{rainbow-1..6}    & Rainbow Highlights & Secuencia de colores ordenada \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+Las extensiones propias del template (dominios \texttt{eq-}, \texttt{doc-},
+\texttt{tikz-}, \texttt{table-}, \texttt{caption-}, \texttt{plot-}) no
+tienen correspondencia directa en el Style Guide porque ese no cubre
+documentos matemáticos. Las asignaciones se derivaron de los principios
+del Style Guide: colores fríos para elementos epistémicos neutros (Blue
+para operadores, Sapphire para dominios), colores cálidos para elementos
+con carga semántica fuerte (Peach para incógnitas, Red para vectores).
+
 \begin{notasbib}
-La configuración de \texttt{listings} sigue la guía de estilo oficial de
-Catppuccin (\url{https://catppuccin.com/style-guide}). Los lenguajes Rust
-y Go se definen desde cero con \verb|\lstdefinelanguage| porque el paquete
-\texttt{listings} no los incluye nativamente.
-Para resaltado más avanzado (funciones definidas por el usuario, type
-inference), considerar \texttt{minted} con Pygments como alternativa.
+El Style Guide oficial de Catppuccin está disponible en
+\texttt{https://github.com/catppuccin/catppuccin/blob/main/docs/style-guide.md}.
+La paleta completa con valores hexadecimales para cada flavor se documenta
+en \texttt{https://catppuccin.com/palette}. El paquete
+\texttt{catppuccinpalette} para \LaTeX\ se mantiene en CTAN y en
+\texttt{https://github.com/catppuccin/latex}.
 \end{notasbib}

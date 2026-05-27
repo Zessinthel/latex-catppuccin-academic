@@ -1,19 +1,31 @@
-\usepackage[
-  top=2.5cm,
-  bottom=2.5cm,
-  left=3.5cm,
-  right=3.0cm,
-  headheight=15pt,
-  headsep=20pt,
-  footskip=25pt,
-  marginparwidth=2cm,
-  marginparsep=0.5cm,
-]{geometry}
+%───────────────────────────────────────────────────────────────────────────────
+% GEOMETRY.TEX — Layout de página, espaciado y encabezados
+%───────────────────────────────────────────────────────────────────────────────
+% \usepackage{geometry} declarado en packages.tex.
+% Paquetes requeridos: geometry, setspace, parskip, fancyhdr.
+%───────────────────────────────────────────────────────────────────────────────
 
+% ─── Márgenes ────────────────────────────────────────────────────────────────
+% Margen izquierdo más amplio: reserva espacio para encuadernación.
+% marginpar: espacio para notas al margen (\\marginpar{}).
+\geometry{
+  top           = 2.5cm,
+  bottom        = 2.5cm,
+  left          = 3.5cm,
+  right         = 3.0cm,
+  headheight    = 15pt,
+  headsep       = 20pt,
+  footskip      = 25pt,
+  marginparwidth= 2cm,
+  marginparsep  = 0.5cm,
+}
+
+% ─── Espaciado de párrafos ───────────────────────────────────────────────────
 \setlength{\parskip}{6pt plus 2pt minus 2pt}
 \onehalfspacing
 
-% Headers and footers
+% ─── Encabezados y pies de página ────────────────────────────────────────────
+% Estilo principal: sección en izquierda, número de página en derecha.
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\nouppercase{\leftmark}}
@@ -21,6 +33,8 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \addtolength{\headheight}{3pt}
 
+% Estilo plain: para páginas de inicio de capítulo.
+% Solo número de página centrado, sin línea de encabezado.
 \fancypagestyle{plain}{%
   \fancyhf{}
   \renewcommand{\headrulewidth}{0pt}

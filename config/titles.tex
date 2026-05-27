@@ -1,0 +1,27 @@
+%───────────────────────────────────────────────────────────────────────────────
+% TITLES-CONFIG.TEX — Jerarquía de títulos con colores semánticos Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Consume aliases del dominio doc-* definidos en catppuccin-palette.tex.
+% No usa Ctp* directamente.
+% titlesec se carga en packages.tex.
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Capítulo ────────────────────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{doc-chapter}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge\color{doc-chapter}}
+
+% ─── Sección ─────────────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{doc-section}}
+  {\thesection}{1em}{}
+
+% ─── Subsección ──────────────────────────────────────────────────────────────
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{doc-subsection}}
+  {\thesubsection}{1em}{}
+
+% ─── Subsubsección ───────────────────────────────────────────────────────────
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{doc-subsubsection}}
+  {\thesubsubsection}{1em}{}

@@ -1,19 +1,19 @@
 %───────────────────────────────────────────────────────────────────────────────
 % HYPERREF.TEX — Configuración de hipervínculos
 %───────────────────────────────────────────────────────────────────────────────
-% Debe cargarse DESPUÉS del tema (usa colores semánticos definidos allí).
-% hyperref y bookmark ya están cargados en packages.tex.
+% Cargado DESPUÉS del tema: consume aliases link-* de catppuccin-palette.tex.
+% hyperref y bookmark se cargan en packages.tex.
+% No usa Ctp* directamente.
 %───────────────────────────────────────────────────────────────────────────────
 
 \hypersetup{
   colorlinks  = true,
-  linkcolor   = linkcolor,       % referencias internas (\ref, \cref, TOC)
-  citecolor   = citecolor,       % citas bibliográficas
-  urlcolor    = urlcolor,        % URLs externas
+  linkcolor   = link-internal,   % referencias internas (\ref, \cref, TOC)
+  citecolor   = link-cite,       % citas bibliográficas
+  urlcolor    = link-external,   % URLs externas
   pdfborder   = {0 0 0},
   breaklinks  = true,
-  pagecolor = CtpBackground,
-  % ── Metadatos PDF (usan macros de metadata.tex) ───────────────────────────
+  % ── Metadatos PDF (macros definidas en metadata.tex) ──────────────────────
   pdftitle    = {\docTitulo},
   pdfauthor   = {\docAutor},
   pdfsubject  = {\docSubject},

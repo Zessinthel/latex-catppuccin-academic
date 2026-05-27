@@ -1,21 +1,54 @@
 %───────────────────────────────────────────────────────────────────────────────
-% CATPPUCCIN THEME — Versión completa y robusta (sin errores)
-% Para template académico de física, matemática, computación.
+% CATPPUCCIN-PALETTE.TEX — Sistema de color semántico para documentos académicos
+%───────────────────────────────────────────────────────────────────────────────
+%
+% ARQUITECTURA DE TRES CAPAS:
+%
+%   Nivel 0 — Ctp* (valores absolutos del flavor, SOLO en este archivo)
+%   Nivel 1 — Estructural (roles de UI genéricos, sin prefijo de dominio)
+%              surface0, overlay0, maintext, background, ...
+%   Nivel 2 — Semántico (roles de dominio del documento, con prefijo)
+%              doc-*, link-*, env-*, eq-*, code-*, alg-*, plot-*, ...
+%
+% CONVENCIÓN DE NOMBRES: {dominio}-{elemento}[-{variante}]
+%   Dominios activos:
+%     doc      Estructura del documento (capítulos, secciones)
+%     link     Hipervínculos (internos, externos, citas)
+%     env      Entornos teoremáticos (definición, teorema, ...)
+%     eq       Matemáticas semánticas (operadores, incógnitas, ...)
+%     code     Código fuente / listings
+%     alg      Algoritmos (algorithm2e)
+%     plot     Gráficas pgfplots
+%     tikz     Elementos gráficos TikZ
+%     table    Tablas
+%     caption  Captions de flotantes
+%     fb       Feedback y estado (éxito, error, dificultad)
+%     diff     Diffs y comparaciones
+%     rainbow  Secuencia de colores distinguibles
+%
+% PROTOCOLO DE EXTENSIÓN — para añadir un dominio nuevo:
+%   1. Añadir sección aquí con los \colorlet del dominio.
+%   2. Crear config/{dominio}-config.tex consumiendo solo aliases.
+%   3. Registrar \input en main.tex.
+%   Nunca usar Ctp* fuera de este archivo.
+%
+% VARIANTES DE FONDO: usar \createback{alias} para generar {alias}-back,
+%   el fondo claro para tcolorbox según el tema activo.
 %───────────────────────────────────────────────────────────────────────────────
 
 % ─── 1. Selección del flavor (descomentar solo una) ──────────────────────────
-\usepackage[Latte,styleAll]{catppuccinpalette}   % Tema claro
-%\usepackage[Frappe,styleAll]{catppuccinpalette} % Tema oscuro
-%\usepackage[Macchiato,styleAll]{catppuccinpalette}% Tema oscuro
-%\usepackage[Mocha,styleAll]{catppuccinpalette}  % Tema oscuro
+%\usepackage[Latte,styleAll]{catppuccinpalette}
+%\usepackage[Frappe,styleAll]{catppuccinpalette}
+%\usepackage[Macchiato,styleAll]{catppuccinpalette}
+\usepackage[Mocha,styleAll]{catppuccinpalette}
 
-% ─── 2. Configuración MANUAL de claro/oscuro (según el flavor elegido) ───────
-% Si elegiste Latte: \darkthemefalse
-% Si elegiste Frappé/Macchiato/Mocha: \darkthemetrue
+% ─── 2. Toggle claro/oscuro ──────────────────────────────────────────────────
+% Latte          → \darkthemefalse
+% Frappé/Macchiato/Mocha → \darkthemetrue
 \newif\ifdarktheme
-\darkthemefalse   % ← Cambia a \darkthemetrue si usas un flavor oscuro
+\darkthemetrue
 
-% ─── 3. Página y texto base ─────────────────────────────────────────────────
+% ─── 3. Color de página y texto base ────────────────────────────────────────
 \ifdarktheme
   \pagecolor{CtpBase}
   \AtBeginDocument{\color{CtpText}}
@@ -24,8 +57,24 @@
   \AtBeginDocument{\color{black}}
 \fi
 
-% ─── 4. Todos los colores de la guía (disponibles para usar) ─────────────────
-% Fondo y superficie
+% ─── 4. Macro de variante de fondo ──────────────────────────────────────────
+% \createback{alias}  →  define {alias}-back como fondo claro para tcolorbox.
+% El resultado adapta luminosidad según el tema activo.
+\newcommand{\createback}[1]{%
+  \ifdarktheme
+    \colorlet{#1-back}{CtpBase!95!#1}%
+  \else
+    \colorlet{#1-back}{white!97!#1}%
+  \fi
+}
+
+% =============================================================================
+% NIVEL 1 — INFRAESTRUCTURA VISUAL
+% =============================================================================
+% Mapeo directo del Catppuccin Style Guide: Background Colors + Typography.
+% Son el vocabulario visual base — no tienen semántica de dominio.
+
+% ─── Fondos y superficies ────────────────────────────────────────────────────
 \colorlet{background}{CtpBase}
 \colorlet{secondarybg}{CtpMantle}
 \colorlet{crustbg}{CtpCrust}
@@ -36,103 +85,192 @@
 \colorlet{overlay1}{CtpOverlay1}
 \colorlet{overlay2}{CtpOverlay2}
 
-% Tipografía
+% ─── Tipografía base ─────────────────────────────────────────────────────────
 \colorlet{maintext}{CtpText}
 \colorlet{subtext0}{CtpSubtext0}
 \colorlet{subtext1}{CtpSubtext1}
 \colorlet{subtletext}{CtpOverlay1}
 
-% Mensajes funcionales
-\colorlet{success}{CtpGreen}
-\colorlet{warning}{CtpYellow}
-\colorlet{error}{CtpRed}
-\colorlet{info}{CtpTeal}
-\colorlet{difficultycolor}{CtpLavender}
+% =============================================================================
+% NIVEL 2 — SEMÁNTICA DE DOMINIO
+% =============================================================================
 
-% Enlaces
-\colorlet{linkcolor}{CtpBlue}
-\colorlet{citecolor}{CtpGreen}
-\colorlet{urlcolor}{CtpPeach}
-\colorlet{visitedlinkcolor}{CtpLavender}
-\colorlet{hoverlinkcolor}{CtpSky}
+% ─── doc: Estructura del documento ──────────────────────────────────────────
+% Jerarquía de títulos: contraste decreciente con la profundidad.
+% Fundamento style guide: Rainbow Highlights para jerarquía visual.
+\colorlet{doc-chapter}{CtpPink}           % máximo contraste, warm
+\colorlet{doc-section}{CtpSky}            % cool, segundo nivel
+\colorlet{doc-subsection}{CtpLavender}    % suave, tercer nivel
+\colorlet{doc-subsubsection}{CtpPeach}    % warm suave, cuarto nivel
+\colorlet{doc-paragraph}{CtpSubtext0}     % casi texto, diferencia mínima
 
-% Sintaxis / código
-\colorlet{keywordcolor}{CtpMauve}
-\colorlet{stringcolor}{CtpGreen}
-\colorlet{commentcolor}{CtpOverlay2}
-\colorlet{paramcolor}{CtpMaroon}
-\colorlet{builtincolor}{CtpRed}
-\colorlet{typecolor}{CtpYellow}
-\colorlet{enumvarcolor}{CtpTeal}
-\colorlet{macrocolor}{CtpRosewater}
-\colorlet{operatorcolor}{CtpSky}
-\colorlet{delimcolor}{CtpOverlay2}
+% ─── link: Hipervínculos ─────────────────────────────────────────────────────
+% Fundamento style guide: Links=Blue, Followed Links=Lavender, Hover=Sky.
+\colorlet{link-internal}{CtpBlue}         % refs internas (\ref, \cref, TOC)
+\colorlet{link-external}{CtpPeach}        % URLs externas
+\colorlet{link-cite}{CtpGreen}            % citas bibliográficas
+\colorlet{link-visited}{CtpLavender}      % Followed Links
+\colorlet{link-hover}{CtpSky}             % On Hover Links
 
-% Diferencias (diff) y depuración
-\colorlet{diffheader}{CtpBlue}
-\colorlet{diffindex}{CtpOverlay2}
-\colorlet{difffile}{CtpPink}
-\colorlet{diffhunk}{CtpPeach}
-\colorlet{diffchangedbg}{CtpBlue!15}       % con opacidad 15%
-\colorlet{diffinsertedbg}{CtpGreen!15}
-\colorlet{diffremovedbg}{CtpRed!15}
-\colorlet{breakpointcolor}{CtpRed}
+% ─── env: Entornos teoremáticos ──────────────────────────────────────────────
+% Cada entorno tiene frame (color pleno) y back (variante clara, vía \createback).
+\colorlet{env-def}{CtpBlue}               % Definición: epistémico, fundacional
+\colorlet{env-thm}{CtpMauve}              % Teorema: color más prominente
+\colorlet{env-prop}{CtpGreen}             % Proposición: verdad demostrada
+\colorlet{env-ex}{CtpPeach}               % Ejemplo: warm, invita a leer
+\colorlet{env-obs}{CtpOverlay0}           % Observación: secundaria, no compite
+\colorlet{env-phys}{CtpSapphire}          % Conexión física: evoca ciencia
+\colorlet{env-star}{CtpYellow}            % Estrella Polar: destaca
+\colorlet{env-comp}{CtpPink}              % Ejercicio computacional: activo
+\createback{env-def}
+\createback{env-thm}
+\createback{env-prop}
+\createback{env-ex}
+\createback{env-obs}
+\createback{env-phys}
+\createback{env-star}
+\createback{env-comp}
 
-% Arcoíris (para bloques destacados, corchetes, etc.)
-\colorlet{rainbow1}{CtpRed}
-\colorlet{rainbow2}{CtpPeach}
-\colorlet{rainbow3}{CtpYellow}
-\colorlet{rainbow4}{CtpGreen}
-\colorlet{rainbow5}{CtpSapphire}
-\colorlet{rainbow6}{CtpLavender}
+% ─── eq: Matemáticas semánticas ──────────────────────────────────────────────
+% Coloreado en tres ejes ortogonales. Las macros viven en equation-styles.tex.
+% Fundamento: extensión del style guide al dominio matemático.
+%
+% Eje 1 — Rol sintáctico (estable entre contextos)
+\colorlet{eq-op}{CtpBlue}                 % operadores: ∫, ∑, ∂, ∇, Ĥ
+\colorlet{eq-fn}{CtpGreen}                % funciones/mapas: f(·), σ(·), V(r)
+\colorlet{eq-dm}{CtpTeal}                 % diferenciales/medidas: dx, dt, dW
+\colorlet{eq-dom}{CtpSapphire}            % dominios/conjuntos: Ω, ∂Ω, ℝⁿ
+%
+% Eje 2 — Estatus epistémico (la dimensión que la tipografía no codifica)
+\colorlet{eq-unknown}{CtpPeach}           % incógnita / buscado / aprendido
+\colorlet{eq-known}{CtpMauve}             % dato / conocido / fijado
+\colorlet{eq-const}{CtpLavender}          % constante universal: ℏ, kB, π, c
+%
+% Eje 3 — Tipo matemático (refuerzo sutil de la tipografía)
+\colorlet{eq-vec}{CtpRed}                 % vectores/campos: u, E, B, J
+\colorlet{eq-ten}{CtpRosewater}           % tensores/matrices: σᵢⱼ, gμν, W
 
-% Colores para títulos (estructura del documento)
-\colorlet{chaptercolor}{CtpPink}
-\colorlet{sectioncolor}{CtpSky}
-\colorlet{subsectioncolor}{CtpLavender}
-\colorlet{subsubsectioncolor}{CtpPeach}
+% ─── code: Código fuente (listings) ─────────────────────────────────────────
+% Mapeo directo del Catppuccin Style Guide: Language Defaults (Code Editors).
+\colorlet{code-keyword}{CtpMauve}         % Keyword
+\colorlet{code-string}{CtpGreen}          % Strings
+\colorlet{code-comment}{CtpOverlay2}      % Comments
+\colorlet{code-operator}{CtpSky}          % Operators
+\colorlet{code-type}{CtpYellow}           % Classes, Interfaces, Types
+\colorlet{code-fn}{CtpBlue}               % Methods, Functions
+\colorlet{code-mod}{CtpTeal}              % Enum Variants → módulos/namespaces
+\colorlet{code-macro}{CtpRosewater}       % Macros, decoradores, pragmas
+\colorlet{code-builtin}{CtpRed}           % Builtins, Atoms, Symbols
+\colorlet{code-const}{CtpPeach}           % Constants, Numbers
+\colorlet{code-param}{CtpMaroon}          % Parameters
+\colorlet{code-delim}{CtpOverlay2}        % Braces, Delimiters
+\colorlet{code-bg}{CtpBase}               % fondo del bloque de código
+\colorlet{code-border}{CtpSurface0}       % frame / rule
+\colorlet{code-linenum}{CtpOverlay1}      % Line Numbers
 
-% ─── 5. Colores semánticos para entornos (preservados) ───────────────────────
-\colorlet{defcolor}{CtpBlue}
-\colorlet{thmcolor}{CtpMauve}
-\colorlet{propcolor}{CtpGreen}
-\colorlet{ejemcolor}{CtpPeach}
-\colorlet{obscolor}{CtpOverlay0}
-\colorlet{fisicacolor}{CtpSapphire}
-\colorlet{estrellacolor}{CtpYellow}
-\colorlet{compcolor}{CtpPink}
+% ─── alg: Algoritmos (algorithm2e) ──────────────────────────────────────────
+% Comparte filosofía con code, pero con roles propios del pseudocódigo.
+\colorlet{alg-keyword}{CtpMauve}          % palabras clave: While, For, Return
+\colorlet{alg-arg}{CtpText}               % argumentos: texto principal
+\colorlet{alg-comment}{CtpOverlay2}       % comentarios inline
+\colorlet{alg-linenum}{CtpSky}            % números de línea
+\colorlet{alg-caption}{CtpBlue}           % caption: ancla visual del algoritmo
+\colorlet{alg-line}{CtpOverlay0}          % líneas estructurales: sutiles
 
-% ─── 6. Colores "light" (fondos de cajas) ────────────────────────────────────
-\newcommand{\createLightColor}[2]{%
-  \ifdarktheme
-    \colorlet{#1light}{CtpBase!95!#2}%
-  \else
-    \colorlet{#1light}{white!97!#2}%
-  \fi
-}
-\createLightColor{defcolor}{defcolor}
-\createLightColor{thmcolor}{thmcolor}
-\createLightColor{propcolor}{propcolor}
-\createLightColor{ejemcolor}{ejemcolor}
-\createLightColor{obscolor}{obscolor}
-\createLightColor{fisicacolor}{fisicacolor}
-\createLightColor{estrellacolor}{estrellacolor}
-\createLightColor{compcolor}{compcolor}
-% Opcional: también para success, warning, etc.
-\createLightColor{success}{success}
-\createLightColor{warning}{warning}
-\createLightColor{error}{error}
-\createLightColor{info}{info}
+% ─── plot: Gráficas (pgfplots) ───────────────────────────────────────────────
+% Series: Rainbow Highlights del style guide + extensiones para 8 curvas.
+% Ejes e infraestructura usan aliases estructurales de nivel 1.
+\colorlet{plot-series-1}{CtpBlue}         % Rainbow #5 (reordenado por contraste)
+\colorlet{plot-series-2}{CtpPeach}        % Rainbow #2
+\colorlet{plot-series-3}{CtpGreen}        % Rainbow #4
+\colorlet{plot-series-4}{CtpMauve}        % extensión
+\colorlet{plot-series-5}{CtpRed}          % Rainbow #1
+\colorlet{plot-series-6}{CtpTeal}         % extensión
+\colorlet{plot-series-7}{CtpYellow}       % Rainbow #3
+\colorlet{plot-series-8}{CtpPink}         % extensión
+\colorlet{plot-axis}{CtpOverlay0}         % ejes y ticks
+\colorlet{plot-grid}{CtpSurface1}         % grid: más sutil que plot-axis
+\colorlet{plot-label}{CtpText}            % labels de ejes y títulos
+\colorlet{plot-tick-label}{CtpSubtext0}   % números de ticks
+\colorlet{plot-legend-bg}{CtpBase}        % fondo de leyenda
+\colorlet{plot-legend-border}{CtpSurface0}% borde de leyenda
+\colorlet{plot-errorbar}{CtpOverlay0}     % barras de error: sutiles
 
-% ─── 7. Atajos de texto ──────────────────────────────────────────────────────
-\newcommand{\textsuccess}[1]{\textcolor{success}{#1}}
-\newcommand{\textwarning}[1]{\textcolor{warning}{#1}}
-\newcommand{\texterror}[1]{\textcolor{error}{#1}}
-\newcommand{\textinfo}[1]{\textcolor{info}{#1}}
-\newcommand{\textkeyword}[1]{\textcolor{keywordcolor}{#1}}
-\newcommand{\textstring}[1]{\textcolor{stringcolor}{#1}}
-\newcommand{\textcomment}[1]{\textcolor{commentcolor}{#1}}
+% ─── tikz: Elementos gráficos TikZ ──────────────────────────────────────────
+% Valores por defecto para nodos, aristas y estados de autómata.
+% El contexto semántico puede sobreescribir directamente.
+\colorlet{tikz-node-bg}{CtpSurface0}      % nodo genérico, fondo
+\colorlet{tikz-node-border}{CtpOverlay0}  % nodo genérico, borde
+\colorlet{tikz-edge}{CtpOverlay1}         % arista estándar
+\colorlet{tikz-arrow}{CtpOverlay2}        % punta de flecha
+\colorlet{tikz-label}{CtpSubtext0}        % anotación/label
+\colorlet{tikz-accept}{CtpGreen}          % autómata: estado aceptador
+\colorlet{tikz-reject}{CtpRed}            % autómata: estado rechazador
+\colorlet{tikz-initial}{CtpBlue}          % autómata: estado inicial
+\colorlet{tikz-highlight}{CtpYellow}      % nodo destacado en explicación
 
-% ─── 9. Colores por defecto para listings / tcolorbox (ejemplo) ──────────────
-\colorlet{codebg}{surface0}
-\colorlet{codeframe}{overlay1}
+% ─── table: Tablas ───────────────────────────────────────────────────────────
+\colorlet{table-head}{CtpBase}         % fondo encabezado: azul muy sutil
+\colorlet{table-head-text}{CtpText}       % texto del encabezado
+\colorlet{table-row-alt}{CtpSurface0}  % filas alternadas
+\colorlet{table-rule}{CtpOverlay0!50}     % líneas booktabs
+
+% ─── caption: Captions de flotantes ─────────────────────────────────────────
+% Cada tipo de flotante tiene identidad visual propia.
+% Los labels de caption ecoízan el color del entorno correspondiente.
+\colorlet{caption-fig}{CtpBlue}           % label figura: = link-internal
+\colorlet{caption-tab}{CtpMauve}          % label tabla: = env-thm
+\colorlet{caption-code}{CtpGreen}         % label código: = code-string
+\colorlet{caption-alg}{CtpPeach}          % label algoritmo: cálido
+\colorlet{caption-sub}{CtpSapphire}       % sub-caption: = env-phys
+\colorlet{caption-text}{CtpSubtext0}      % texto descriptivo del caption
+
+% ─── fb: Feedback y estado ───────────────────────────────────────────────────
+% Fundamento style guide: Success=Green, Warnings=Yellow, Errors=Red, Info=Teal.
+\colorlet{fb-success}{CtpGreen}
+\colorlet{fb-warning}{CtpYellow}
+\colorlet{fb-error}{CtpRed}
+\colorlet{fb-info}{CtpTeal}
+\colorlet{fb-difficulty}{CtpLavender}     % indicador de dificultad: neutro
+\createback{fb-success}
+\createback{fb-warning}
+\createback{fb-error}
+\createback{fb-info}
+
+% ─── diff: Diffs y comparaciones ─────────────────────────────────────────────
+% Fundamento style guide: Diff & Merge.
+\colorlet{diff-header}{CtpBlue}
+\colorlet{diff-index}{CtpOverlay2}
+\colorlet{diff-file}{CtpPink}
+\colorlet{diff-hunk}{CtpPeach}
+\colorlet{diff-changed-bg}{CtpBlue!15}
+\colorlet{diff-inserted-bg}{CtpGreen!15}
+\colorlet{diff-removed-bg}{CtpRed!15}
+\colorlet{diff-breakpoint}{CtpRed}
+
+% ─── rainbow: Secuencia de colores distinguibles ─────────────────────────────
+% Fundamento style guide: Rainbow Highlights (Brackets, Headings, etc.).
+\colorlet{rainbow-1}{CtpRed}
+\colorlet{rainbow-2}{CtpPeach}
+\colorlet{rainbow-3}{CtpYellow}
+\colorlet{rainbow-4}{CtpGreen}
+\colorlet{rainbow-5}{CtpSapphire}
+\colorlet{rainbow-6}{CtpLavender}
+
+% =============================================================================
+% ATAJOS TIPOGRÁFICOS
+% =============================================================================
+\newcommand{\textsuccess}[1]{\textcolor{fb-success}{#1}}
+\newcommand{\textwarning}[1]{\textcolor{fb-warning}{#1}}
+\newcommand{\texterror}[1]{\textcolor{fb-error}{#1}}
+\newcommand{\textinfo}[1]{\textcolor{fb-info}{#1}}
+\newcommand{\textkeyword}[1]{\textcolor{code-keyword}{#1}}
+\newcommand{\textstring}[1]{\textcolor{code-string}{#1}}
+\newcommand{\textcomment}[1]{\textcolor{code-comment}{#1}}
+
+% ─── frontmatter: Páginas preliminares ───────────────────────────────────────
+% Alias propios de portada y páginas preliminares.
+% No comparten dominio con entornos teoremáticos ni estructura del documento.
+\colorlet{titlepage-accent}{CtpMauve}    % línea decorativa y borde de caja de cita
+                                          % Mauve: prominente, no reclamado por
+                                          % ningún otro rol estructural del doc.

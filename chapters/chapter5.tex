@@ -1,0 +1,525 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Código y algoritmos}
+\label{ch:codigo}
+%───────────────────────────────────────────────────────────────────────────────
+
+El template distingue dos tipos de material computacional con herramientas
+distintas. El paquete \texttt{listings}~\cite{listings2020} es para código
+fuente ejecutable real: produce syntax highlighting completo y puede importar
+archivos directamente desde el sistema de archivos. El paquete
+\texttt{algorithm2e}~\cite{algorithm2e2017} es para pseudocódigo matemático
+independiente del lenguaje: opera en modo texto con macros de coloreado
+semántico y ecuaciones.
+
+La distinción no es estética sino epistémica: un bloque de listings dice
+\textit{``este código corre en Python 3.11''}; un bloque de algorithm2e
+dice \textit{``este procedimiento existe en el nivel matemático, su
+implementación es ortogonal a la exposición''}.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Listings: código fuente ejecutable}
+\label{sec:listings}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{Sintaxis básica}
+\label{subsec:listings-sintaxis}
+
+El bloque de código más simple usa un estilo predefinido y un caption:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{lstlisting}[style=python, caption={Nombre descriptivo}, label={lst:etiqueta}]
+# codigo aqui
+end{lstlisting}   % <- sin backslash en el documento real
+\end{lstlisting}
+
+Los estilos disponibles son: \texttt{python}, \texttt{c}, \texttt{cpp},
+\texttt{rust}, \texttt{go}, \texttt{julia}, \texttt{matlab},
+\texttt{fortran}, \texttt{asm}, \texttt{mathematica}, y \texttt{latex}.
+Todos heredan del estilo base \texttt{catppuccin-base} definido en
+\texttt{config/listings.tex}.
+
+\subsection{Importar archivos externos}
+\label{subsec:lstinputlisting}
+
+\begin{definicion}{lstinputlisting}
+\label{def:lstinputlisting}
+El comando \texttt{\textbackslash lstinputlisting} importa un archivo de
+código directamente desde el sistema de archivos, sin necesidad de copiar
+el contenido en el \texttt{.tex}. La carpeta \texttt{code/} del proyecto
+es el repositorio canónico de todos los archivos de código.
+\end{definicion}
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Archivo completo
+\lstinputlisting[style=python,
+  caption={Integrador de Euler para EDOs},
+  label={lst:euler}]{code/euler.py}
+
+% Fragmento: solo lineas 15-40
+\lstinputlisting[style=python,
+  firstline=15, lastline=40,
+  caption={Funcion de paso del integrador},
+  label={lst:euler-step}]{code/euler.py}
+
+% Con numero de lineas relativo al archivo
+\lstinputlisting[style=julia,
+  firstnumber=15,
+  firstline=15, lastline=40,
+  caption={...}]{code/rk4.jl}
+\end{lstlisting}
+
+\begin{observacion}{Rutas relativas}
+Las rutas en \texttt{\textbackslash lstinputlisting} son relativas al
+archivo \texttt{main.tex}, no al archivo \texttt{.tex} del capítulo.
+Si \texttt{main.tex} está en la raíz del proyecto, \texttt{code/euler.py}
+apunta a \texttt{./code/euler.py} desde la raíz, independientemente de
+en qué capítulo aparezca el comando.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Galería de estilos por lenguaje}
+\label{sec:galeria}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los snippets siguientes son fragmentos reales de física computacional y
+machine learning. Cada uno está elegido para ejercitar las distintas clases
+de color: keywords estructurales, tipos, funciones, strings, comentarios,
+macros y módulos.
+
+\subsection{Python — Descenso de gradiente estocástico}
+\label{subsec:python}
+
+\begin{lstlisting}[style=python,
+  caption={SGD con momentum para un modelo de regresión logística},
+  label={lst:sgd}]
+import numpy as np
+from typing import Callable
+
+def sgd_momentum(
+    grad_fn: Callable[[np.ndarray], np.ndarray],
+    theta0:  np.ndarray,
+    lr:      float = 1e-3,
+    beta:    float = 0.9,
+    n_iter:  int   = 1000,
+) -> np.ndarray:
+    """Descenso de gradiente estocastico con momentum de Polyak."""
+    theta = theta0.copy()
+    v     = np.zeros_like(theta)   # momento acumulado
+
+    for t in range(1, n_iter + 1):
+        g  = grad_fn(theta)        # gradiente estocastico
+        v  = beta * v + (1 - beta) * g
+        theta -= lr * v            # actualizacion de parametros
+
+    return theta
+\end{lstlisting}
+
+\subsection{C — Integrador de Euler para una EDO escalar}
+\label{subsec:c}
+
+\begin{lstlisting}[style=c,
+  caption={Método de Euler explícito: $\equ{y}' = \eqfn{f}(\eqk{t}, \equ{y})$},
+  label={lst:euler-c}]
+#include <stdio.h>
+#include <math.h>
+
+/* f(t, y) = -lambda * y  =>  solucion exacta: y(t) = y0 * exp(-lambda*t) */
+static double f(double t, double y, double lam) {
+    (void)t;
+    return -lam * y;
+}
+
+void euler(double y0, double t0, double tf,
+           double lam, int n, double *out_t, double *out_y) {
+    double h = (tf - t0) / n;
+    out_t[0] = t0;
+    out_y[0] = y0;
+
+    for (int i = 0; i < n; ++i) {
+        out_y[i+1] = out_y[i] + h * f(out_t[i], out_y[i], lam);
+        out_t[i+1] = out_t[i] + h;
+    }
+}
+\end{lstlisting}
+
+\subsection{C++ — Resolución de sistema lineal con LU (Eigen)}
+\label{subsec:cpp}
+
+\begin{lstlisting}[style=cpp,
+  caption={Factorización LU parcialmente pivotada con Eigen},
+  label={lst:lu-cpp}]
+#include <Eigen/Dense>
+#include <iostream>
+
+using Matrix = Eigen::MatrixXd;
+using Vector = Eigen::VectorXd;
+
+// Resuelve A x = b mediante descomposicion LU con pivoteo parcial.
+// Lanza std::runtime_error si A es singular numericamente.
+Vector solve_lu(const Matrix& A, const Vector& b) {
+    auto lu = A.partialPivLu();
+    if (std::abs(lu.determinant()) < 1e-12)
+        throw std::runtime_error("Matriz singular: det(A) ~ 0");
+    return lu.solve(b);
+}
+
+int main() {
+    Matrix A = Matrix::Random(4, 4);
+    Vector b = Vector::Random(4);
+    Vector x = solve_lu(A, b);
+    std::cout << "Residuo: " << (A * x - b).norm() << "\n";
+}
+\end{lstlisting}
+
+\subsection{Rust — Integrador RK4 genérico}
+\label{subsec:rust}
+
+\begin{lstlisting}[style=rust,
+  caption={Runge-Kutta de orden 4 genérico sobre \texttt{f64}},
+  label={lst:rk4-rust}]
+/// Avance de un paso del metodo RK4.
+/// `f`: derivada del sistema  dy/dt = f(t, y)
+/// Devuelve y(t + h).
+pub fn rk4_step<F>(f: F, t: f64, y: f64, h: f64) -> f64
+where
+    F: Fn(f64, f64) -> f64,
+{
+    let k1 = f(t,           y);
+    let k2 = f(t + 0.5*h,  y + 0.5*h*k1);
+    let k3 = f(t + 0.5*h,  y + 0.5*h*k2);
+    let k4 = f(t + h,       y + h*k3);
+    y + (h / 6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn decay_exact() {
+        // y' = -y, y(0) = 1  =>  y(1) = e^{-1}
+        let f = |_t: f64, y: f64| -y;
+        let y1 = rk4_step(f, 0.0, 1.0, 1.0);
+        assert!((y1 - (-1.0_f64).exp()).abs() < 1e-6);
+    }
+}
+\end{lstlisting}
+
+\subsection{Go — Caminata aleatoria 2D}
+\label{subsec:go}
+
+\begin{lstlisting}[style=go,
+  caption={Simulación de caminata aleatoria 2D en Go},
+  label={lst:rw-go}]
+package main
+
+import (
+    "fmt"
+    "math/rand"
+)
+
+type Point struct{ X, Y float64 }
+
+// RandomWalk simula n pasos de una caminata aleatoria 2D.
+// Cada paso tiene longitud 1 en una direccion aleatoria.
+func RandomWalk(n int, seed int64) []Point {
+    rng   := rand.New(rand.NewSource(seed))
+    path  := make([]Point, n+1)
+    path[0] = Point{0, 0}
+    steps := [][2]float64{{1,0},{-1,0},{0,1},{0,-1}}
+
+    for i := range n {
+        s       := steps[rng.Intn(4)]
+        path[i+1] = Point{path[i].X + s[0], path[i].Y + s[1]}
+    }
+    return path
+}
+
+func main() {
+    path := RandomWalk(10_000, 42)
+    fmt.Printf("Posicion final: (%.2f, %.2f)\n",
+        path[len(path)-1].X, path[len(path)-1].Y)
+}
+\end{lstlisting}
+
+\subsection{Julia — Método de potencias para el eigenvalor dominante}
+\label{subsec:julia}
+
+\begin{lstlisting}[style=julia,
+  caption={Iteración de potencias: eigenvalor dominante de $\eqten{A}$},
+  label={lst:power-julia}]
+using LinearAlgebra
+
+"""
+    power_iteration(A, tol=1e-10, maxiter=1000) -> (lambda, v)
+
+Calcula el eigenvalor dominante lambda y su eigenvector normalizado v
+de la matriz simetrica A mediante iteracion de potencias.
+"""
+function power_iteration(A::AbstractMatrix{T};
+                         tol::Float64 = 1e-10,
+                         maxiter::Int = 1000) where T <: AbstractFloat
+    n = size(A, 1)
+    v = normalize(randn(n))      # vector inicial aleatorio
+    lambda_old = zero(T)
+
+    for _ in 1:maxiter
+        w      = A * v           # multiplicacion matriz-vector
+        lambda = dot(v, w)       # cociente de Rayleigh
+        v      = normalize(w)
+        abs(lambda - lambda_old) < tol && break
+        lambda_old = lambda
+    end
+    return lambda_old, v
+end
+\end{lstlisting}
+
+\subsection{MATLAB — Ecuación de calor 1D por diferencias finitas}
+\label{subsec:matlab}
+
+\begin{lstlisting}[style=matlab,
+  caption={Ecuación de calor 1D: esquema de Crank-Nicolson [LeVeque 2007]},
+  label={lst:heat-matlab}]
+function U = heat_crank_nicolson(alpha, L, T, Nx, Nt)
+% heat_crank_nicolson  Resuelve u_t = alpha * u_xx en [0,L] x [0,T]
+%   Condiciones de frontera: u(0,t) = u(L,t) = 0
+%   Condicion inicial:       u(x,0) = sin(pi*x/L)
+
+dx = L / Nx;  dt = T / Nt;
+r  = alpha * dt / (2 * dx^2);    % numero de Courant-Friedrich-Lewy
+
+% Matrices tridiagonales del esquema implicito
+e = ones(Nx-1, 1);
+A = spdiags([-r*e, (1+2*r)*e, -r*e], [-1 0 1], Nx-1, Nx-1);
+B = spdiags([ r*e, (1-2*r)*e,  r*e], [-1 0 1], Nx-1, Nx-1);
+
+x = linspace(dx, L-dx, Nx-1)';
+U = sin(pi * x / L);             % condicion inicial
+
+for n = 1:Nt
+    U = A \ (B * U);             % paso de tiempo Crank-Nicolson
+end
+end
+\end{lstlisting}
+
+\subsection{Fortran — Multiplicación matriz-vector con BLAS}
+\label{subsec:fortran}
+
+\begin{lstlisting}[style=fortran,
+  caption={Llamada a \texttt{dgemv} de BLAS para $\eqvec{\mathbf{y}} \leftarrow \alpha\eqten{A}\eqvec{\mathbf{x}} + \beta\eqvec{\mathbf{y}}$},
+  label={lst:blas-fortran}]
+program matvec_blas
+  implicit none
+  integer,  parameter :: n = 4
+  real(8),  parameter :: alpha = 1.0d0, beta = 0.0d0
+  real(8)             :: A(n,n), x(n), y(n)
+  integer             :: i
+
+  ! Inicializar A y x
+  A = reshape([(real(i,8), i=1,n*n)], [n,n])
+  x = [(1.0d0, i=1,n)]
+  y = 0.0d0
+
+  ! y <- alpha*A*x + beta*y  (BLAS nivel 2)
+  call dgemv('N', n, n, alpha, A, n, x, 1, beta, y, 1)
+
+  write(*,'(A,*(F8.2))') 'y = ', y
+end program matvec_blas
+\end{lstlisting}
+
+\subsection{Assembler x86-64 — Norma euclídea con SIMD}
+\label{subsec:asm}
+
+\begin{lstlisting}[style=asm,
+  caption={Norma euclídea de un vector float con instrucciones SSE4},
+  label={lst:norm-asm}]
+; norm_f32(float* v, int n) -> float
+; Calcula ||v||_2 = sqrt(sum v[i]^2) usando SSE4.1
+; Argumento: rdi = puntero, esi = longitud (multiplo de 4)
+section .text
+global norm_f32
+norm_f32:
+    xorps   xmm0, xmm0          ; acumulador = 0.0
+.loop:
+    movups  xmm1, [rdi]         ; cargar 4 floats
+    mulps   xmm1, xmm1          ; xmm1 = v[i]^2
+    addps   xmm0, xmm1          ; acumular
+    add     rdi, 16             ; avanzar 4 * sizeof(float)
+    sub     esi, 4
+    jg      .loop               ; continuar si quedan elementos
+
+    haddps  xmm0, xmm0          ; reduccion horizontal
+    haddps  xmm0, xmm0
+    sqrtss  xmm0, xmm0          ; sqrt del escalar
+    ret
+\end{lstlisting}
+
+\subsection{Mathematica — Solución simbólica de la ecuación de onda}
+\label{subsec:mathematica}
+
+\begin{lstlisting}[style=mathematica,
+  caption={Solución simbólica de la ecuación de onda 1D con condiciones de Dirichlet},
+  label={lst:wave-mathematica}]
+(* Ecuacion de onda: u_tt = c^2 u_xx en [0,L], u(0,t)=u(L,t)=0 *)
+With[{c = 1, L = Pi},
+  u[x_, t_] = Sum[
+    With[{omega = n*c*Pi/L},
+      (A[n]*Cos[omega*t] + B[n]*Sin[omega*t]) * Sin[n*Pi*x/L]],
+    {n, 1, 10}];
+
+  (* Condicion inicial: u(x,0) = sin(x), u_t(x,0) = 0 *)
+  coefs = Table[
+    {n, 2/L * Integrate[Sin[x]*Sin[n*Pi*x/L], {x,0,L}]},
+    {n, 1, 10}];
+
+  Plot[u[x, 0.5] /. {A[n_] :> coefs[[n,2]], B[n_] :> 0},
+       {x, 0, L}, PlotLabel -> "u(x, 0.5)"]
+]
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Algoritmos: pseudocódigo matemático}
+\label{sec:algoritmos}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Cuándo usar algorithm2e vs listings}
+\label{def:algo-vs-listings}
+\texttt{algorithm2e} es el entorno correcto cuando el procedimiento existe
+en el nivel matemático — cuando su descripción no depende de ningún lenguaje
+de programación específico y cuando los símbolos del pseudocódigo son objetos
+matemáticos con sus propios roles semánticos. Si el código se va a ejecutar
+tal cual, usar \texttt{listings}.
+\end{definicion}
+
+\subsection{Sintaxis básica de algorithm2e}
+\label{subsec:algo-sintaxis}
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Entrada}\SetKwInOut{Output}{Salida}
+  \Input{descripcion de entradas}
+  \Output{descripcion de salidas}
+
+  inicializacion\;
+  \While{condicion}{
+    cuerpo del bucle\;
+    \If{condicion}{
+      rama verdadera\;
+    }
+  }
+  \Return{resultado}
+  \caption{Nombre del algoritmo [clave-bib]}
+  \label{alg:etiqueta}
+\end{algorithm}
+\end{lstlisting}
+
+Los estilos de texto \texttt{\textbackslash algkw\{\}}, \texttt{\textbackslash algarg\{\}},
+\texttt{\textbackslash algcomment\{\}} definidos en \texttt{config/algorithms.tex}
+se aplican automáticamente vía \texttt{\textbackslash SetKwSty} y compañía.
+No es necesario usarlos manualmente en el cuerpo del algoritmo.
+
+\subsection{Theming semántico de ecuaciones en algoritmos}
+\label{subsec:algo-ecuaciones}
+
+La intersección más poderosa del template: pseudocódigo matemático donde
+cada símbolo lleva su rol semántico. Las macros de \texttt{equations.tex}
+funcionan dentro de \texttt{algorithm2e} en modo matemático normal.
+
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Entrada}\SetKwInOut{Output}{Salida}
+  \Input{%
+    NFA $\eqk{N} = (\eqdom{Q}, \eqdom{\Sigma}, \eqop{\delta},
+    \eqk{q_0}, \eqdom{F})$}
+  \Output{%
+    DFA $\eqk{D} = (\eqdom{Q'}, \eqdom{\Sigma}, \eqop{\delta'},
+    \eqk{q'_0}, \eqdom{F'})$}
+
+  $\eqk{q'_0} \gets \eqop{E}(\eqdom{\{}\eqk{q_0}\eqdom{\}})$\;
+  Añadir $\eqk{q'_0}$ a $\eqdom{Q'}$ como estado no marcado\;
+
+  \While{$\exists\, \equ{T} \in \eqdom{Q'}$ no marcado}{
+    Marcar $\equ{T}$\;
+    \For{cada $\equ{a} \in \eqdom{\Sigma}$}{
+      $\equ{U} \gets \eqop{E}(\eqop{move}(\equ{T}, \equ{a}))$\;
+      \If{$\equ{U} \notin \eqdom{Q'}$}{
+        Añadir $\equ{U}$ a $\eqdom{Q'}$ no marcado\;
+      }
+      $\eqop{\delta'}(\equ{T}, \equ{a}) \gets \equ{U}$\;
+    }
+  }
+  \Return{$\eqk{D}$}
+  \caption{Construcción de subconjuntos: NFA $\to$ DFA~\cite{press2007numerical}}
+  \label{alg:subset-construction}
+\end{algorithm}
+
+El color comunica la estructura lógica del algoritmo: $\eqdom{Q}$,
+$\eqdom{\Sigma}$, $\eqdom{F}$ son conjuntos (dominios, sapphire).
+$\eqk{q_0}$, $\eqk{N}$, $\eqk{D}$ son parámetros conocidos (mauve).
+$\equ{T}$ y $\equ{U}$ son variables de trabajo (incógnitas locales, peach).
+$\eqop{\delta}$ y $\eqop{E}$ son operadores/funciones (blue, green).
+
+\subsection{Algoritmo numérico: gradiente conjugado}
+\label{subsec:conjugate-gradient}
+
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Entrada}\SetKwInOut{Output}{Salida}
+  \Input{%
+    Matriz $\eqk{A} \in \eqdom{\mathbb{R}^{n\times n}}$ SPD,
+    vector $\eqk{b} \in \eqdom{\mathbb{R}^n}$,
+    tolerancia $\eqk{\epsilon} > 0$}
+  \Output{Solución aproximada $\equ{x} \approx \eqk{A}^{-1}\eqk{b}$}
+
+  $\equ{x} \gets \mathbf{0}$\;
+  $\equ{r} \gets \eqk{b} - \eqk{A}\equ{x}$\;
+  $\equ{p} \gets \equ{r}$\;
+  $\equ{\rho} \gets \equ{r}^\top \equ{r}$\;
+
+  \While{$\sqrt{\equ{\rho}} > \eqk{\epsilon}$}{
+    $\equ{q} \gets \eqk{A}\equ{p}$\;
+    $\equ{\alpha} \gets \equ{\rho}\, /\, (\equ{p}^\top \equ{q})$\;
+    $\equ{x} \gets \equ{x} + \equ{\alpha}\,\equ{p}$\;
+    $\equ{r} \gets \equ{r} - \equ{\alpha}\,\equ{q}$\;
+    $\equ{\rho_{\mathrm{new}}} \gets \equ{r}^\top \equ{r}$\;
+    $\equ{p} \gets \equ{r} + (\equ{\rho_{\mathrm{new}}} / \equ{\rho})\,\equ{p}$\;
+    $\equ{\rho} \gets \equ{\rho_{\mathrm{new}}}$\;
+  }
+  \Return{$\equ{x}$}
+  \caption{Método del gradiente conjugado~\cite{higham2002accuracy}}
+  \label{alg:cg}
+\end{algorithm}
+
+\begin{observacion}{Algoritmos largos y ruptura de página}
+\texttt{algorithm2e} no envuelve el entorno \texttt{algorithm} en
+\texttt{tcolorbox} (ver \cref{ch:estructura}). Esto permite que algoritmos
+largos se dividan naturalmente entre páginas. Usar el placement \texttt{[H]}
+solo cuando el algoritmo es corto y debe aparecer junto al texto que lo
+introduce. Para algoritmos de más de 20 líneas, dejar el placement vacío y
+permitir que \LaTeX{} lo posicione.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Referenciando código y algoritmos}
+\label{sec:ref-codigo}
+%───────────────────────────────────────────────────────────────────────────────
+
+Con \texttt{cleveref} configurado en \texttt{config/packages.tex}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Referenciar un bloque de listing
+Como muestra el \cref{lst:sgd}, el momentum...
+
+% Referenciar un algoritmo
+El \cref{alg:cg} converge en a lo sumo $n$ iteraciones...
+
+% Rango de listings
+Los \crefrange{lst:euler-c}{lst:rk4-rust} ilustran...
+\end{lstlisting}
+
+Los nombres en español ya están configurados: \texttt{\textbackslash cref\{lst:sgd\}}
+produce \textit{cód.~1} y \texttt{\textbackslash Cref\{alg:cg\}} produce
+\textit{Algoritmo~2}.
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]

@@ -1,0 +1,397 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Figuras y gráficas}
+\label{ch:figuras}
+%───────────────────────────────────────────────────────────────────────────────
+
+Las figuras en un documento académico cumplen dos funciones distintas:
+las gráficas generadas por \texttt{pgfplots}~\cite{pgfplots2023} son parte
+del argumento matemático --- muestran convergencia, distribuciones, campos
+de fase --- y deben ser tan rigurosas como una ecuación. Las imágenes
+externas importadas con \texttt{graphicx}~\cite{graphicx2021} son apoyo
+visual: diagramas de arquitectura, fotografías de montajes, resultados de
+simulaciones externas. El tratamiento tipográfico es el mismo pero su
+naturaleza es diferente.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Figuras externas}
+\label{sec:figuras-externas}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{Figura simple}
+\label{subsec:figura-simple}
+
+La estructura canónica de una figura flotante en flujo normal de texto:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/nombre.pdf}
+  \caption{Descripcion completa que se lee sin ver la figura.}
+  \label{fig:etiqueta}
+\end{figure}
+\end{lstlisting}
+
+\begin{observacion}{Formato de imagen recomendado}
+LuaLaTeX acepta PDF, PNG y JPEG vía \texttt{\textbackslash includegraphics}.
+Para gráficas vectoriales (diagramas, plots generados externamente), siempre
+usar PDF — escala sin pérdida de calidad a cualquier resolución de impresión.
+Para fotografías o capturas de pantalla, PNG. Los SVG deben convertirse a
+PDF primero (\texttt{inkscape -{}-export-filename=out.pdf in.svg}).
+\end{observacion}
+
+\subsection{Figura dentro de tcolorbox}
+\label{subsec:figura-en-caja}
+
+Dentro de cualquier entorno basado en \texttt{tcolorbox}, usar \texttt{boxfig}
+en lugar de \texttt{figure}. El ancho de referencia cambia de
+\texttt{\textbackslash textwidth} a \texttt{\textbackslash linewidth}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{ejemplo}{Campo electrico de una carga puntual}
+  \begin{boxfig}{fig:campo-e}{Lineas de campo de $\eqvec{\mathbf{E}}$}
+    \includegraphics[width=0.7\linewidth]{figs/campo_electrico.pdf}
+  \end{boxfig}
+  La intensidad decae como $\eqfn{E}(r) \propto \eqk{q}/\equ{r}^2$.
+\end{ejemplo}
+\end{lstlisting}
+
+\subsection{Subfiguras}
+\label{subsec:subfiguras}
+
+El paquete \texttt{subcaption}~\cite{subcaption2022} permite agrupar
+múltiples figuras con subcaptions independientes:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/solucion_t0.pdf}
+    \caption{$t = 0$: condicion inicial.}
+    \label{fig:calor-t0}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figs/solucion_t1.pdf}
+    \caption{$t = 0.5$: difusion parcial.}
+    \label{fig:calor-t1}
+  \end{subfigure}
+  \caption{Evolucion de la ecuacion de calor
+           $\eqop{\partial_t}\equ{u} = \eqk{\alpha}\eqop{\nabla^2}\equ{u}$
+           con condiciones de Dirichlet.}
+  \label{fig:calor-evolucion}
+\end{figure}
+\end{lstlisting}
+
+La referencia a una subfigura usa el label de la subfigura:
+\texttt{\textbackslash cref\{fig:calor-t0\}} produce \textit{fig.~7.1a}.
+La referencia al grupo usa el label de la figura principal.
+
+\subsection{Figuras embebidas en texto}
+\label{subsec:wrapfig}
+
+Para figuras pequeñas que deben fluir con el texto sin interrumpir el
+párrafo, \texttt{wrapfig}~\cite{wrapfig2021} provee \texttt{wrapfigure}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{wrapfigure}{r}{0.35\textwidth}
+  \centering
+  \includegraphics[width=0.33\textwidth]{figs/diagrama.pdf}
+  \caption{Diagrama del sistema.}
+  \label{fig:diagrama}
+\end{wrapfigure}
+El texto circundante fluye alrededor de la figura. La opcion {r} la
+coloca a la derecha; {l} a la izquierda. El ancho (0.35\textwidth)
+debe ser ligeramente mayor que el de la imagen para dejar margen.
+\end{lstlisting}
+
+\begin{observacion}{Wrapfigure y listas}
+\texttt{wrapfigure} no funciona correctamente dentro de entornos de lista
+(\texttt{itemize}, \texttt{enumerate}) ni dentro de \texttt{tcolorbox}.
+Tampoco debe aparecer al inicio de un capítulo antes de que exista
+suficiente texto para fluir. Para esos contextos, usar \texttt{figure}
+estándar.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Gráficas con pgfplots}
+\label{sec:pgfplots}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Estilos Catppuccin para pgfplots}
+\label{def:pgfplots-estilos}
+\texttt{config/pgfplots.tex} define dos estilos con nombre y un ciclo
+de colores de 8 series:
+\begin{itemize}[leftmargin=2em]
+  \item \texttt{catppuccin-clean} --- para publicación: grid mayor, fonts
+    pequeñas, leyenda en esquina superior derecha.
+  \item \texttt{catppuccin-filled} --- para notas o presentaciones: igual
+    que \texttt{clean} pero con fondo \texttt{secondarybg}.
+\end{itemize}
+El ciclo de colores (\texttt{plot-series-1} a \texttt{plot-series-8})
+garantiza que hasta 8 series sean visualmente distinguibles usando tanto
+color como marcador distinto.
+\end{definicion}
+
+\subsection{Estructura básica de una gráfica}
+\label{subsec:pgfplots-basico}
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      catppuccin-clean,
+      xlabel = {$\eqk{t}$},
+      ylabel = {$\equ{y}(\eqk{t})$},
+      title  = {Decaimiento exponencial},
+      xmin=0, xmax=5,
+    ]
+      \addplot[plot-series-1, thick] expression[domain=0:5]{exp(-x)};
+      \addplot[plot-series-2, thick, dashed] expression[domain=0:5]{exp(-2*x)};
+      \legend{$e^{-t}$, $e^{-2t}$}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Comparacion de tasas de decaimiento.}
+  \label{fig:decaimiento}
+\end{figure}
+\end{lstlisting}
+
+\subsection{Gráfica con datos reales y barras de error}
+\label{subsec:pgfplots-errorbar}
+
+Para datos numéricos de simulaciones, \texttt{pgfplots} acepta coordenadas
+directas con incertidumbre. El alias \texttt{plot-errorbar} controla el
+color de las barras, que debe ser sutil para no competir con la serie:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{axis}[
+  catppuccin-clean,
+  xlabel = {Numero de particulas $\eqk{N}$},
+  ylabel = {$\langle \equ{E} \rangle / \eqk{N}$},
+  xmode  = log,
+]
+  \addplot+[
+    plot-series-1,
+    error bars/.cd,
+      y dir=both, y explicit,
+      error bar style={plot-errorbar, thin},
+  ] coordinates {
+    (100,  -1.23) +- (0, 0.05)
+    (500,  -1.41) +- (0, 0.02)
+    (1000, -1.45) +- (0, 0.01)
+    (5000, -1.47) +- (0, 0.005)
+  };
+\end{axis}
+\end{lstlisting}
+
+\subsection{Curva de nivel y mapa de calor}
+\label{subsec:pgfplots-contour}
+
+Los colormaps \texttt{catppuccin-heat} (magnitudes) y
+\texttt{catppuccin-diverge} (residuos con signo) se definen en
+\texttt{config/pgfplots.tex}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Mapa de calor de la funcion de densidad de probabilidad 2D
+\begin{axis}[
+  catppuccin-clean,
+  colormap name  = catppuccin-heat,
+  colorbar,
+  view           = {0}{90},      % proyeccion superior
+  xlabel         = {$\equ{x}_1$},
+  ylabel         = {$\equ{x}_2$},
+]
+  \addplot3[surf, shader=interp, samples=40,
+            domain=-3:3, domain y=-3:3]
+    {exp(-0.5*(x^2 + y^2)) / (2*pi)};
+\end{axis}
+
+% Mapa divergente para residuos
+\begin{axis}[
+  colormap name = catppuccin-diverge,
+  colorbar,
+]
+  \addplot3[surf, domain=-2:2] {x*y};
+\end{axis}
+\end{lstlisting}
+
+\subsection{Gráfica 2D completa con theming semántico}
+\label{subsec:pgfplots-completo}
+
+Un ejemplo de gráfica funcional real con coloreado semántico en labels
+y título. Muestra la convergencia del error de discretización
+$\equ{e}_h = \|\equ{u}_h - \eqk{u}\|$ en función de $\eqk{h}$~\cite{tufte2001visual}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{loglogaxis}[
+      catppuccin-clean,
+      xlabel = {Paso de malla $\eqk{h}$},
+      ylabel = {Error $\|\equ{u}_h - \eqk{u}\|_2$},
+      title  = {Convergencia de diferencias finitas},
+      legend pos = north west,
+      xtick     = {0.0625, 0.125, 0.25, 0.5},
+      xticklabels = {$1/16$, $1/8$, $1/4$, $1/2$},
+    ]
+      % Datos numericos: O(h^2)
+      \addplot[plot-series-1, mark=*] coordinates {
+        (0.5, 1.2e-2) (0.25, 3.1e-3) (0.125, 7.8e-4) (0.0625, 1.9e-4)
+      };
+      % Referencia teorica: pendiente -2 en log-log
+      \addplot[plot-series-5, dashed, no markers]
+        coordinates {(0.5, 1.2e-2) (0.0625, 1.9e-4)};
+      \legend{FD centradas, $\mathcal{O}(\eqk{h}^2)$}
+    \end{loglogaxis}
+  \end{tikzpicture}
+  \caption{Convergencia del esquema de diferencias finitas centradas
+           para la ecuacion de Poisson 1D. La pendiente $-2$ en escala
+           log-log confirma el orden teorico $\mathcal{O}(\eqk{h}^2)$.}
+  \label{fig:convergencia-fd}
+\end{figure}
+\end{lstlisting}
+
+\subsection{Subfiguras con pgfplots}
+\label{subsec:pgfplots-subfig}
+
+Para comparar resultados en múltiples paneles que comparten un tema
+visual coherente:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[catppuccin-clean, width=\textwidth, height=5cm,
+                   title={Espacio de fase}, xlabel={$\equ{x}$},
+                   ylabel={$\equ{\dot{x}}$}]
+        \addplot[plot-series-1] table {data/fase.dat};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Oscilador amortiguado: $\eqk{\gamma} < 2\eqk{\omega_0}$}
+    \label{fig:fase-subamortiguado}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[catppuccin-clean, width=\textwidth, height=5cm,
+                   title={Serie temporal}, xlabel={$\eqk{t}$},
+                   ylabel={$\equ{x}(\eqk{t})$}]
+        \addplot[plot-series-2] table {data/tiempo.dat};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Decaimiento amortiguado en el tiempo}
+    \label{fig:tiempo-subamortiguado}
+  \end{subfigure}
+  \caption{Oscilador armónico subamortiguado: representación dual.}
+  \label{fig:oscilador}
+\end{figure}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Captions: tipografía y colores}
+\label{sec:captions}
+%───────────────────────────────────────────────────────────────────────────────
+
+El label del caption (``Figura 7.1'', ``Tabla 3.2'') usa el alias de color
+del dominio \texttt{caption-*}, distinto por tipo de flotante. Esto permite
+identificar visualmente de qué tipo es el elemento referenciado antes de
+leer el número:
+
+\begin{acadtable}[H]{tab:caption-colores}{Colores de labels de caption por tipo}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Tipo} & \thead{Alias} & \thead{Color Ctp} & \thead{Razón} \\
+    \midrule
+    Figura     & \texttt{caption-fig}  & \textcolor{caption-fig}{\textbf{Blue}}
+      & = \texttt{link-internal}; coherente con referencias \\
+    Tabla      & \texttt{caption-tab}  & \textcolor{caption-tab}{\textbf{Mauve}}
+      & = \texttt{env-thm}; distinguible de figura \\
+    Código     & \texttt{caption-code} & \textcolor{caption-code}{\textbf{Green}}
+      & = \texttt{code-string}; evoca código \\
+    Algoritmo  & \texttt{caption-alg}  & \textcolor{caption-alg}{\textbf{Peach}}
+      & Cálido; distinguible de los anteriores \\
+    Subfigura  & \texttt{caption-sub}  & \textcolor{caption-sub}{\textbf{Sapphire}}
+      & = \texttt{env-phys}; un nivel por debajo de la figura \\
+    \midrule
+    \multicolumn{2}{l}{Texto descriptivo} & \textcolor{caption-text}{\textbf{Subtext0}}
+      & Secundario; no compite con el label \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+El texto descriptivo del caption (todo lo que sigue al label) usa
+\texttt{caption-text} en gris suave para que el label coloreado ancle
+visualmente el flotante sin que el texto completo compita con el contenido.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{linewidth vs textwidth}
+\label{sec:linewidth}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{linewidth dentro de tcolorbox}
+\label{def:linewidth}
+Dentro de un entorno \texttt{tcolorbox}, \texttt{\textbackslash linewidth}
+es el ancho del área de contenido de la caja (descontando los márgenes
+\texttt{left=6pt} y \texttt{right=6pt} de \texttt{basebox}).
+\texttt{\textbackslash textwidth} es siempre el ancho de la columna de texto
+completa, independientemente del contexto. Usar \texttt{\textbackslash textwidth}
+dentro de una caja produce overflow.
+\end{definicion}
+
+\begin{acadtable}[H]{tab:linewidth-contexto}{Ancho correcto según contexto}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Contexto} & \thead{Ancho correcto} & \thead{Aplica a} \\
+    \midrule
+    Flujo normal    & \texttt{\textbackslash textwidth}
+      & \texttt{figure}, \texttt{acadtable}, \texttt{tabularx} \\
+    Dentro de tcolorbox & \texttt{\textbackslash linewidth}
+      & \texttt{boxfig}, \texttt{boxtab}, \texttt{tabularx} \\
+    Subfigura       & \texttt{\textbackslash textwidth} del subfigure
+      & \texttt{\textbackslash includegraphics}, \texttt{tikzpicture} \\
+    Wrapfigure      & ancho declarado en \texttt{wrapfigure}
+      & imagen interna \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{PlaceFloat y FloatBarrier}
+\label{sec:float-control}
+%───────────────────────────────────────────────────────────────────────────────
+
+El algoritmo de flotantes de \LaTeX\ puede acumular figuras y tablas no
+colocadas hasta el final de una sección, dejando páginas desequilibradas.
+Dos herramientas del template controlan esto:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% FloatBarrier: fuerza la colocacion de todos los flotantes pendientes
+% antes de continuar. Util al inicio de una nueva seccion.
+\FloatBarrier
+
+% Placement [H] (paquete float): coloca el flotante exactamente aqui,
+% sin algoritmo de flotantes. Usar cuando la figura es parte del argumento
+% y debe aparecer en ese punto exacto del texto.
+\begin{figure}[H]
+  ...
+\end{figure}
+\end{lstlisting}
+
+\begin{observacion}{Cuándo usar \texttt{[H]} y cuándo \texttt{[htbp]}}
+\texttt{[H]} es para figuras que son parte del argumento narrativo ---
+el lector necesita verlas en ese punto exacto para seguir el razonamiento.
+\texttt{[htbp]} es para figuras que ilustran o complementan el argumento ---
+el lector puede verlas antes o después sin perder el hilo. El uso excesivo
+de \texttt{[H]} produce páginas con grandes espacios en blanco cuando la
+figura no cabe en el espacio restante. \texttt{\textbackslash FloatBarrier}
+al inicio de cada \texttt{\textbackslash section} es un buen balance.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]

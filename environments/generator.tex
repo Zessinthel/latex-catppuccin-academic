@@ -1,14 +1,18 @@
 %───────────────────────────────────────────────────────────────────────────────
-% GENERADOR DE ENTORNOS (VERSIÓN CORREGIDA)
+% GENERATOR.TEX — Generador de entornos teoremáticos
+%───────────────────────────────────────────────────────────────────────────────
 % Uso: \crearEntorno{nombre}{color}{título}{conContador?}{opcionesAdicionales}
+%
+%   #1  nombre del entorno        (ej: definicion)
+%   #2  alias semántico de color  (ej: env-def)
+%   #3  título base               (ej: Definición)
+%   #4  1 si tiene contador, 0 si no
+%   #5  opciones adicionales para tcolorbox (puede estar vacío)
+%
+% Requiere que {#2}-back esté definido en catppuccin-palette.tex vía \createback.
+% No usa Ctp* directamente.
 %───────────────────────────────────────────────────────────────────────────────
 \newcommand{\crearEntorno}[5]{%
-  % #1: nombre del entorno (ej: definicion)
-  % #2: color semántico (ej: defcolor)
-  % #3: título base (ej: Definición)
-  % #4: 1 si tiene contador, 0 si no
-  % #5: opciones adicionales para tcolorbox (puede estar vacío)
-
   \ifnum#4=1
     \newcounter{#1counter}[chapter]
     \expandafter\renewcommand\csname the#1counter\endcsname{%
@@ -23,7 +27,7 @@
     \begin{tcolorbox}[
       basebox,
       colframe=#2,
-      colback=#2light,
+      colback=#2-back,
       title={%
         \ifnum#4=1
           \unexpanded{#3 }\csname the#1counter\endcsname\unexpanded{ --- }##1%

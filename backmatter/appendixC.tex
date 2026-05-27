@@ -1,0 +1,394 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Referencia de comandos}
+\label{ap:referencia}
+%───────────────────────────────────────────────────────────────────────────────
+
+Inventario completo de comandos del template organizados por dominio.
+Para cada comando se indica la firma, el archivo de origen y una descripción
+concisa. Los comandos de \LaTeX\ estándar y de paquetes externos no se
+incluyen — solo los definidos o configurados por este template.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos teoremáticos}
+\label{ap:ref:entornos}
+%───────────────────────────────────────────────────────────────────────────────
+
+Definidos en \texttt{environments/instances.tex} vía
+\texttt{environments/generator.tex}.
+Todos tienen la firma \texttt{\textbackslash begin\{nombre\}\{Título\}...\textbackslash end\{nombre\}}.
+
+\begin{acadtable}[H]{ap:tab:ref-entornos}{Entornos teoremáticos}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Entorno} & \thead{Contador} & \thead{Uso} \\
+    \midrule
+    \texttt{definicion}   & por capítulo & Vocabulario formal. Color: \textcolor{env-def}{\textbf{Blue}} \\
+    \texttt{teorema}      & por capítulo & Resultado principal demostrado. Color: \textcolor{env-thm}{\textbf{Mauve}} \\
+    \texttt{proposicion}  & por capítulo & Resultado intermedio. Color: \textcolor{env-prop}{\textbf{Green}} \\
+    \texttt{ejemplo}      & por capítulo & Instancia concreta. Color: \textcolor{env-ex}{\textbf{Peach}} \\
+    \texttt{observacion}  & — & Nota técnica o matiz. Color: \textcolor{env-obs}{\textbf{Overlay0}} \\
+    \texttt{fisicaconexion} & — & Interpretación física. Color: \textcolor{env-phys}{\textbf{Sapphire}} \\
+    \texttt{estrella}     & por capítulo & Resultado pivote del capítulo. Color: \textcolor{env-star}{\textbf{Yellow}} \\
+    \texttt{ejerciciocomp}& por capítulo & Tarea computacional. Color: \textcolor{env-comp}{\textbf{Pink}} \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\begin{observacion}{Referencia a entornos con contador}
+Los entornos con contador registran \texttt{\textbackslash label} internamente
+cuando se usa \texttt{\textbackslash refstepcounter}. El label debe ir
+\textit{dentro} del entorno. \texttt{\textbackslash cref\{def:hilbert\}}
+produce \textit{def.~1.3} usando el nombre configurado en
+\texttt{config/packages.tex}.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos especiales}
+\label{ap:ref:especiales}
+%───────────────────────────────────────────────────────────────────────────────
+
+Definidos en \texttt{environments/specials.tex}.
+
+\begin{acadtable}[H]{ap:tab:ref-especiales}{Entornos y comandos especiales}
+  \begin{tabularx}{\textwidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Comando / Entorno} & \thead{Descripción} \\
+    \midrule
+    \texttt{\textbackslash dificultad\{m\}\{f\}}
+      & Indicador de dificultad. \texttt{m}: matemática (1--5),
+        \texttt{f}: física (1--5). Genera una caja compacta con estrellas. \\
+    \texttt{notasbib}
+      & Entorno de notas bibliográficas. Genera una sección
+        \textit{Notas bibliográficas} no numerada con caja sutil. \\
+    \texttt{ejercicio}
+      & Ejercicio matemático simple sin caja. Contador por capítulo.
+        Formato: \textit{Ejercicio 3.2.} \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos de tabla}
+\label{ap:ref:tablas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Definidos en \texttt{config/tables.tex}.
+
+\begin{acadtable}[H]{ap:tab:ref-tablas}{Entornos y comandos de tablas}
+  \begin{tabularx}{\textwidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Comando / Entorno} & \thead{Descripción} \\
+    \midrule
+    \texttt{acadtable[pos]\{label\}\{caption\}}
+      & Tabla flotante con caption y label integrados.
+        Posición por defecto \texttt{[htbp]}; usar \texttt{[H]}
+        para colocación fija. Ancho: \texttt{\textbackslash textwidth}. \\
+    \texttt{boxtab\{label\}\{caption\}}
+      & Tabla no-flotante para usar \textit{dentro} de tcolorbox.
+        Usa \texttt{\textbackslash captionof} + \texttt{\textbackslash phantomsection}.
+        Ancho: \texttt{\textbackslash linewidth}. \\
+    \texttt{fittable}
+      & Reescala su contenido si excede \texttt{\textbackslash linewidth}.
+        Recurso de último recurso: prefiere reestructurar la tabla. \\
+    \texttt{\textbackslash thead\{texto\}}
+      & Encabezado de columna: bold + color \texttt{table-head-text}. \\
+    \texttt{\textbackslash headerrow}
+      & Aplica \texttt{\textbackslash rowcolor\{table-head\}} a la fila actual. \\
+    \texttt{\textbackslash tablenote\{marca\}\{texto\}}
+      & Nota al pie de tabla en \texttt{\textbackslash footnotesize}.
+        Multiple llamadas se apilan. \\
+    \midrule
+    \texttt{L\{w\}}, \texttt{C\{w\}}, \texttt{R\{w\}}
+      & Columnas de ancho fijo con wrapping y alineación izquierda,
+        centro, derecha. Para \texttt{tabular}. \\
+    \texttt{X}, \texttt{Y}, \texttt{Z}
+      & Columnas proporcionales izquierda, centro, derecha.
+        Solo para \texttt{tabularx}. \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos de figura}
+\label{ap:ref:figuras}
+%───────────────────────────────────────────────────────────────────────────────
+
+Definidos en \texttt{config/tcolorbox.tex}.
+
+\begin{acadtable}[H]{ap:tab:ref-figuras}{Entornos de figura}
+  \begin{tabularx}{\textwidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Entorno} & \thead{Descripción} \\
+    \midrule
+    \texttt{boxfig\{label\}\{caption\}}
+      & Figura no-flotante para usar \textit{dentro} de tcolorbox.
+        El contenido (imagen o TikZ) va antes del caption.
+        Ancho de referencia: \texttt{\textbackslash linewidth}. \\
+    \midrule
+    \multicolumn{2}{l}{\textit{Entornos estándar de LaTeX (no definidos por el template):}} \\
+    \texttt{figure[pos]}
+      & Figura flotante estándar. Usar fuera de tcolorbox.
+        Ancho: \texttt{\textbackslash textwidth}. \\
+    \texttt{subfigure[align]\{ancho\}}
+      & Subfigura dentro de \texttt{figure}. Requiere \texttt{subcaption}. \\
+    \texttt{wrapfigure\{pos\}\{ancho\}}
+      & Figura embebida en texto. No usar dentro de listas o tcolorbox. \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Macros de ecuaciones semánticas}
+\label{ap:ref:ecuaciones}
+%───────────────────────────────────────────────────────────────────────────────
+
+Definidos en \texttt{config/equations.tex}.
+\textbf{Regla}: siempre dentro de modo matemático (\texttt{\$...\$},
+\texttt{\textbackslash[...\textbackslash]}, \texttt{equation}, etc.).
+
+\begin{acadtable}[H]{ap:tab:ref-eq-basicos}{Macros de coloreado semántico básicos}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Color} & \thead{Rol semántico} \\
+    \midrule
+    \texttt{\textbackslash eqop\{·\}} & \textcolor{eq-op}{\textbf{Blue}}
+      & Operador sintáctico: $\eqop{\nabla}$, $\eqop{\partial}$,
+        $\eqop{\sum}$, $\eqop{\delta}$ \\
+    \texttt{\textbackslash eqfn\{·\}} & \textcolor{eq-fn}{\textbf{Green}}
+      & Función/mapa: $\eqfn{f}(\cdot)$, $\eqfn{\mathcal{L}}$,
+        $\eqfn{\sigma}$ \\
+    \texttt{\textbackslash eqdm\{·\}} & \textcolor{eq-dm}{\textbf{Teal}}
+      & Diferencial/medida: $\eqdm{dx}$, $\eqdm{dt}$, $\eqdm{dW}$ \\
+    \texttt{\textbackslash eqdom\{·\}}& \textcolor{eq-dom}{\textbf{Sapphire}}
+      & Dominio/conjunto: $\eqdom{\Omega}$, $\eqdom{\mathbb{R}^n}$,
+        $\eqdom{\Sigma}$ \\
+    \midrule
+    \texttt{\textbackslash equ\{·\}}  & \textcolor{eq-unknown}{\textbf{Peach}}
+      & Incógnita/buscado: $\equ{u}$, $\equ{\theta}$, $\equ{\psi}$ \\
+    \texttt{\textbackslash eqk\{·\}}  & \textcolor{eq-known}{\textbf{Mauve}}
+      & Conocido/parámetro: $\eqk{\lambda}$, $\eqk{m}$, $\eqk{q_0}$ \\
+    \texttt{\textbackslash eqcon\{·\}}& \textcolor{eq-const}{\textbf{Lavender}}
+      & Constante universal: $\eqcon{\hbar}$, $\eqcon{k_B}$, $\eqcon{\pi}$ \\
+    \midrule
+    \texttt{\textbackslash eqvec\{·\}}& \textcolor{eq-vec}{\textbf{Red}}
+      & Vector/campo: $\eqvec{\mathbf{E}}$, $\eqvec{\mathbf{u}}$ \\
+    \texttt{\textbackslash eqten\{·\}}& \textcolor{eq-ten}{\textbf{Rosewater}}
+      & Tensor/matriz: $\eqten{\sigma_{ij}}$, $\eqten{W}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\begin{acadtable}[H]{ap:tab:ref-eq-compuestos}{Macros compuestos}
+  \begin{tabularx}{\textwidth}{l X l}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Descripción} & \thead{Produce} \\
+    \midrule
+    \texttt{\textbackslash eqpdv\{f\}\{t\}}
+      & Derivada parcial: numerador = incógnita, denominador = variable indep.
+      & $\eqpdv{f}{t}$ \\
+    \texttt{\textbackslash eqgrad\{u\}}
+      & Gradiente coloreado de una incógnita
+      & $\eqgrad{u}$ \\
+    \texttt{\textbackslash eqdvg\{v\}}
+      & Divergencia (evita colisión con \texttt{\textbackslash div} de physics)
+      & $\eqdvg{\mathbf{v}}$ \\
+    \texttt{\textbackslash eqSDE\{X\}\{a\}\{b\}}
+      & SDE completa con color: $dX = a\,dt + b\,dW$
+      & $\eqSDE{X}{a}{b}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\begin{acadtable}[H]{ap:tab:ref-eq-toggle}{Toggle de coloreado}
+  \begin{tabularx}{\textwidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Comando} & \thead{Efecto} \\
+    \midrule
+    \texttt{\textbackslash eqcolorstrue}  & Activa coloreado (por defecto) \\
+    \texttt{\textbackslash eqcolorsfalse} & Desactiva: todas las macros pasan
+      el argumento sin modificar. Usar para impresión B/N o en grupos locales. \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Macros de notación matemática}
+\label{ap:ref:notation}
+%───────────────────────────────────────────────────────────────────────────────
+
+Definidos en \texttt{config/notation.tex}.
+
+\begin{acadtable}[H]{ap:tab:ref-notation}{Vocabulario matemático del template}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Produce} & \thead{Dominio} \\
+    \midrule
+    \texttt{\textbackslash R}, \texttt{\textbackslash N},
+    \texttt{\textbackslash Z}, \texttt{\textbackslash C},
+    \texttt{\textbackslash Q}, \texttt{\textbackslash F}
+      & $\R$, $\N$, $\Z$, $\C$, $\Q$, $\F$ & Conjuntos numéricos \\
+    \texttt{\textbackslash T}   & $A\T$  & Transpuesta \\
+    \texttt{\textbackslash HH}  & $A\HH$ & Adjunto hermítico ($\dagger$) \\
+    \texttt{\textbackslash Id}  & $\Id$  & Matriz identidad \\
+    \texttt{\textbackslash diag}, \texttt{\textbackslash spec}
+      & $\diag(\cdot)$, $\spec(\cdot)$ & Operadores matriciales \\
+    \texttt{\textbackslash argmin}, \texttt{\textbackslash argmax}
+      & $\argmin$, $\argmax$ & Optimización \\
+    \texttt{\textbackslash Lap}, \texttt{\textbackslash Div}
+      & $\Lap$, $\Div$ & Aliases de physics \\
+    \midrule
+    \texttt{\textbackslash E\{·\}}  & $\E{X}$  & Valor esperado $\mathbb{E}[\,\cdot\,]$ \\
+    \texttt{\textbackslash Prob\{·\}}& $\Prob{A}$ & Probabilidad $\mathbb{P}(\cdot)$ \\
+    \texttt{\textbackslash Ep\{·\}} & $\Ep{f}$ & Valor esperado estilo física $\langle\cdot\rangle$ \\
+    \texttt{\textbackslash KL}, \texttt{\textbackslash Var}, \texttt{\textbackslash Cov}
+      & $\KL$, $\Var$, $\Cov$ & Estadísticos \\
+    \texttt{\textbackslash Normal}, \texttt{\textbackslash Uniform}
+      & $\Normal$, $\Uniform$ & Distribuciones \\
+    \midrule
+    \texttt{\textbackslash Loss}  & $\Loss$ & Función de pérdida $\mathcal{L}$ \\
+    \texttt{\textbackslash Lscr}  & $\Lscr$ & Pérdida script $\mathscr{L}$ \\
+    \texttt{\textbackslash D}     & $\D$    & Dataset $\mathcal{D}$ \\
+    \texttt{\textbackslash Params}& $\Params$ & Espacio de parámetros $\Theta$ \\
+    \texttt{\textbackslash params}& $\params$ & Parámetros $\theta$ \\
+    \texttt{\textbackslash score[v]}& $\score$ & Score function $\nabla_v\log p$ \\
+    \texttt{\textbackslash SDE\{X\}\{a\}\{b\}}
+      & $\SDE{X}{a}{b}$ & SDE sin color (inline) \\
+    \midrule
+    \texttt{\textbackslash Ham}   & $\Ham$  & Hamiltoniano $\hat{H}$ \\
+    \texttt{\textbackslash Hscr}  & $\Hscr$ & Espacio de Hilbert $\mathscr{H}$ \\
+    \texttt{\textbackslash Fscr}  & $\Fscr$ & Transformada de Fourier $\mathscr{F}$ \\
+    \texttt{\textbackslash kB}    & $\kB$   & Constante de Boltzmann $k_B$ \\
+    \texttt{\textbackslash keff}  & $\keff$ & Factor efectivo $k_{\mathrm{eff}}$ \\
+    \midrule
+    \texttt{\textbackslash OK}, \texttt{\textbackslash nOK}
+      & $\OK$, $\nOK$ & Marcas de verificación y error \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Comandos de pgfplots}
+\label{ap:ref:pgfplots}
+%───────────────────────────────────────────────────────────────────────────────
+
+Estilos y ciclos definidos en \texttt{config/pgfplots.tex}.
+
+\begin{acadtable}[H]{ap:tab:ref-pgfplots}{Estilos y colormaps de pgfplots}
+  \begin{tabularx}{\textwidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Nombre} & \thead{Descripción} \\
+    \midrule
+    \texttt{catppuccin} (cycle list)
+      & 8 series con colores \texttt{plot-series-1..8} y marcadores
+        distintos. Activado por defecto en todos los ejes. \\
+    \texttt{catppuccin-clean} (estilo)
+      & Grid mayor, fonts pequeñas, leyenda en esquina superior derecha.
+        Para publicación. \\
+    \texttt{catppuccin-filled} (estilo)
+      & Como \texttt{clean} pero con fondo \texttt{secondarybg}.
+        Para notas y presentaciones. \\
+    \texttt{catppuccin-heat} (colormap)
+      & Secuencial: magnitudes positivas. \texttt{background} → series frías
+        → series cálidas. \\
+    \texttt{catppuccin-diverge} (colormap)
+      & Divergente: residuos con signo. \texttt{plot-series-1} ←→
+        \texttt{maintext} ←→ \texttt{plot-series-5}. \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Prefijos de etiquetas recomendados}
+\label{ap:ref:labels}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{acadtable}[H]{ap:tab:ref-labels}{Convención de prefijos para \texttt{\textbackslash label}}
+  \begin{tabularx}{\textwidth}{l l l}
+    \toprule
+    \headerrow
+    \thead{Tipo} & \thead{Prefijo} & \thead{Ejemplo} \\
+    \midrule
+    Capítulo       & \texttt{ch:}     & \texttt{ch:ecuaciones} \\
+    Sección        & \texttt{sec:}    & \texttt{sec:tres-ejes} \\
+    Subsección     & \texttt{subsec:} & \texttt{subsec:eje-epistemico} \\
+    Ecuación       & \texttt{eq:}     & \texttt{eq:schrodinger} \\
+    Figura         & \texttt{fig:}    & \texttt{fig:convergencia} \\
+    Tabla          & \texttt{tab:}    & \texttt{tab:col-tipos} \\
+    Algoritmo      & \texttt{alg:}    & \texttt{alg:cg} \\
+    Listing/Código & \texttt{lst:}    & \texttt{lst:sgd} \\
+    Apéndice       & \texttt{ap:}     & \texttt{ap:styleguide} \\
+    Definición     & \texttt{def:}    & \texttt{def:hilbert} \\
+    Teorema        & \texttt{thm:}    & \texttt{thm:lp-completo} \\
+    Proposición    & \texttt{prop:}   & \texttt{prop:norma-continua} \\
+    Ejemplo        & \texttt{ex:}     & \texttt{ex:elbo} \\
+    Estrella       & \texttt{star:}   & \texttt{star:espectral} \\
+    Ejercicio comp.& \texttt{comp:}   & \texttt{comp:triangular} \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Nombres en español de cleveref}
+\label{ap:ref:cref}
+%───────────────────────────────────────────────────────────────────────────────
+
+Configurados en \texttt{config/packages.tex}.
+\texttt{\textbackslash cref} produce la forma corta; \texttt{\textbackslash Cref}
+la capitalizada.
+
+\begin{acadtable}[H]{ap:tab:ref-cref}{Nombres de cleveref en español}
+  \begin{tabularx}{\textwidth}{l l l}
+    \toprule
+    \headerrow
+    \thead{Tipo} & \thead{\textbackslash cref} & \thead{\textbackslash Cref} \\
+    \midrule
+    Ecuación    & ec.~(1.1)      & Ecuación~(1.1) \\
+    Figura      & fig.~1.1       & Figura~1.1 \\
+    Tabla       & tabla~1.1      & Tabla~1.1 \\
+    Capítulo    & cap.~1         & Capítulo~1 \\
+    Sección     & sec.~1.1       & Sección~1.1 \\
+    Algoritmo   & alg.~1         & Algoritmo~1 \\
+    Apéndice    & ap.~A          & Apéndice~A \\
+    Código      & cód.~1         & Código~1 \\
+    Definición  & def.~1.1       & Definición~1.1 \\
+    Teorema     & teo.~1.1       & Teorema~1.1 \\
+    Proposición & prop.~1.1      & Proposición~1.1 \\
+    Ejemplo     & ej.~1.1        & Ejemplo~1.1 \\
+    Estrella    & ~1.1          & Estrella Polar~1.1 \\
+    Ej. comp.   & ej. comp.~1.1  & Ejercicio Computacional~1.1 \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Checklist de extensión del template}
+\label{ap:ref:checklist}
+%───────────────────────────────────────────────────────────────────────────────
+
+Lista de verificación al añadir cualquier componente nuevo:
+
+\begin{enumerate}[label=$\square$, leftmargin=2em]
+  \item ¿Los colores nuevos están en \texttt{catppuccin-palette.tex}
+    bajo el prefijo de dominio correcto?
+  \item ¿Se llamó \texttt{\textbackslash createback\{\}} para aliases
+    que se usan como fondos de tcolorbox?
+  \item ¿El archivo de config consume solo aliases (sin \texttt{Ctp*})?
+  \item ¿Se registró el \texttt{\textbackslash input} en \texttt{main.tex}
+    en el paso 8?
+  \item ¿Si el dominio tiene entornos flotantes, existe la variante
+    no-flotante para uso dentro de tcolorbox?
+  \item ¿Las tablas con columnas \texttt{S} de siunitx envuelven los
+    headers en \texttt{\textbackslash multicolumn\{1\}\{c\}\{...\}}?
+  \item ¿Las macros de ecuaciones siempre van dentro de modo matemático?
+  \item ¿Los \texttt{\textbackslash label} dentro de tcolorbox están
+    \textit{dentro} del entorno, no en el argumento del título?
+\end{enumerate}

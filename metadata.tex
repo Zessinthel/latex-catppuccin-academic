@@ -1,31 +1,45 @@
 %───────────────────────────────────────────────────────────────────────────────
-% METADATOS DEL DOCUMENTO (solo datos breves)
-% Este archivo debe cargarse AL PRINCIPIO del preámbulo.
+% METADATA.TEX — Variables del documento
+%───────────────────────────────────────────────────────────────────────────────
+% Cargado en el paso 2 del preámbulo (main.tex), antes del tema.
+% Consumido por: titlepage.tex, preliminary.tex, hyperref.tex.
+%
+% REGLA: solo \newcommand con valores de texto plano.
+% No cargar paquetes ni definir macros matemáticas aquí.
 %───────────────────────────────────────────────────────────────────────────────
 
-% --- Identificación del documento ---
+% ─── Identificación ──────────────────────────────────────────────────────────
 \newcommand{\docTitulo}{Título del documento}
-\newcommand{\docSubtitulo}{Subtítulo del documento\\ con saltos de línea}
+\newcommand{\docSubtitulo}{Subtítulo del documento}
 \newcommand{\docAutor}{Autor del documento}
-\newcommand{\docFecha}{\the\year}               % por defecto, año actual
-\newcommand{\docEstado}{Versión preliminar}      % ej: "Borrador", "Final", "Tesis doctoral"
+\newcommand{\docFecha}{\the\year}        % año de compilación por defecto
+\newcommand{\docVersion}{0.1}            % versión semántica del documento
+\newcommand{\docEstado}{Borrador}        % Borrador | Versión preliminar | Final
 
-% --- Cita de portada ---
+% ─── Portada ─────────────────────────────────────────────────────────────────
 \newcommand{\docCita}{``Cita representativa del documento.''}
 
-% --- Textos cortos para páginas preliminares (dedicatoria, epígrafe, agradecimientos) ---
+% ─── Páginas preliminares ────────────────────────────────────────────────────
 \newcommand{\docDedicatoria}{A quienes hicieron posible este trabajo.}
 \newcommand{\docEpigrafe}{``Epígrafe o cita inicial.''}
 \newcommand{\docAgradecimientos}{%
-  Quiero expresar mi gratitud a las personas e instituciones que apoyaron esta investigación.
+  Quiero expresar mi gratitud a las personas e instituciones
+  que apoyaron esta investigación.%
 }
 
-% --- Palabras clave y clasificación (para metadatos PDF) ---
-\newcommand{\docKeywords}{palabra clave 1, palabra clave 2, tema principal}
+% ─── Metadatos PDF (usados por hyperref en config/hyperref.tex) ──────────────
+\newcommand{\docKeywords}{palabra clave 1, palabra clave 2}
 \newcommand{\docSubject}{Área temática principal}
+\newcommand{\docLang}{es}                % código ISO 639-1 del idioma
+% \newcommand{\docDOI}{10.xxxx/xxxxx}   % descomentar si el doc tiene DOI
 
-% =============================================================================
-% RECURSOS BIBLIOGRÁFICOS
-% =============================================================================
-\addbibresource{references/references.bib}
-
+% ─── Recursos bibliográficos ─────────────────────────────────────────────────
+%\addbibresource{references/references.bib}
+\addbibresource{references/chapter1.bib}
+\addbibresource{references/chapter2.bib}
+\addbibresource{references/chapter3.bib}
+\addbibresource{references/chapter4.bib}
+\addbibresource{references/chapter5.bib}
+\addbibresource{references/chapter6.bib}
+\addbibresource{references/chapter7.bib}
+\addbibresource{references/chapter8.bib}

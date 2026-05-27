@@ -1,0 +1,158 @@
+%───────────────────────────────────────────────────────────────────────────────
+% NOTATION.TEX — Vocabulario matemático del documento
+%───────────────────────────────────────────────────────────────────────────────
+%
+% Este archivo define los objetos matemáticos propios del documento.
+% NO configura paquetes — eso vive en config/equations.tex y demás.
+%
+% RELACIÓN CON OTROS ARCHIVOS:
+%   physics       →  \abs, \norm, \tr, \grad, \div, \curl, \laplacian,
+%                    \dv, \pdv, \bra, \ket, \braket, \comm, \acomm, etc.
+%   equations.tex →  \eqop, \equ, \eqk, \eqfn, \eqdm, \eqdom (coloreado semántico)
+%                    \eqpdv, \eqgrad, \eqdvg, \eqSDE  (compuestos coloreados)
+%   notation.tex  →  todo lo demás: objetos del dominio, operadores propios,
+%                    distribuciones, shortcuts de uso frecuente.
+%
+% REGLA DE EXTENSIÓN:
+%   Añadir secciones por dominio. Nunca mezclar dominios dentro de una sección.
+%   Si una sección supera ~30 comandos, considerar un archivo propio.
+%
+% CONFLICTOS CONOCIDOS CON physics:
+%   \div   →  physics lo redefine como divergencia. Usar \eqdvg (coloreado)
+%             o \divergence (physics). Para división: / o \frac{}{}.
+%   \rank  →  physics define \rank. Para sobrescribir: ver nota al final.
+%───────────────────────────────────────────────────────────────────────────────
+
+
+% =============================================================================
+% ÁLGEBRA Y ANÁLISIS
+% =============================================================================
+
+% ─── Conjuntos numéricos ─────────────────────────────────────────────────────
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}          % cuerpo genérico (álgebra abstracta)
+
+% ─── Operadores matriciales y lineales ───────────────────────────────────────
+% \tr, \rank ya existen en physics. Ver nota al final para sobrescribir \rank.
+\newcommand{\T}{^{\top}}             % transpuesta: A\T
+\newcommand{\HH}{^{\dagger}}         % adjunto hermítico (†): A\HH
+\newcommand{\Id}{\mathbf{I}}         % matriz identidad
+\DeclareMathOperator{\diag}{diag}    % \diag(a,b,c) o \diag(A)
+\DeclareMathOperator{\spec}{spec}    % espectro de un operador
+
+% ─── Optimización ────────────────────────────────────────────────────────────
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\minimize}{minimize}
+\DeclareMathOperator*{\maximize}{maximize}
+
+% ─── Aliases de physics (nombres cortos para uso frecuente) ──────────────────
+% Mantener solo los que se usan en el documento con alta frecuencia.
+% Para el resto: usar directamente \laplacian, \divergence, etc.
+\newcommand{\Lap}{\laplacian}        % alias → \laplacian (∇²)
+\newcommand{\Div}{\divergence}       % alias → \divergence (∇·)
+
+
+% =============================================================================
+% PROBABILIDAD Y ESTADÍSTICA
+% =============================================================================
+
+% ─── Operadores de esperanza y probabilidad ───────────────────────────────────
+% \mleft[\mright] corrige el espaciado que \left[\right] introduce en
+% ciertos contextos (ver paquete mleftright).
+\newcommand{\E}[1]{\mathbb{E}\!\mleft[#1\mright]}
+\newcommand{\Prob}[1]{\mathbb{P}\!\mleft(#1\mright)}
+\newcommand{\Ep}[1]{\langle #1 \rangle}   % valor esperado estilo física ⟨·⟩
+
+% ─── Operadores estadísticos ─────────────────────────────────────────────────
+\DeclareMathOperator{\KL}{KL}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Ent}{H}        % entropía: H(X)
+\DeclareMathOperator{\MI}{I}         % información mutua: I(X;Y)
+
+% ─── Distribuciones ──────────────────────────────────────────────────────────
+\newcommand{\Normal}{\mathcal{N}}    % \Normal(\mu, \sigma^2)
+\newcommand{\Uniform}{\mathcal{U}}   % \Uniform(a, b)
+\newcommand{\Bernoulli}{\mathrm{Ber}}
+\newcommand{\Poisson}{\mathrm{Poi}}
+\newcommand{\Categorical}{\mathrm{Cat}}
+
+
+% =============================================================================
+% MACHINE LEARNING
+% =============================================================================
+
+% ─── Objetos del modelo ──────────────────────────────────────────────────────
+\newcommand{\Loss}{\mathcal{L}}      % función de pérdida ℒ
+\newcommand{\Lscr}{\mathscr{L}}      % pérdida en notación script (alternativa)
+\newcommand{\D}{\mathcal{D}}         % dataset 𝒟
+\newcommand{\Params}{\Theta}         % espacio de parámetros Θ
+\newcommand{\params}{\theta}         % parámetros θ
+
+% ─── Funciones de activación ─────────────────────────────────────────────────
+\DeclareMathOperator{\softmax}{softmax}
+\DeclareMathOperator{\sigmoid}{\sigma}   % \sigmoid(x) = σ(x)
+\DeclareMathOperator{\relu}{ReLU}
+\DeclareMathOperator{\gelu}{GELU}
+
+% ─── Score function y difusión ───────────────────────────────────────────────
+% \score toma la variable como argumento opcional (default: \bm{x})
+% Uso: \score  →  ∇_x log p(x)
+%      \score[\bm{z}]  →  ∇_z log p(z)
+\newcommand{\score}[1][\bm{x}]{\grad_{#1}\log p}
+
+% Ecuación diferencial estocástica — versión sin color (inline, B/N)
+% Para la versión con coloreado semántico usar \eqSDE de equations.tex.
+% \SDE{X}{a(X,t)}{b(t)}  →  dX = a(X,t) dt + b(t) dW
+\newcommand{\SDE}[3]{d#1 = #2\,dt + #3\,dW}
+
+
+% =============================================================================
+% FÍSICA COMPUTACIONAL
+% =============================================================================
+
+% ─── Mecánica cuántica ───────────────────────────────────────────────────────
+% \bra, \ket, \braket, \comm, \acomm ya existen en physics.
+\newcommand{\Ham}{\hat{H}}           % operador Hamiltoniano Ĥ
+\newcommand{\Hscr}{\mathscr{H}}      % espacio de Hilbert ℋ
+\newcommand{\Fscr}{\mathscr{F}}      % transformada de Fourier ℱ (operador)
+
+% ─── Mecánica estadística ─────────────────────────────────────────────────────
+\newcommand{\kB}{k_{\mathrm{B}}}     % constante de Boltzmann k_B
+\newcommand{\Zpart}{Z}               % función de partición Z
+\newcommand{\FP}{\mathcal{L}_{\mathrm{FP}}}  % operador Fokker-Planck ℒ_FP
+
+% ─── Física de reactores ─────────────────────────────────────────────────────
+\newcommand{\keff}{k_{\mathrm{eff}}} % factor de multiplicación efectivo
+
+
+% =============================================================================
+% SÍMBOLOS AUXILIARES
+% =============================================================================
+\newcommand{\OK}{\ensuremath{\checkmark}}   % ✓
+\newcommand{\nOK}{\ensuremath{\times}}      % ✗
+
+
+% =============================================================================
+% NOTAS DE COMPATIBILIDAD
+% =============================================================================
+%
+% ── Sobrescribir \rank de physics ────────────────────────────────────────────
+% physics define \rank como operador. Para usar "rango" en español
+% o cambiar el comportamiento, descomentar:
+% \let\rank\relax
+% \DeclareMathOperator{\rank}{rango}
+%
+% ── \D puede colisionar ──────────────────────────────────────────────────────
+% Si algún paquete cargado define \D (poco común), usar \Dataset en su lugar:
+% \let\D\relax
+% \newcommand{\Dataset}{\mathcal{D}}
+%
+% ── \sigmoid vs variable σ ───────────────────────────────────────────────────
+% \sigmoid usa \sigma internamente. Si σ ya está ocupada como variable en
+% una sección, usar \sigma(x) directamente en lugar de \sigmoid(x).

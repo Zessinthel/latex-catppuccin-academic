@@ -1,0 +1,50 @@
+%───────────────────────────────────────────────────────────────────────────────
+% CAPTIONS-CONFIG.TEX — Estilo de captions con colores semánticos Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Consume aliases del dominio caption-* definidos en catppuccin-palette.tex.
+% No usa Ctp* directamente.
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Figuras ─────────────────────────────────────────────────────────────────
+\captionsetup{
+  font        = small,
+  labelfont   = {bf, color=caption-fig},     % "Figura 1.1" en bold + azul
+  textfont    = {color=caption-text},         % texto del caption en gris suave
+  format      = hang,                         % sangría francesa
+  labelsep    = endash,                       % "Figura 1.1 –"
+  skip        = 8pt,
+  justification = justified,
+}
+
+% ─── Subfiguras ──────────────────────────────────────────────────────────────
+\captionsetup[sub]{
+  font        = footnotesize,
+  labelfont   = {bf, color=caption-sub},     % "(a)" en sapphire
+  textfont    = {color=caption-text},
+  labelsep    = space,
+  skip        = 4pt,
+}
+
+% ─── Tablas ──────────────────────────────────────────────────────────────────
+\captionsetup[table]{
+  position    = above,                        % caption arriba de la tabla
+  labelfont   = {bf, color=caption-tab},     % "Tabla 1.1" en mauve
+  skip        = 6pt,
+}
+
+% ─── Algoritmos ──────────────────────────────────────────────────────────────
+% algorithm2e gestiona su propio caption vía \SetAlCapSty en algorithms.tex.
+% No se necesita configuración aquí.
+
+% ─── Listings (código fuente) ─────────────────────────────────────────────────
+\captionsetup[lstlisting]{
+  labelfont   = {bf, color=caption-code},    % "Código 1.1" en verde
+  textfont    = {color=caption-text},
+  format      = hang,
+  labelsep    = endash,
+  skip        = 6pt,
+}
+
+% ─── Nombres en español ──────────────────────────────────────────────────────
+\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Índice de códigos}

@@ -1,4 +1,11 @@
-% Dificultad (comando)
+%───────────────────────────────────────────────────────────────────────────────
+% SPECIALS.TEX — Entornos especiales: dificultad, notas bib, ejercicios
+%───────────────────────────────────────────────────────────────────────────────
+% Consume aliases fb-* y aliases estructurales de catppuccin-palette.tex.
+% No usa Ctp* directamente.
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Indicador de dificultad ─────────────────────────────────────────────────
 \newcommand{\estrellita}[1]{%
   \foreach \i in {1,...,5}{%
     \ifnum\i>#1
@@ -14,17 +21,17 @@
   \begin{tcolorbox}[
     enhanced,
     breakable,
-    % interior hidden,           % comentado para ver el fondo
-    colframe=difficultycolor,            % borde
-    colback=CtpBackground,            % fondo
+    colframe=fb-difficulty,
+    colback=background,
+    coltext=maintext,
     arc=0.5pt,
     outer arc=0.5pt,
-    boxrule=0.5pt,                  
-    left=2pt,                    
+    boxrule=0.5pt,
+    left=2pt,
     right=2pt,
     top=2pt,
     bottom=2pt,
-    drop fuzzy shadow=black!5,
+    drop fuzzy shadow=background,
     fontupper=\small
   ]
   \textbf{Nivel:}\quad
@@ -33,7 +40,7 @@
   \end{tcolorbox}
 }
 
-% Notas bibliográficas
+% ─── Notas bibliográficas ─────────────────────────────────────────────────────
 \NewDocumentEnvironment{notasbib}{}
 {
   \section*{Notas bibliográficas}
@@ -54,9 +61,7 @@
   \normalsize
 }
 
-%───────────────────────────────────────────────────────────────────────────────
-% EJERCICIOS SIMPLES (SIN CAJA)
-%───────────────────────────────────────────────────────────────────────────────
+% ─── Ejercicios simples (sin caja) ───────────────────────────────────────────
 \newcounter{ejercicio}[chapter]
 \renewcommand{\theejercicio}{\thechapter.\arabic{ejercicio}}
 

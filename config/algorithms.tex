@@ -1,43 +1,40 @@
 %───────────────────────────────────────────────────────────────────────────────
-% ESTILO PARA ALGORITMOS CON COLORES TEMÁTICOS CATPPUCCIN 
+% ALGORITHMS.TEX — Estilo de algoritmos con colores semánticos Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Consume aliases del dominio alg-* definidos en catppuccin-palette.tex.
+% No usa Ctp* directamente.
+%
+% DECISIÓN DE DISEÑO — sin wrapper tcolorbox:
+%   algorithm2e con [ruled, vlined, linesnumbered] es un contenedor visual
+%   completo (líneas de delimitación, caption, numeración, líneas de bloque).
+%   Envolverlo en tcolorbox superpondría dos sistemas visuales sin ganancia.
+%   El theming completo se logra únicamente vía los comandos \Set*Sty y los
+%   parches de color de líneas — sin restricciones de breakable ni anidamiento.
 %───────────────────────────────────────────────────────────────────────────────
 
-% Definir comandos de estilo que toman un argumento
-\newcommand{\algkw}[1]{\textcolor{keywordcolor}{#1}}      % palabras clave (antes CtpMauve)
-\newcommand{\algarg}[1]{\textcolor{maintext}{#1}}          % argumentos (antes CtpText)
-\newcommand{\algcomment}[1]{\textcolor{commentcolor}{#1}}  % comentarios (antes CtpOverlay2)
-\newcommand{\algnum}[1]{\textcolor{operatorcolor}{#1}}     % números de línea (antes CtpSky)
-\newcommand{\algcap}[1]{\textcolor{linkcolor}{#1}}         % caption (antes CtpBlue)
+% ─── Estilos de texto ────────────────────────────────────────────────────────
+\newcommand{\algkw}[1]{\textcolor{alg-keyword}{#1}}     % palabras clave
+\newcommand{\algarg}[1]{\textcolor{alg-arg}{#1}}         % argumentos
+\newcommand{\algcomment}[1]{\textcolor{alg-comment}{#1}} % comentarios
+\newcommand{\algnum}[1]{\textcolor{alg-linenum}{#1}}     % números de línea
+\newcommand{\algcap}[1]{\textcolor{alg-caption}{#1}}     % caption
 
-% Aplicar los estilos a algorithm2e (¡sin la barra invertida!)
+% ─── Aplicar estilos a algorithm2e ───────────────────────────────────────────
 \SetKwSty{algkw}
 \SetArgSty{algarg}
 \SetCommentSty{algcomment}
 \SetNlSty{algnum}{}{}
 \SetAlCapSty{algcap}
 
-% Caja decorativa (opcional)
-\tcolorboxenvironment{algorithm}{
-  colback=background!0,          % fondo transparente (antes CtpBase!0)
-  colframe=surface0,             % marco sutil (antes CtpSurface0)
-  arc=0pt,
-  boxrule=0pt,
-  left=6pt,
-  right=6pt,
-  top=6pt,
-  bottom=6pt,
-  before skip=10pt,
-  after skip=10pt,
-  drop fuzzy shadow=black!5
-}
-
-% ── Color y grosor de líneas de algoritmos ────────────────────────────────────
-\setlength{\algoheightrule}{0.6pt}       % línea superior e inferior
+% ─── Grosor de líneas ────────────────────────────────────────────────────────
+\setlength{\algoheightrule}{0.6pt}       % líneas superior e inferior
 \setlength{\algotitleheightrule}{0.5pt}  % línea bajo el caption
 
+% ─── Color de líneas estructurales ───────────────────────────────────────────
+% Parches internos de algorithm2e para colorear las líneas ruled y vlined
+% con alg-line. Separado de alg-linenum (números) para control independiente.
 \makeatletter
-% Usamos operatorcolor (CtpSky) para las líneas, o puedes definir uno específico
-\newcommand{\algolinecolor}{operatorcolor}    % antes CtpSky
+\newcommand{\algolinecolor}{alg-line}
 
 \def\@algocf@pre@ruled{%
   {\color{\algolinecolor}\hrule width\algocf@ruledwidth
@@ -57,7 +54,7 @@
   \kern\interspacealgoruled}
 \makeatother
 
-% Línea vertical izquierda (para entorno ruled con vlined)
+% ─── Línea vertical izquierda (vlined) ───────────────────────────────────────
 \makeatletter
 \renewcommand{\algocf@Vline}[1]{%
   \strut\par\nointerlineskip%
@@ -67,9 +64,7 @@
       \vtop{\algocf@addskiptotal #1}\Hlne}}\vskip\skiphlne%
   \algocf@pop{\skiprule}%
   \nointerlineskip}
-\makeatother
 
-\makeatletter
 \renewcommand{\algocf@Vsline}[1]{%
   \strut\par\nointerlineskip%
   \algocf@bblockcode%

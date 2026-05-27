@@ -1,51 +1,54 @@
 \documentclass[12pt, oneside]{book}
 
-% =============================================================================
-% BASIC PACKAGES AND CONFIGURATION
-% =============================================================================
+% ─── 1. Paquetes ─────────────────────────────────────────────────────────────
+% Carga todos los paquetes. Debe ir primero — el resto depende de ellos.
 \input{config/packages.tex}
-\input{config/geometry.tex}
 
-% =============================================================================
-% METADATOS
-% =============================================================================
+% ─── 2. Metadatos ────────────────────────────────────────────────────────────
+% Variables del documento (\docTitulo, \docAutor, etc.).
+% Va antes del tema para que hyperref las use en los metadatos del PDF.
 \input{metadata.tex}
 
-% =============================================================================
-% THEME (CHOOSE ONE)
-% =============================================================================
-% Descomentar UNA sola línea:
-\input{themes/catppuccin-palette.tex}   
+% ─── 3. Tema de color ────────────────────────────────────────────────────────
+% Define todos los aliases semánticos (env-*, doc-*, code-*, etc.).
+% Descomentar UNO solo en catppuccin-palette.tex, no aquí.
+\input{themes/catppuccin-palette.tex}
 
-% =============================================================================
-% HYPERREF (después del tema, usa colores Ctp*)
-% =============================================================================
+% ─── 4. Hipervínculos ────────────────────────────────────────────────────────
+% Después del tema: consume aliases link-* de la paleta.
 \input{config/hyperref.tex}
 
-% =============================================================================
-% MACROS AND ENVIRONMENTS
-% =============================================================================
-\input{config/macros.tex}
-\input{config/tcolorbox-config.tex}
+% ─── 5. Layout de página ─────────────────────────────────────────────────────
+% Después de hyperref: fancyhdr puede interactuar con el layout de hyperref.
+\input{config/geometry.tex}
+
+% ─── 6. Cajas base ───────────────────────────────────────────────────────────
+% Antes de environments/: generator.tex depende de basebox e innerbox.
+\input{config/tcolorbox.tex}
+
+% ─── 7. Entornos del documento ───────────────────────────────────────────────
+% Orden obligatorio: generator → instances → specials.
 \input{environments/generator.tex}
 \input{environments/instances.tex}
 \input{environments/specials.tex}
 
-% =============================================================================
-% CONFIGURACIONES ADICIONALES (después del tema)
-% =============================================================================
-\input{config/titles-config.tex}
-\input{config/listings-catppuccin.tex}
+% ─── 8. Configuraciones de dominio ───────────────────────────────────────────
+% Después del tema y de los entornos. Orden entre sí es libre.
+\input{config/titles.tex}
+\input{config/captions.tex}
+\input{config/tables.tex}
+\input{config/listings.tex}
 \input{config/algorithms.tex}
-\input{config/tables-config.tex}
-\input{config/equation-styles.tex}
-\input{config/pgfplots-config.tex}
-\input{config/captions-config.tex}
+\input{config/equations.tex}
+\input{config/pgfplots.tex}
+
+% ─── 9. Notación matemática ──────────────────────────────────────────────────
+% Al final de la preámbula: puede usar cualquier paquete ya cargado.
+\input{config/notation.tex}
 
 % =============================================================================
-% DOCUMENT
-% =============================================================================
 \begin{document}
+% =============================================================================
 
 \input{frontmatter/titlepage.tex}
 \input{frontmatter/preliminary.tex}
@@ -54,9 +57,18 @@
 \tableofcontents
 
 \include{chapters/chapter1}
+\include{chapters/chapter2}
+\include{chapters/chapter3}
+\include{chapters/chapter4}
+\include{chapters/chapter5}
+\include{chapters/chapter6}
+\include{chapters/chapter7}
+\include{chapters/chapter8}
 
 \begin{appendices}
-\include{backmatter/appendixA}
+  \include{backmatter/appendixA}
+  \include{backmatter/appendixB}
+  \include{backmatter/appendixC}
 \end{appendices}
 
 \end{document}

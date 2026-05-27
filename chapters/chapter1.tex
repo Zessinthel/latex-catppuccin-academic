@@ -1,786 +1,251 @@
-%═══════════════════════════════════════════════════════════════════════════════
-\chapter{Demostración de la plantilla}
-\label{ch:demo}
-%═══════════════════════════════════════════════════════════════════════════════
-
-Este capítulo ilustra todas las capacidades de la plantilla
-\texttt{latex\-catppuccin\-academic}. Los colores se adaptan automáticamente
-al tema seleccionado (Latte, Frappé, Macchiato o Mocha); para cambiar de
-tema basta modificar una línea en
-\texttt{themes/\allowbreak catppuccin\-palette.tex}.
-
-La plantilla está diseñada para textos académicos de física computacional:
-notas de clase, tesis, reportes técnicos y artículos. Cada elemento visual
----entornos, ecuaciones, tablas, algoritmos, gráficas, código--- sigue la
-paleta Catppuccin de forma coherente.
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Entornos teoremáticos}
-\label{sec:entornos}
-%═══════════════════════════════════════════════════════════════════════════════
-
-La plantilla define entornos mediante el generador
-\texttt{environments/\allowbreak generator.tex}.
-Cada entorno tiene su propio color de marco y fondo, organizados en tres niveles:
-fundamentos (definición, teorema, proposición), apoyo (ejemplo, observación,
-conexión física), y especiales (estrella polar, ejercicio computacional).
-
 %───────────────────────────────────────────────────────────────────────────────
-\subsection{Nivel 1: Fundamentos}
+\chapter{Primeros pasos}
+\label{ch:primeros-pasos}
 %───────────────────────────────────────────────────────────────────────────────
 
-\begin{definicion}{Espacio de Hilbert}
-Un \textbf{espacio de Hilbert} es un espacio vectorial dotado de un producto
-interno $\langle \cdot, \cdot \rangle$ que induce una norma
-$\|x\| = \sqrt{\langle x, x \rangle}$ bajo la cual el espacio es completo.
+Esta guía se escribe a sí misma: cada elemento que aparece en estas páginas
+es una instancia real del componente que describe. Los entornos coloreados
+que ves al leer son exactamente los que usarás al escribir. Las ecuaciones
+están coloreadas con el sistema semántico del template. El código de listings
+usa los estilos definidos en \texttt{config/listings.tex}.
+
+El template \texttt{latex-catppuccin-academic} está diseñado para documentos
+académicos de física computacional, matemáticas y machine learning: notas
+de clase, tesis, apuntes avanzados. Su principio central es que la riqueza
+visual no es decoración --- es información. El color de un entorno dice qué
+rol epistémico tiene. El color de un símbolo dice si es operador, incógnita
+o constante. El sistema crece con cada documento que lo usa.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Requisitos del sistema}
+\label{sec:requisitos}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Motor de compilación: LuaLaTeX}
+\textbf{LuaLaTeX}~\cite{luatex2023} es un motor TeX que extiende pdfLaTeX
+con soporte nativo para UTF-8, acceso a fuentes del sistema vía
+\texttt{fontspec}, y un intérprete Lua embebido. Este template lo requiere
+por dos razones concretas: el paquete \texttt{catppuccinpalette} que gestiona
+la paleta de colores~\cite{catppuccin2021} está escrito con primitivas
+LuaLaTeX, y el soporte completo de caracteres Unicode en bloques de código
+(\texttt{listings}) depende del motor.
 \end{definicion}
 
-\begin{teorema}{Teorema de representación de Riesz}
-Sea $\mathcal{H}$ un espacio de Hilbert. Para todo funcional lineal continuo
-$\varphi: \mathcal{H} \to \mathbb{R}$ existe un único $y \in \mathcal{H}$
-tal que $\varphi(x) = \langle x, y \rangle$ para todo $x \in \mathcal{H}$.
-\end{teorema}
-
-\begin{proposicion}{Identidad de polarización}
-En un espacio de Hilbert real, el producto interno se recupera de la norma:
-\[
-\langle x, y \rangle
-= \frac{1}{4}\left(\|x+y\|^2 - \|x-y\|^2\right).
-\]
-\end{proposicion}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Nivel 2: Apoyo}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{ejemplo}{Producto interno en $\mathbb{R}^n$}
-El producto interno euclídeo $\langle x, y \rangle = \sum_{i=1}^n x_i y_i$
-convierte a $\mathbb{R}^n$ en un espacio de Hilbert de dimensión finita.
-\end{ejemplo}
-
-\begin{observacion}{Completitud}
-La completitud es esencial: el espacio de funciones continuas $C[0,1]$ con
-la norma $L^2$ tiene producto interno pero \textit{no} es de Hilbert --- su
-completación es $L^2[0,1]$.
+\begin{observacion}{Distribución y versión mínima}
+Se recomienda \textbf{TeX Live 2022} o superior (o MiKTeX equivalente).
+El paquete \texttt{catppuccinpalette} es relativamente reciente --- versiones
+anteriores de la distribución pueden no incluirlo. Si
+\texttt{tlmgr install catppuccinpalette} devuelve error, actualiza con
+\texttt{tlmgr update -{}-all}.
 \end{observacion}
 
-\begin{fisicaconexion}{Espacios de Hilbert en mecánica cuántica}
-En mecánica cuántica, los estados de un sistema se representan como vectores
-en un espacio de Hilbert complejo $\mathcal{H}$. Los observables son operadores
-autoadjuntos sobre $\mathcal{H}$, y la evolución temporal está gobernada por
-operadores unitarios $U(t) = e^{-iHt/\hbar}$.
-\end{fisicaconexion}
+Los paquetes que carga el template están listados y comentados en
+\texttt{config/packages.tex}. Incluyen entre otros \texttt{pgfplots}~\cite{pgfplots2023} para gráficas y \texttt{tcolorbox}~\cite{tcolorbox2024} para cajas. Todos forman parte de TeX Live y no requieren
+instalaciones adicionales.
 
 %───────────────────────────────────────────────────────────────────────────────
-\subsection{Nivel 3: Especiales}
+\section{Estructura del proyecto}
+\label{sec:estructura}
 %───────────────────────────────────────────────────────────────────────────────
 
-\begin{estrella}{Reactor de fisión como proceso estocástico}
-La cinética puntual de un reactor nuclear puede modelarse mediante la SDE 
-$dn = [\rho n / \Lambda]\,dt + \sqrt{D\,n}\,dW$,
-donde $n$ es la población de neutrones, $\rho$ la reactividad,
-$\Lambda$ el tiempo de generación, y $D$ el coeficiente de Diven.
-La varianza del flujo neutrónico se relaciona con $\rho$ a través de la
-fórmula de Campbell.
-\end{estrella}
+El template sigue una arquitectura modular estricta: un archivo por
+responsabilidad, agrupados en carpetas por tipo.
 
-\begin{ejerciciocomp}{Implementación de descenso de gradiente}
-Implemente el \cref{alg:gradient} para la función
-$f(x) = x^2 + 2x + 1$ y verifique que converge al mínimo $x^* = -1$.
-Compare la convergencia con distintas tasas de aprendizaje
-$\eta \in \{0.01, 0.1, 0.5, 1.0\}$.
-\end{ejerciciocomp}
+\begin{center}
+\ttfamily\scriptsize\color{maintext}
+\begin{verbatim}
+.
+|-- main.tex
+|-- metadata.tex
+|-- config/
+|   |-- packages.tex    |-- geometry.tex    |-- hyperref.tex
+|   |-- tcolorbox.tex   |-- titles.tex      |-- captions.tex
+|   |-- tables.tex      |-- listings.tex    |-- algorithms.tex
+|   |-- equations.tex   |-- pgfplots.tex    \-- notation.tex
+|-- environments/
+|   |-- generator.tex   |-- instances.tex   \-- specials.tex
+|-- themes/
+|   \-- catppuccin-palette.tex
+|-- frontmatter/
+|   |-- titlepage.tex   |-- preliminary.tex  \-- preface.tex
+|-- chapters/           |-- backmatter/       |-- figs/
+|-- references/
+|   \-- references.bib  (+ chapter1.bib, chapter2.bib, ...)
+\end{verbatim}
+\end{center}
 
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Ecuaciones con coloreado semántico}
-\label{sec:ecuaciones}
-%═══════════════════════════════════════════════════════════════════════════════
-
-La plantilla define un sistema de coloreado semántico para ecuaciones
-que combina tres ejes: rol sintáctico, estatus epistémico y tipo matemático
-(véase \texttt{config/\allowbreak equation\-styles.tex}).
-Los colores se desactivan globalmente con
-\texttt{\textbackslash eqcolorsfalse} para versiones de impresión en
-blanco y negro.
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Eje 1: Rol sintáctico}
-%───────────────────────────────────────────────────────────────────────────────
-
-Los roles sintácticos son estables entre contextos: una integral siempre es
-un \eqop{operador}, un \eqdm{dx} siempre es un diferencial, una
-\eqfn{función} siempre es función. Formulación débil del problema de Poisson:
-
-\begin{equation}
-\label{eq:poisson-weak}
-\eqop{\int_{\eqdom{\Omega}}}
-\equ{\nabla u \cdot \nabla v}
-\, \eqdm{dx}
-=
-\eqop{\int_{\eqdom{\partial\Omega}}}
-\equ{u \frac{\partial v}{\partial n}}
-\, \eqdm{dS}.
-\end{equation}
-
-Aquí $u$ y $v$ son las incógnitas (\texttt{\textbackslash equ}, melocotón),
-$\Omega$ es el dominio (\texttt{\textbackslash eqdom}, zafiro),
-las integrales son operadores (\texttt{\textbackslash eqop}, azul),
-y $dx$, $dS$ son medidas (\texttt{\textbackslash eqdm}, turquesa).
+\begin{observacion}{Principio de nomenclatura}
+El nombre de cada archivo refleja su sujeto, no su tipo. \texttt{tables.tex}
+en \texttt{config/} configura tablas; \texttt{equations.tex} configura el
+coloreado semántico; \texttt{notation.tex} define el vocabulario matemático.
+El sufijo \texttt{-config} es redundante cuando la carpeta ya comunica el
+contexto.
+\end{observacion}
 
 %───────────────────────────────────────────────────────────────────────────────
-\subsection{Eje 2: Estatus epistémico}
+\section{Compilación}
+\label{sec:compilacion}
 %───────────────────────────────────────────────────────────────────────────────
 
-El color codifica qué se busca y qué se asume conocido --- la dimensión que
-la tipografía \textit{no puede} representar.
+La secuencia de compilación típica para un documento con bibliografía:
 
-\paragraph{La dualidad $f(x;\theta)$.}
-En un modelo paramétrico $f(x;\theta)$, los roles epistémicos de $x$ y
-$\theta$ se invierten entre física y machine learning:
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+lualatex main.tex   # primera pasada: genera .aux y .bcf
+biber main          # procesa la bibliografia
+lualatex main.tex   # segunda pasada: inserta referencias
+lualatex main.tex   # tercera pasada: estabiliza TOC y cross-refs
+\end{lstlisting}
 
-\medskip
-\textbf{Lectura de física} --- dado el modelo (parámetros \eqk{conocidos}),
-encontrar el estado (\equ{incógnita}):
+La gestión de bibliografía usa \texttt{biblatex}~\cite{biblatex2024} con backend \texttt{biber}. Para documentos sin bibliografía, dos pasadas son suficientes. Los archivos
+intermedios (\texttt{.aux}, \texttt{.log}, \texttt{.bcf}, \texttt{.synctex.gz})
+no forman parte del fuente y pueden excluirse con \texttt{.gitignore}.
 
-\begin{equation}
-\label{eq:physics-reading}
-\eqfn{f}\!\left(\equ{x};\, \eqk{\theta}\right)
-= \eqk{y}
-\qquad\Longrightarrow\qquad
-\equ{x^*} = \eqop{\argmin_{x}} \;
-\eqfn{\mathcal{L}}\!\left(\eqfn{f}(\equ{x};\,\eqk{\theta}),\; \eqk{y}\right).
-\end{equation}
-
-\textbf{Lectura de ML} --- dado el dato (\eqk{conocido}), aprender los
-parámetros (\equ{incógnita}):
-
-\begin{equation}
-\label{eq:ml-reading}
-\eqfn{f}\!\left(\eqk{x};\, \equ{\theta}\right)
-= \equ{\hat{y}}
-\qquad\Longrightarrow\qquad
-\equ{\theta^*} = \eqop{\argmin_{\theta}} \;
-\eqfn{\mathcal{L}}\!\left(\eqfn{f}(\eqk{x};\,\equ{\theta}),\; \eqk{y}\right).
-\end{equation}
-
-La estructura de ambas ecuaciones es idéntica; solo cambia el color.
-El lector identifica de inmediato quién es dato y quién es incógnita sin
-consultar el texto.
+\begin{observacion}{Compilación continua}
+La mayoría de editores (TeXstudio, VS Code con LaTeX Workshop, Neovim con
+vimtex) permiten compilación automática al guardar. Configurar la cadena
+como \texttt{lualatex -> biber -> lualatex x2}. En línea de comandos,
+\texttt{latexmk -lualatex -interaction=nonstopmode main.tex} determina
+automáticamente el número de pasadas necesarias.
+\end{observacion}
 
 %───────────────────────────────────────────────────────────────────────────────
-\subsection{Eje 3: Tipo matemático}
+\section{Eligiendo un flavor}
+\label{sec:flavor}
 %───────────────────────────────────────────────────────────────────────────────
 
-La tipografía ya codifica tipo (negrita = vector, doble barra = conjunto);
-el color \textit{refuerza} cuando la distinción de rango es importante.
-Ecuaciones de Maxwell:
+\begin{definicion}{Flavor de Catppuccin}
+Catppuccin~\cite{catppuccin-styleguide} define cuatro \textbf{flavors}:
+variantes de la misma paleta de 26 colores con distintas temperaturas de
+fondo. \textbf{Latte} es el único flavor claro; \textbf{Frappé},
+\textbf{Macchiato} y \textbf{Mocha} son progresivamente más oscuros. Todos
+los colores semánticos del template son invariantes entre flavors --- el azul
+siempre es el color de referencias internas, el malva siempre es el de
+teoremas --- pero sus valores hexadecimales se adaptan para mantener contraste
+y legibilidad en cada temperatura de fondo.
+\end{definicion}
 
-\begin{align}
-\eqop{\nabla \cdot} \eqvec{\mathbf{E}}
-  &= \eqcon{\frac{1}{\varepsilon_0}} \eqk{\rho},
-  \label{eq:gauss} \\[4pt]
-\eqop{\nabla \times} \eqvec{\mathbf{E}}
-  &= -\eqop{\frac{\partial}{\partial t}} \eqvec{\mathbf{B}},
-  \label{eq:faraday} \\[4pt]
-\eqop{\nabla \cdot} \eqvec{\mathbf{B}}
-  &= 0,
-  \label{eq:gauss-mag} \\[4pt]
-\eqop{\nabla \times} \eqvec{\mathbf{B}}
-  &= \eqcon{\mu_0} \eqvec{\mathbf{J}}
-   + \eqcon{\mu_0 \varepsilon_0}
-     \eqop{\frac{\partial}{\partial t}} \eqvec{\mathbf{E}}.
-  \label{eq:ampere}
-\end{align}
+El flavor se elige en un único lugar:
+\texttt{themes/catppuccin-palette.tex}. Descomentar exactamente una línea
+y ajustar el toggle de tema oscuro:
 
-Los campos vectoriales $\mathbf{E}$, $\mathbf{B}$, $\mathbf{J}$ usan
-\texttt{\textbackslash eqvec} (rojo), las constantes $\varepsilon_0$, $\mu_0$ usan
-\texttt{\textbackslash eqcon} (lavanda), los operadores diferenciales usan \texttt{\textbackslash eqop}
-(azul), y la densidad de carga $\rho$ es un dato \texttt{\textbackslash eqk} (malva).
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\usepackage[Latte,styleAll]{catppuccinpalette}       % claro
+%\usepackage[Frappe,styleAll]{catppuccinpalette}
+%\usepackage[Macchiato,styleAll]{catppuccinpalette}
+%\usepackage[Mocha,styleAll]{catppuccinpalette}
 
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Los tres ejes juntos: Schrödinger}
-%───────────────────────────────────────────────────────────────────────────────
+\darkthemefalse    % Latte
+%\darkthemetrue    % Frappe, Macchiato o Mocha
+\end{lstlisting}
 
-\begin{equation}
-\label{eq:schrodinger}
-\eqop{\hat{H}} \equ{\psi}
-=
-\left[
-  \eqcon{-\frac{\hbar^2}{2m}} \eqop{\nabla^2}
-  + \eqfn{V(\mathbf{r})}
-\right] \equ{\psi}
-=
-\equ{E} \equ{\psi}.
-\end{equation}
+El toggle \texttt{darktheme} controla el color de fondo de página y la
+generación de fondos de cajas: en tema claro son \texttt{white!97!color},
+en tema oscuro son \texttt{CtpBase!95!color}. Esto garantiza que los
+entornos teoremáticos sean legibles en cualquier flavor.
 
-El hamiltoniano $\hat{H}$ y el laplaciano son \eqop{operadores},
-$\psi$ y $E$ son las \equ{incógnitas},
-$V(\mathbf{r})$ es una \eqfn{función} conocida,
-y $\hbar^2/2m$ es una \eqcon{constante} universal.
+\begin{observacion}{Sistema de color en tres capas}
+\texttt{Ctp*} (valores absolutos del flavor) solo aparece en
+\texttt{themes/catppuccin-palette.tex}. Los archivos de config consumen
+aliases semánticos (\texttt{env-def}, \texttt{doc-chapter},
+\texttt{code-keyword}). Los archivos de contenido consumen comandos
+(\texttt{\textbackslash eqop}, \texttt{\textbackslash begin\{teorema\}}).
+Ningún archivo viola la capa que le corresponde. Cuando ese invariante
+se mantiene, cambiar el flavor del documento entero es descomentar
+una línea.
+\end{observacion}
 
 %───────────────────────────────────────────────────────────────────────────────
-\subsection{Macros compuestos}
+\section{Configurando los metadatos}
+\label{sec:metadatos}
 %───────────────────────────────────────────────────────────────────────────────
 
-Los macros compuestos combinan roles para patrones frecuentes.
+Todos los datos específicos del documento viven en \texttt{metadata.tex}.
+Este archivo se carga antes del tema para que \texttt{hyperref} pueda usar
+las variables al generar los metadatos del PDF.
 
-Proceso de Ornstein--Uhlenbeck con \texttt{\textbackslash eqSDE}:
-
-\begin{equation}
-\label{eq:ou}
-\eqSDE{X_t}{-\eqk{\theta} \equ{X_t}}{\sigma}.
-\end{equation}
-
-Ecuación de Fokker--Planck con \texttt{\textbackslash eqpdv}:
-
-\begin{equation}
-\label{eq:fokker-planck}
-\eqpdv{p}{t}
-=
-\eqop{-\frac{\partial}{\partial x}}
-\left[ \eqfn{\mu(x,t)} \equ{p} \right]
-+
-\eqcon{\frac{1}{2}}
-\eqop{\frac{\partial^2}{\partial x^2}}
-\left[ \eqfn{\sigma^2(x,t)} \equ{p} \right].
-\end{equation}
-
-Score matching (lectura de ML: $\theta$ es incógnita, $x$ es dato):
-
-\begin{equation}
-\label{eq:score-matching}
-\eqfn{\mathcal{L}}(\equ{\theta})
-=
-\eqcon{\frac{1}{2}}
-\eqop{\mathbb{E}_{\eqk{x} \sim \eqdom{p_{\text{data}}}}}
-\left[
-  \norm{
-    \eqfn{s_{\equ{\theta}}}(\eqk{x})
-    - \eqop{\nabla_{\eqk{x}}} \log \eqk{p(x)}
-  }^2
-\right].
-\end{equation}
-
-Ecuaciones de campo de Einstein con \texttt{\textbackslash eqten}:
-
-\begin{equation}
-\label{eq:einstein}
-\equ{R_{\mu\nu}} - \eqcon{\frac{1}{2}} \eqten{g_{\mu\nu}} \equ{R}
-+ \eqcon{\Lambda} \eqten{g_{\mu\nu}}
-= \eqcon{\frac{8\pi G}{c^4}} \eqk{T_{\mu\nu}}.
-\end{equation}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Toggle: versión sin color}
-%───────────────────────────────────────────────────────────────────────────────
-
-Con \texttt{\textbackslash eqcolorsfalse} en un grupo local, la misma ecuación se renderiza
-sin color (útil para impresión):
-
-{%
-\eqcolorsfalse
-\begin{equation}
-\eqop{\hat{H}} \equ{\psi}
-=
-\left[
-  \eqcon{-\frac{\hbar^2}{2m}} \eqop{\nabla^2}
-  + \eqfn{V(\mathbf{r})}
-\right] \equ{\psi}
-=
-\equ{E} \equ{\psi}.
-\tag{\ref{eq:schrodinger}$'$}
-\end{equation}
-}%
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Tablas}
-\label{sec:tablas}
-%═══════════════════════════════════════════════════════════════════════════════
-
-La configuración de tablas
-(\texttt{config/\allowbreak tables\-config.tex})
-proporciona tres mecanismos contra el desbordamiento, tipos de columna
-extendidos, y estilo Catppuccin con encabezados coloreados y filas alternadas.
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Tabla adaptativa con \texttt{tabularx}}
-%───────────────────────────────────────────────────────────────────────────────
-
-Las columnas \texttt{X} (izquierda), \texttt{Y} (centrada) y \texttt{Z}
-(derecha) se expanden proporcionalmente para llenar
-\texttt{\textbackslash textwidth}.
-
-\begin{acadtable}{tab:metodos}{Comparación de métodos de optimización}
-  \begin{tabularx}{\textwidth}{l Y Y Y}
+\begin{acadtable}[H]{tab:metadata-campos}{Campos de \texttt{metadata.tex}}
+  \begin{tabularx}{\textwidth}{l l X}
     \toprule
     \headerrow
-    \thead{Método} & \thead{Convergencia} & \thead{Memoria} & \thead{Hessiano} \\
+    \thead{Comando} & \thead{Usado en} & \thead{Notas} \\
     \midrule
-    Descenso de gradiente & $\mathcal{O}(1/k)$        & $\mathcal{O}(n)$   & No  \\
-    \rowcolor{tablerowalt}
-    Newton                & $\mathcal{O}(1/k^2)$      & $\mathcal{O}(n^2)$ & Sí  \\
-    L-BFGS                & Superlineal                & $\mathcal{O}(mn)$  & No  \\
-    \rowcolor{tablerowalt}
-    Adam                  & $\mathcal{O}(1/\sqrt{k})$  & $\mathcal{O}(n)$  & No  \\
+    \texttt{\textbackslash docTitulo}
+      & Portada, PDF title    & Sin \texttt{\textbackslash\textbackslash} \\
+    \texttt{\textbackslash docSubtitulo}
+      & Portada               & Admite \texttt{\textbackslash\textbackslash} \\
+    \texttt{\textbackslash docAutor}
+      & Portada, PDF author   & Sin \texttt{\textbackslash\textbackslash} \\
+    \texttt{\textbackslash docFecha}
+      & Portada               & Default: año de compilación \\
+    \texttt{\textbackslash docVersion}
+      & Portada               & Versionado semántico \\
+    \texttt{\textbackslash docEstado}
+      & Portada               & Borrador \textbar{} Final \textbar{} etc. \\
+    \midrule
+    \texttt{\textbackslash docCita}
+      & Portada               & Entre comillas tipográficas \\
+    \texttt{\textbackslash docDedicatoria}
+      & Preliminary           & Texto breve \\
+    \texttt{\textbackslash docEpigrafe}
+      & Preliminary           & Entre comillas tipográficas \\
+    \texttt{\textbackslash docAgradecimientos}
+      & Preliminary           & Párrafo libre \\
+    \midrule
+    \texttt{\textbackslash docKeywords}
+      & PDF keywords          & Separadas por coma \\
+    \texttt{\textbackslash docSubject}
+      & PDF subject           & Área temática \\
+    \texttt{\textbackslash docLang}
+      & PDF language          & Código ISO 639-1 \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\begin{observacion}{Metadatos PDF y modo matemático}
+Los campos usados como metadatos PDF (\texttt{\textbackslash docTitulo},
+\texttt{\textbackslash docAutor}, \texttt{\textbackslash docKeywords})
+no admiten comandos matemáticos ni énfasis tipográfico. \texttt{hyperref}
+los pasa al PDF como strings planos. Si el título contiene matemáticas,
+usar \texttt{\textbackslash texorpdfstring\{\$E=mc\^{}2\$\}\{E=mc2\}} para
+proveer una versión alternativa para el PDF.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{El preámbulo y su orden de carga}
+\label{sec:preambulo}
+%───────────────────────────────────────────────────────────────────────────────
+
+El orden de los \texttt{\textbackslash input} en \texttt{main.tex} no es
+arbitrario. Cada paso depende del anterior:
+
+\begin{acadtable}[H]{tab:load-order}{Orden de carga del preámbulo}
+  \begin{tabularx}{\textwidth}{c l X}
+    \toprule
+    \headerrow
+    \thead{Paso} & \thead{Archivo} & \thead{Dependencia} \\
+    \midrule
+    1 & \texttt{config/packages.tex}
+      & Carga todos los paquetes. El resto depende de ellos. \\
+    2 & \texttt{metadata.tex}
+      & Define \texttt{\textbackslash docTitulo} etc. antes de
+        que hyperref los necesite. \\
+    3 & \texttt{themes/catppuccin-palette.tex}
+      & Define aliases de color antes de que alguien los consuma. \\
+    4 & \texttt{config/hyperref.tex}
+      & Consume aliases \texttt{link-*}. Debe ir después del tema. \\
+    5 & \texttt{config/geometry.tex}
+      & \texttt{fancyhdr} puede interactuar con anchors de hyperref. \\
+    6 & \texttt{config/tcolorbox.tex}
+      & Define \texttt{basebox}~\cite{tcolorbox2024}. Los entornos lo necesitan. \\
+    7 & \texttt{environments/*.tex}
+      & Orden obligatorio: generator $\to$ instances $\to$ specials. \\
+    8 & \texttt{config/titles.tex} \ldots
+      & Configs de dominio. Entre sí el orden es libre. \\
+    9 & \texttt{config/notation.tex}
+      & Puede usar cualquier paquete ya cargado. \\
     \bottomrule
   \end{tabularx}
 \end{acadtable}
 
 %───────────────────────────────────────────────────────────────────────────────
-\subsection{Alineación numérica con \texttt{siunitx}}
-%───────────────────────────────────────────────────────────────────────────────
-
-Las columnas tipo \texttt{S} alinean números por el separador decimal.
-Los encabezados van entre \texttt{\{llaves\}} para que \texttt{siunitx}
-no intente parsearlos.
-
-\begin{acadtable}{tab:benchmark}{Resultados de benchmark en MNIST}
-  \begin{tabular}{l S[table-format=2.2] S[table-format=1.4] S[table-format=5.0]}
-    \toprule
-    \headerrow
-    \thead{Modelo} & {\thead{Error (\si{\percent})}} & {\thead{$p$-valor}} & {\thead{Parámetros}} \\
-    \midrule
-    MLP (1 capa)   &  5.12 & 0.0412 &   784 \\
-    \rowcolor{tablerowalt}
-    MLP (3 capas)  &  2.87 & 0.0023 &  2048 \\
-    CNN            &  0.95 & 0.0001 &  3200 \\
-    \rowcolor{tablerowalt}
-    ResNet-18      &  0.41 & 0.0001 & 11200 \\
-    \bottomrule
-  \end{tabular}
-  \tablenote{}{Todos los modelos entrenados con Adam, $\eta = \num{1e-3}$, 100 épocas.}
-\end{acadtable}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Overflow controlado con \texttt{fittable}}
-%───────────────────────────────────────────────────────────────────────────────
-
-El entorno \texttt{fittable} mide el ancho de una tabla y la reescala
-\textit{solo} si excede \texttt{\textbackslash textwidth}. Es la solución de mínimo esfuerzo
-para tablas anchas existentes.
-
-\begin{acadtable}{tab:wide}{Propiedades termofísicas (reescalada automáticamente)}
-  \begin{fittable}
-    \begin{tabular}{l c c c c c c c c}
-      \toprule
-      \headerrow
-      \thead{Exp.} & \thead{$T$ (\si{\kelvin})} & \thead{$P$ (\si{\mega\pascal})}
-        & \thead{$\rho$ (\si{\kg\per\m\cubed})} & \thead{$\mu$ (\si{\pascal\second})}
-        & \thead{$k$ (\si{\watt\per\m\per\kelvin})} & \thead{$c_p$ (\si{\joule\per\kg\per\kelvin})}
-        & \thead{Re} & \thead{Nu} \\
-      \midrule
-      A-01 & 300 & 0.1 & 1.177 & \num{1.85e-5} & 0.026 & 1005 & 12400 & 42.3 \\
-      \rowcolor{tablerowalt}
-      A-02 & 400 & 0.5 & 0.883 & \num{2.29e-5} & 0.034 & 1014 & 18700 & 58.1 \\
-      A-03 & 500 & 1.0 & 0.706 & \num{2.67e-5} & 0.041 & 1030 & 24200 & 73.9 \\
-      \rowcolor{tablerowalt}
-      A-04 & 600 & 2.0 & 0.588 & \num{3.02e-5} & 0.047 & 1051 & 31500 & 91.2 \\
-      \bottomrule
-    \end{tabular}
-  \end{fittable}
-\end{acadtable}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Columnas de ancho fijo}
-%───────────────────────────────────────────────────────────────────────────────
-
-Los tipos \texttt{L\{ancho\}}, \texttt{C\{ancho\}} y \texttt{R\{ancho\}}
-permiten wrapping automático con alineación vertical centrada.
-
-\begin{acadtable}{tab:datasets}{Conjuntos de datos utilizados}
-  \begin{tabular}{l C{3cm} L{5.5cm} R{2cm}}
-    \toprule
-    \headerrow
-    \thead{Dataset} & \thead{Dominio} & \thead{Descripción} & \thead{Muestras} \\
-    \midrule
-    MNIST     & Visión & Dígitos escritos a mano, $28\times28$ px, escala de grises
-                       & \num{70000} \\
-    \rowcolor{tablerowalt}
-    CIFAR-10  & Visión & Imágenes naturales de 10 clases, $32\times32$ px, color
-                       & \num{60000} \\
-    Penn TB   & NLP    & Corpus con anotaciones sintácticas
-                       & \num{49208} \\
-    \bottomrule
-  \end{tabular}
-\end{acadtable}
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Algoritmos}
-\label{sec:algoritmos}
-%═══════════════════════════════════════════════════════════════════════════════
-
-Los algoritmos usan \texttt{algorithm2e} con colores Catppuccin configurados
-en \texttt{config/algorithms.tex}: palabras clave en malva, comentarios en
-gris, números de línea en celeste, y líneas verticales coloreadas.
-
-\begin{algorithm}[H]
-\caption{Descenso de gradiente}
-\label{alg:gradient}
-\LinesNumbered
-\KwIn{$f: \mathbb{R}^n \to \mathbb{R}$, $\nabla f$, $x_0$, $\eta$, $\varepsilon$}
-\KwOut{Mínimo aproximado $x^*$}
-$x \leftarrow x_0$\;
-\While{$\|\nabla f(x)\| > \varepsilon$}{
-  $x \leftarrow x - \eta \nabla f(x)$\;
-}
-\Return $x$\;
-\end{algorithm}
-
-\begin{algorithm}[H]
-\caption{Adam (un paso)}
-\label{alg:adam}
-\LinesNumbered
-\KwIn{$g$, $m$, $v$, $t$, $\beta_1$, $\beta_2$, $\eta$, $\varepsilon$}
-\KwOut{$\Delta\theta$, $m$, $v$, $t$}
-$m \leftarrow \beta_1 m + (1-\beta_1) g$\;
-$v \leftarrow \beta_2 v + (1-\beta_2) g^2$\;
-$\hat{m} \leftarrow m / (1-\beta_1^t)$\;
-$\hat{v} \leftarrow v / (1-\beta_2^t)$\;
-$\Delta\theta \leftarrow -\eta \hat{m} / (\sqrt{\hat{v}} + \varepsilon)$\;
-$t \leftarrow t+1$\;
-\Return $\Delta\theta$, $m$, $v$, $t$\;
-\end{algorithm}
-
-\begin{algorithm}[H]
-\caption{Euler--Maruyama para SDEs}
-\label{alg:em}
-\LinesNumbered
-\KwIn{$dX_t = \mu(X_t,t)\,dt + \sigma(X_t,t)\,dW_t$, $X_0$, $\Delta t$, $T$}
-\KwOut{Trayectoria $\{X_k\}_{k=0}^{N}$}
-$X \leftarrow X_0$\;
-\For{$k = 0$ \KwTo $N-1$}{
-  $t \leftarrow k\Delta t$\;
-  $\xi \leftarrow \mathcal{N}(0,1)$\tcp*{ruido gaussiano}
-  $X \leftarrow X + \mu(X,t)\Delta t + \sigma(X,t)\sqrt{\Delta t}\,\xi$\;
-}
-\Return trayectoria\;
-\end{algorithm}
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Gráficas con \texttt{pgfplots}}
-\label{sec:pgfplots}
-%═══════════════════════════════════════════════════════════════════════════════
-
-La configuración de \texttt{pgfplots}
-(\texttt{config/\allowbreak pgfplots\-config.tex})
-define un cycle list de 8 colores Catppuccin, estilos de ejes
-(\texttt{catppuccin\-clean} y \texttt{catppuccin\-filled}),
-y colormaps secuencial/divergente.
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Curvas con cycle list automático}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{figure}[htbp]
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      catppuccin-clean,
-      width=0.85\textwidth,
-      height=6cm,
-      xlabel={Época},
-      ylabel={Pérdida (log)},
-      title={Convergencia de optimizadores},
-      ymode=log,
-      xmin=0, xmax=100,
-      legend pos=north east,
-    ]
-      \addplot+[thick, no markers, domain=0:100, samples=80]
-        {2*exp(-0.02*x) + 0.1};
-      \addlegendentry{SGD}
-
-      \addplot+[thick, no markers, domain=0:100, samples=80]
-        {2*exp(-0.04*x) + 0.05};
-      \addlegendentry{Momentum}
-
-      \addplot+[thick, no markers, domain=0:100, samples=80]
-        {2*exp(-0.07*x) + 0.02};
-      \addlegendentry{Adam}
-
-      \addplot+[thick, no markers, domain=0:100, samples=80]
-        {2*exp(-0.05*x) + 0.03};
-      \addlegendentry{RMSprop}
-    \end{axis}
-  \end{tikzpicture}
-  \caption{Curvas de pérdida para distintos optimizadores. Los colores
-           provienen del cycle list Catppuccin automáticamente.}
-  \label{fig:optimizers}
-\end{figure}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Funciones analíticas}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{figure}[htbp]
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      catppuccin-clean,
-      width=0.85\textwidth,
-      height=6cm,
-      xlabel={$x$},
-      ylabel={$\psi_n(x)$},
-      title={Funciones propias del oscilador armónico cuántico},
-      domain=-4:4,
-      samples=150,
-      ymin=-1.2, ymax=1.5,
-      legend pos=south east,
-      no markers,
-    ]
-      \addplot+[thick] {exp(-x^2/2) * 0.7511};
-      \addlegendentry{$\psi_0$}
-      \addplot+[thick] {2*x * exp(-x^2/2) * 0.5311};
-      \addlegendentry{$\psi_1$}
-      \addplot+[thick] {(4*x^2 - 2) * exp(-x^2/2) * 0.2659};
-      \addlegendentry{$\psi_2$}
-      \addplot+[thick] {(8*x^3 - 12*x) * exp(-x^2/2) * 0.1083};
-      \addlegendentry{$\psi_3$}
-      \addplot+[thick, dashed, black!40] {0.1*x^2};
-      \addlegendentry{$V(x) \propto x^2$}
-    \end{axis}
-  \end{tikzpicture}
-  \caption{Primeras cuatro autofunciones $\psi_n(x) = H_n(x)\,e^{-x^2/2}$
-           del oscilador armónico cuántico.}
-  \label{fig:harmonic}
-\end{figure}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Barras y scatter}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{figure}[htbp]
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      catppuccin-clean,
-      width=0.85\textwidth,
-      height=5.5cm,
-      ybar=4pt,
-      bar width=10pt,
-      xlabel={Modelo},
-      ylabel={Precisión (\%)},
-      title={Benchmark en CIFAR-10},
-      symbolic x coords={MLP, CNN, ResNet-18, ResNet-50, ViT-S},
-      xtick=data,
-      ymin=60, ymax=100,
-      nodes near coords,
-      nodes near coords style={font=\tiny, color=CtpSubtext0},
-      legend pos=north west,
-      enlarge x limits=0.15,
-    ]
-      \addplot coordinates {(MLP,72.3) (CNN,85.1) (ResNet-18,93.2) (ResNet-50,95.4) (ViT-S,96.1)};
-      \addlegendentry{Sin aumento}
-      \addplot coordinates {(MLP,74.8) (CNN,89.7) (ResNet-18,95.6) (ResNet-50,96.9) (ViT-S,97.5)};
-      \addlegendentry{Con aumento}
-    \end{axis}
-  \end{tikzpicture}
-  \caption{Precisión en CIFAR-10 con y sin aumento de datos.}
-  \label{fig:cifar-bar}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      catppuccin-clean,
-      width=0.85\textwidth,
-      height=5.5cm,
-      xlabel={$\log_{10}(N)$},
-      ylabel={Error de generalización},
-      title={Scaling laws: error vs tamaño del dataset},
-      legend pos=north east,
-    ]
-      \addplot+[only marks, mark size=2pt,
-        error bars/.cd, y dir=both, y explicit,
-      ] coordinates {
-        (2, 0.45) +- (0, 0.08)
-        (3, 0.28) +- (0, 0.05)
-        (4, 0.15) +- (0, 0.03)
-        (5, 0.09) +- (0, 0.02)
-        (6, 0.06) +- (0, 0.01)
-      };
-      \addlegendentry{Modelo S}
-
-      \addplot+[only marks, mark size=2pt,
-        error bars/.cd, y dir=both, y explicit,
-      ] coordinates {
-        (2, 0.38) +- (0, 0.07)
-        (3, 0.18) +- (0, 0.04)
-        (4, 0.08) +- (0, 0.02)
-        (5, 0.04) +- (0, 0.01)
-        (6, 0.025) +- (0, 0.005)
-      };
-      \addlegendentry{Modelo L}
-
-      \addplot+[no markers, thick, CtpBlue, dashed, domain=2:6, samples=50]
-        {0.9 * 10^(-0.45*x)};
-      \addlegendentry{$\varepsilon \propto N^{-0.45}$}
-      \addplot+[no markers, thick, CtpPeach, dashed, domain=2:6, samples=50]
-        {1.2 * 10^(-0.55*x)};
-      \addlegendentry{$\varepsilon \propto N^{-0.55}$}
-    \end{axis}
-  \end{tikzpicture}
-  \caption{Scaling laws empíricas con barras de error ($\pm 1\sigma$).}
-  \label{fig:scaling}
-\end{figure}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Colormaps}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{figure}[htbp]
-  \centering
-  \begin{tikzpicture}
-    \begin{axis}[
-      catppuccin-clean,
-      width=0.48\textwidth,
-      height=5.5cm,
-      xlabel={$x$}, ylabel={$y$},
-      title={Secuencial},
-      view={0}{90},
-      colormap name=catppuccin-heat,
-      colorbar,
-      colorbar style={
-        ylabel={$f$},
-        ylabel style={color=CtpText},
-        tick label style={color=CtpSubtext0},
-      },
-    ]
-      \addplot3[surf, shader=interp,
-        domain=-3.14:3.14, domain y=-3.14:3.14, samples=40,
-      ] {sin(deg(x)) * cos(deg(y))};
-    \end{axis}
-  \end{tikzpicture}%
-  \hfill%
-  \begin{tikzpicture}
-    \begin{axis}[
-      catppuccin-clean,
-      width=0.48\textwidth,
-      height=5.5cm,
-      xlabel={$x$}, ylabel={$y$},
-      title={Divergente},
-      view={0}{90},
-      colormap name=catppuccin-diverge,
-      colorbar,
-      colorbar style={
-        ylabel={$r$},
-        ylabel style={color=CtpText},
-        tick label style={color=CtpSubtext0},
-      },
-    ]
-      \addplot3[surf, shader=interp,
-        domain=-3.14:3.14, domain y=-3.14:3.14, samples=40,
-      ] {sin(deg(x)) * sin(deg(y))};
-    \end{axis}
-  \end{tikzpicture}
-  \caption{Colormaps Catppuccin. Izquierda: \texttt{catppuccin-heat}
-           (secuencial, para magnitudes). Derecha: \texttt{catppuccin-diverge}
-           (divergente, para residuos con signo).}
-  \label{fig:colormaps}
-\end{figure}
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Código fuente}
-\label{sec:codigo-breve}
-%═══════════════════════════════════════════════════════════════════════════════
-
-La configuración de \texttt{listings}
-(\texttt{config/\allowbreak listings\-catppuccin.tex})
-mapea las categorías sintácticas de cada lenguaje a la paleta Catppuccin:
-keywords en malva, builtins en rojo, strings en verde, comentarios en gris
-itálico, tipos en amarillo, funciones en azul, módulos en turquesa, y
-macros/decoradores en rosa. Ejemplos breves aquí; la galería completa de
-10 lenguajes está en el \cref{ap:codigo}.
-
-\begin{lstlisting}[style=python, caption={Red neuronal mínima en Python}]
-import numpy as np
-
-class Perceptron:
-    def __init__(self, dim_in, dim_out):
-        self.W = np.random.randn(dim_in, dim_out) * 0.01
-        self.b = np.zeros(dim_out)
-
-    def forward(self, x):
-        return np.maximum(0, x @ self.W + self.b)  # ReLU
-\end{lstlisting}
-
-\begin{lstlisting}[style=rust, caption={Trait genérico en Rust}]
-trait OdeSolver {
-    fn step(&self, f: &dyn Fn(f64, &[f64]) -> Vec<f64>,
-            t: f64, y: &[f64], dt: f64) -> Vec<f64>;
-}
-
-struct RungeKutta4;
-
-impl OdeSolver for RungeKutta4 {
-    fn step(&self, f: &dyn Fn(f64, &[f64]) -> Vec<f64>,
-            t: f64, y: &[f64], dt: f64) -> Vec<f64> {
-        let n = y.len();
-        let k1 = f(t, y);
-        // ... (RK4 completo en Apendice A)
-        k1  // placeholder
-    }
-}
-\end{lstlisting}
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Ejercicios}
-\label{sec:ejercicios}
-%═══════════════════════════════════════════════════════════════════════════════
-
-Dos tipos: ejercicios teóricos (sin caja, numerados por capítulo) y
-ejercicios computacionales (en caja coloreada con título).
-
-\begin{ejercicio}
-Demuestre que la función de pérdida MSE para regresión lineal conduce a las
-ecuaciones normales $X^\top X \hat{\beta} = X^\top y$.
-\end{ejercicio}
-
-\begin{ejercicio}
-Sea $f(x) = e^{-x^2}$. Calcule la transformada de Fourier de $f$ y
-verifique que es un punto fijo del operador $\mathcal{F}$ (salvo escala).
-\end{ejercicio}
-
-\begin{ejerciciocomp}{Simulación de proceso OU}
-Simule la ecuación $dX = -\theta X\,dt + \sigma\,dW$ usando el
-\cref{alg:em} y compare la distribución estacionaria numérica con la
-teórica $\mathcal{N}(0, \sigma^2/(2\theta))$. Use $\theta = 2$,
-$\sigma = 1$, $\Delta t = 10^{-3}$, $T = 100$.
-\end{ejerciciocomp}
-
-
-%═══════════════════════════════════════════════════════════════════════════════
-\section{Elementos auxiliares}
-\label{sec:auxiliares}
-%═══════════════════════════════════════════════════════════════════════════════
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Indicador de dificultad}
-%───────────────────────────────────────────────────────────────────────────────
-
-El comando \texttt{\textbackslash dificultad\{mat\}\{fis\}} produce una caja con estrellas:
-
-\dificultad{3}{2}
-
-%───────────────────────────────────────────────────────────────────────────────
-\subsection{Notas bibliográficas}
-%───────────────────────────────────────────────────────────────────────────────
-
-\begin{notasbib}
-Para una introducción a espacios de Hilbert, véase \cite{reed1980functional}.
-La formulación variacional del problema de Poisson y el método de elementos
-finitos se presentan en detalle en cualquier texto de análisis numérico de
-EDPs. Los métodos de score matching se analizan en
-\cite{hyvarinen2005estimation} y su versión denoising en
-\cite{vincent2011connection}.
-\end{notasbib}
-
-
 \printbibliography[heading=subbibliography]

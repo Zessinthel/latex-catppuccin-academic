@@ -1,0 +1,90 @@
+%───────────────────────────────────────────────────────────────────────────────
+% PGFPLOTS.TEX — Estilos de gráficas con colores semánticos Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Consume aliases del dominio plot-* definidos en catppuccin-palette.tex.
+% No usa Ctp* directamente.
+% NOTA: \pgfplotsset{compat=1.18} se declara en packages.tex inmediatamente
+%       después de cargar pgfplots — es inicialización de versión, no config.
+%───────────────────────────────────────────────────────────────────────────────
+
+% ─── Cycle list Catppuccin ───────────────────────────────────────────────────
+% 8 series, ordenadas por contraste visual decreciente.
+% Corresponde a plot-series-1 ... plot-series-8 del palette.
+\pgfplotscreateplotcyclelist{catppuccin}{
+  {plot-series-1, mark=*,         thick},
+  {plot-series-2, mark=square*,   thick},
+  {plot-series-3, mark=triangle*, thick},
+  {plot-series-4, mark=diamond*,  thick},
+  {plot-series-5, mark=pentagon*, thick},
+  {plot-series-6, mark=o,         thick},
+  {plot-series-7, mark=square,    thick},
+  {plot-series-8, mark=triangle,  thick},
+}
+
+% ─── Estilo global de ejes ───────────────────────────────────────────────────
+\pgfplotsset{
+  cycle list name=catppuccin,
+  every axis/.append style={
+    axis line style  = {plot-axis},
+    tick style       = {plot-axis},
+    label style      = {color=plot-label},
+    tick label style = {color=plot-tick-label},
+    title style      = {color=plot-label, font=\bfseries},
+    legend style     = {
+      draw=plot-legend-border,
+      fill=plot-legend-bg,
+      text=maintext,
+      font=\small,
+      rounded corners=1pt,
+    },
+    grid style = {
+      plot-grid,
+      line width=0.3pt,
+      dashed,
+    },
+  },
+  every error bar/.append style={
+    thin,
+    plot-errorbar,
+  },
+}
+
+% ─── Estilos con nombre ───────────────────────────────────────────────────────
+
+% Gráfica limpia para publicación
+\pgfplotsset{
+  catppuccin-clean/.style={
+    grid=major,
+    xlabel style={font=\small},
+    ylabel style={font=\small},
+    tick label style={font=\footnotesize},
+    legend pos=north east,
+    legend cell align=left,
+  },
+}
+
+% Gráfica con fondo coloreado (para presentaciones o notas)
+\pgfplotsset{
+  catppuccin-filled/.style={
+    catppuccin-clean,
+    axis background/.style={fill=secondarybg},
+  },
+}
+
+% ─── Colormaps ────────────────────────────────────────────────────────────────
+% Secuencial: magnitudes positivas (Base → series frías → series cálidas)
+\pgfplotsset{
+  colormap={catppuccin-heat}{
+    color=(background)
+    color=(plot-series-1)
+    color=(plot-series-4)
+    color=(plot-series-5)
+    color=(plot-series-7)
+  },
+  % Divergente: residuos con signo (series-1 ←→ maintext ←→ series-5)
+  colormap={catppuccin-diverge}{
+    color=(plot-series-1)
+    color=(maintext)
+    color=(plot-series-5)
+  },
+}

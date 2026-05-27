@@ -1,0 +1,304 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Estructura del documento}
+\label{ch:estructura}
+%───────────────────────────────────────────────────────────────────────────────
+
+Un documento académico de largo aliento tiene estructura en múltiples escalas:
+la jerarquía visual de títulos que orienta al lector, el sistema de referencias
+cruzadas que da cohesión al argumento, el frontmatter que contextualiza la obra,
+y la bibliografía que ancla cada afirmación. Este capítulo documenta cómo el
+template gestiona cada una de esas escalas y cómo usarlas correctamente.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Jerarquía de títulos}
+\label{sec:titulos}
+%───────────────────────────────────────────────────────────────────────────────
+
+El template configura cuatro niveles de título mediante
+\texttt{titlesec}~\cite{titlesec2021}, cada uno con un color semántico
+distinto definido en la paleta bajo el prefijo \texttt{doc-*}:
+
+\begin{acadtable}[H]{tab:titulo-niveles}{Jerarquía de títulos y sus colores}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Comando} & \thead{Alias de color} & \thead{Color Ctp} & \thead{Uso} \\
+    \midrule
+    \texttt{\textbackslash chapter}
+      & \texttt{doc-chapter} & Pink
+      & Unidad temática mayor \\
+    \texttt{\textbackslash section}
+      & \texttt{doc-section} & Sky
+      & Subtema dentro del capítulo \\
+    \texttt{\textbackslash subsection}
+      & \texttt{doc-subsection} & Lavender
+      & División de una sección \\
+    \texttt{\textbackslash subsubsection}
+      & \texttt{doc-subsubsection} & Peach
+      & Detalle dentro de subsección \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+La progresión de colores no es arbitraria: contraste decreciente con la
+profundidad. El capítulo ancla visualmente la página con el Pink más
+prominente; la subsubsección aporta apenas un tono Peach que diferencia
+sin competir. El lector percibe la jerarquía antes de leer.
+
+\begin{observacion}{Cambiar colores de títulos}
+Los colores se modifican exclusivamente en
+\texttt{themes/catppuccin-palette.tex}, cambiando el alias correspondiente.
+Por ejemplo, para que las secciones usen Mauve en lugar de Sky:
+\texttt{\textbackslash colorlet\{doc-section\}\{CtpMauve\}}.
+Nunca editar \texttt{config/titles.tex} para poner colores directamente.
+\end{observacion}
+
+\subsection{Títulos sin numeración}
+\label{subsec:titulos-nonumber}
+
+Los comandos con asterisco (\texttt{\textbackslash section*},
+\texttt{\textbackslash subsection*}) suprimen la numeración pero
+mantienen el color y la tipografía del nivel correspondiente. Son útiles
+para secciones estructurales como prefacios o glosarios que no deben
+aparecer numeradas en el texto pero sí en la tabla de contenidos:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\section*{Notación}
+\addcontentsline{toc}{section}{Notación}  % añadir al TOC manualmente
+\end{lstlisting}
+
+\subsubsection{Párrafos como cuarto nivel}
+\label{subsubsec:parrafos}
+
+El cuarto nivel visible en el texto es \texttt{\textbackslash subsubsection}.
+Existe un quinto nivel, \texttt{\textbackslash paragraph}, que aparece como
+texto inline sin salto de línea propio. Su uso debe ser esporádico: si
+necesitas un quinto nivel estructural con frecuencia, la estructura del
+documento probablemente necesita reorganización.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Sistema de referencias cruzadas}
+\label{sec:referencias-cruzadas}
+%───────────────────────────────────────────────────────────────────────────────
+
+El template usa \texttt{cleveref}~\cite{cleveref2022} para referencias
+inteligentes. A diferencia de \texttt{\textbackslash ref}, que produce
+solo el número, \texttt{\textbackslash cref} produce el tipo y el número
+correctos en el idioma configurado:
+
+\begin{definicion}{Referencias cruzadas con \texttt{cleveref}}
+\texttt{\textbackslash cref\{etiqueta\}} produce la referencia completa
+en minúscula: \textit{ec.~(2.1)}, \textit{fig.~3.2}, \textit{def.~1.4}.
+\texttt{\textbackslash Cref\{etiqueta\}} produce la versión capitalizada
+para inicio de oración: \textit{Ecuación~(2.1)}, \textit{Figura~3.2}.
+Para rangos, \texttt{\textbackslash crefrange\{etiq1\}\{etiq2\}} produce
+\textit{ecs.~(2.1)--(2.3)} automáticamente.
+\end{definicion}
+
+\subsection{Convención de etiquetas}
+\label{subsec:etiquetas}
+
+Una convención consistente de prefijos hace el código fuente legible y
+evita colisiones entre etiquetas de distintos archivos:
+
+\begin{acadtable}[H]{tab:label-prefijos}{Prefijos de etiquetas recomendados}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Tipo} & \thead{Prefijo} & \thead{Ejemplo} \\
+    \midrule
+    Capítulo      & \texttt{ch:}   & \texttt{ch:estructura} \\
+    Sección       & \texttt{sec:}  & \texttt{sec:referencias-cruzadas} \\
+    Subsección    & \texttt{subsec:} & \texttt{subsec:etiquetas} \\
+    Ecuación      & \texttt{eq:}   & \texttt{eq:schrodinger} \\
+    Figura        & \texttt{fig:}  & \texttt{fig:convergencia} \\
+    Tabla         & \texttt{tab:}  & \texttt{tab:label-prefijos} \\
+    Algoritmo     & \texttt{alg:}  & \texttt{alg:gradient} \\
+    Código        & \texttt{lst:}  & \texttt{lst:perceptron} \\
+    Apéndice      & \texttt{ap:}   & \texttt{ap:galeria} \\
+    Definición    & \texttt{def:}  & \texttt{def:hilbert} \\
+    Teorema       & \texttt{thm:}  & \texttt{thm:riesz} \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Referencias a entornos propios}
+\label{subsec:cref-entornos}
+
+Los entornos teoremáticos del template crean contadores propios. Para que
+\texttt{cleveref} los reconozca, sus contadores están registrados en
+\texttt{config/packages.tex}. El patrón de etiqueta es consistente con
+los prefijos de la \cref{tab:label-prefijos}: poner el
+\texttt{\textbackslash label} dentro del entorno, después del título:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{definicion}{Espacio de Hilbert}
+\label{def:hilbert}
+Un espacio de Hilbert es...
+\end{definicion}
+
+% Más adelante en el texto:
+Como se establece en la \cref{def:hilbert}, un espacio de Hilbert...
+\end{lstlisting}
+
+\begin{observacion}{Posición del \texttt{\textbackslash label}}
+En entornos de \texttt{tcolorbox}, el \texttt{\textbackslash label} debe
+ir \textit{dentro} del entorno, no en el argumento del título. El título
+es un argumento de texto, no un entorno flotante. Poner el label fuera
+produce un anchor de hyperref incorrecto.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Frontmatter}
+\label{sec:frontmatter}
+%───────────────────────────────────────────────────────────────────────────────
+
+El frontmatter agrupa las páginas previas al contenido. El template lo
+divide en tres archivos en \texttt{frontmatter/}, cada uno con una
+responsabilidad única:
+
+\paragraph{\texttt{titlepage.tex} --- Portada.}
+Genera la portada completa a partir de las variables de \texttt{metadata.tex}.
+No requiere edición directa salvo cambios de diseño estructural. Los contenidos
+se controlan exclusivamente desde \texttt{metadata.tex}.
+
+\paragraph{\texttt{preliminary.tex} --- Páginas preliminares.}
+Muestra dedicatoria, epígrafe y agradecimientos en páginas separadas.
+Cada sección es condicional: si la variable correspondiente está vacía
+(\texttt{\textbackslash docDedicatoria\{\}}), la página no se genera.
+Esto permite activar o desactivar secciones sin editar el archivo.
+
+\paragraph{\texttt{preface.tex} --- Prefacio.}
+Capítulo sin numerar (\texttt{\textbackslash chapter*}) añadido al TOC
+manualmente. A diferencia de los preliminares, el prefacio tiene contenido
+narrativo propio --- motivación del trabajo, agradecimientos extendidos,
+contexto histórico --- y se edita directamente como cualquier capítulo.
+
+\begin{observacion}{Paginación del frontmatter}
+Por convención tipográfica, el frontmatter usa numeración romana
+(\texttt{\textbackslash pagenumbering\{roman\}}) y el cuerpo del documento
+numeración arábiga (\texttt{\textbackslash pagenumbering\{arabic\}}).
+El template aplica esto en \texttt{main.tex}. Si quieres que el TOC empiece
+en la página~i, asegúrate de que el cambio de numeración ocurra antes de
+\texttt{\textbackslash tableofcontents}.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Tabla de contenidos}
+\label{sec:toc}
+%───────────────────────────────────────────────────────────────────────────────
+
+\texttt{\textbackslash tableofcontents} genera el TOC automáticamente a
+partir de los títulos del documento. El nivel de profundidad se controla
+con \texttt{tocdepth}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\setcounter{tocdepth}{2}    % muestra hasta \subsection
+\setcounter{tocdepth}{3}    % muestra hasta \subsubsection (default)
+\end{lstlisting}
+
+El template configura \texttt{secnumdepth} en 3 por defecto --- todos los
+niveles hasta \texttt{\textbackslash subsubsection} están numerados. Si una
+sección con asterisco debe aparecer en el TOC (como el prefacio), se añade
+manualmente:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\chapter*{Prefacio}
+\addcontentsline{toc}{chapter}{Prefacio}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Bibliografía por capítulo}
+\label{sec:bibliografia}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Refsection de \texttt{biblatex}}
+Con la opción \texttt{refsection=chapter}, \texttt{biblatex} trata cada
+\texttt{\textbackslash chapter} (o cada \texttt{\textbackslash include})
+como una sección bibliográfica independiente. Las citas de un capítulo
+solo aparecen en la bibliografía de ese capítulo.
+\texttt{\textbackslash printbibliography[heading=subbibliography]} al
+final de cada capítulo imprime solo las referencias citadas en ese capítulo,
+con numeración reiniciada.
+\end{definicion}
+
+El patrón a seguir en cada capítulo nuevo es:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% 1. Crear references/chapterN.bib con las referencias del capitulo
+% 2. En metadata.tex, anadir:
+\addbibresource{references/chapterN.bib}
+
+% 3. Al final del archivo chapterN.tex:
+\printbibliography[heading=subbibliography]
+\end{lstlisting}
+
+\begin{observacion}{Referencias compartidas entre capítulos}
+Si una referencia aparece en varios capítulos, debe estar en el
+\texttt{.bib} del capítulo donde se cita por primera vez, o en el
+\texttt{references.bib} global. \texttt{biblatex} admite múltiples
+\texttt{\textbackslash addbibresource} y no duplica entradas aunque
+la misma clave aparezca en varios archivos.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Apéndices}
+\label{sec:apendices}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los apéndices~\cite{appendix2020} usan el entorno \texttt{appendices}
+provisto por el paquete homónimo. Dentro de él, cada apéndice es un
+\texttt{\textbackslash chapter} normal cuya numeración cambia
+automáticamente a letras (A, B, C\ldots):
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% En main.tex, después de los capítulos:
+\begin{appendices}
+  \include{backmatter/appendixA}
+  \include{backmatter/appendixB}
+\end{appendices}
+
+% En appendixA.tex:
+\chapter{Style Guide de Catppuccin Académico}
+\label{ap:styleguide}
+\end{lstlisting}
+
+Las referencias a apéndices usan el mismo sistema que cualquier otro
+elemento: \texttt{\textbackslash cref\{ap:styleguide\}} produce
+\textit{ap.~A} automáticamente, con el nombre registrado en
+\texttt{config/packages.tex}.
+
+\begin{observacion}{Numeración de figuras y tablas en apéndices}
+Por defecto, las figuras en el apéndice A se numeran A.1, A.2, etc.
+Este comportamiento es automático con el paquete \texttt{appendix}.
+No se necesita configuración adicional.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Encabezados y pies de página}
+\label{sec:headers}
+%───────────────────────────────────────────────────────────────────────────────
+
+El template usa \texttt{fancyhdr}~\cite{fancyhdr2022} configurado en
+\texttt{config/geometry.tex}. El estilo por defecto muestra el nombre de
+la sección actual a la izquierda y el número de página a la derecha.
+Las páginas de inicio de capítulo usan el estilo \texttt{plain}
+(solo número de página centrado, sin línea de encabezado).
+
+Para modificar el contenido de los encabezados, editar directamente
+\texttt{config/geometry.tex}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\fancyhead[L]{\nouppercase{\leftmark}}   % seccion actual, izquierda
+\fancyhead[R]{\thepage}                  % numero de pagina, derecha
+\fancyhead[C]{}                          % centro vacio
+\fancyfoot[C]{}                          % pie vacio
+\end{lstlisting}
+
+En documentos de doble cara (\texttt{twoside}), las posiciones L y R se
+alternan entre páginas pares e impares. Para ese caso, usar las posiciones
+\texttt{LE}, \texttt{RO} (par izquierda, impar derecha) en lugar de
+\texttt{L} y \texttt{R}.
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]

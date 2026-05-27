@@ -1,0 +1,615 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Diagramas}
+\label{ch:diagramas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los diagramas en un documento académico no son decoración: son un lenguaje
+formal con gramática propia. Un autómata finito es una definición matemática
+en forma visual. Un árbol de sintaxis abstracta es la estructura semántica
+de un programa. Un diagrama conmutativo es una proposición sobre morfismos.
+El template~\cite{tikz2023} trata los diagramas con la misma precisión
+que las ecuaciones.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Filosofía de theming en diagramas}
+\label{sec:tikz-filosofia}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Aliases tikz-* como valores por defecto}
+\label{def:tikz-aliases}
+El dominio \texttt{tikz-*} de la paleta define valores por defecto para
+nodos, aristas y labels genéricos. Son el punto de partida — no el único
+color posible. Cuando un nodo tiene significado semántico propio
+(estado aceptador, colisión, estado inicial), se sobreescribe con el
+alias del dominio correspondiente: \texttt{tikz-accept}, \texttt{fb-error},
+\texttt{tikz-initial}.
+\end{definicion}
+
+\begin{acadtable}[H]{tab:tikz-aliases}{Aliases semánticos para diagramas TikZ}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Rol} & \thead{Uso} \\
+    \midrule
+    \texttt{tikz-node-bg}     & Surface0  & Fondo genérico
+      & Nodo sin semántica propia \\
+    \texttt{tikz-node-border} & Overlay0  & Borde genérico
+      & Nodo estándar \\
+    \texttt{tikz-edge}        & Overlay1  & Arista
+      & Conexión sin dirección semántica \\
+    \texttt{tikz-label}       & Subtext0  & Label
+      & Anotación secundaria \\
+    \texttt{tikz-initial}     & Blue      & Estado inicial
+      & Autómatas: punto de entrada \\
+    \texttt{tikz-accept}      & Green     & Estado aceptador
+      & Autómatas: estado final \\
+    \texttt{tikz-reject}      & Red       & Estado rechazador
+      & Autómatas / error \\
+    \texttt{tikz-highlight}   & Yellow    & Nodo destacado
+      & Paso activo en explicaciones \\
+    \midrule
+    \texttt{fb-error}         & Red       & Error / colisión
+      & Condición de error en estructuras \\
+    \texttt{eq-known}         & Mauve     & Dato conocido
+      & Pesos, etiquetas de aristas con valor fijo \\
+    \texttt{env-phys}         & Sapphire  & Transformación
+      & Cajas de función / operación \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+La regla es consistente con el resto del template: \textbf{nunca} usar
+\texttt{Ctp*} directamente en archivos de contenido. Cuando ningún alias
+existente cubre el rol semántico necesario, se añade uno nuevo en
+\texttt{themes/catppuccin-palette.tex} bajo el dominio \texttt{tikz-*}.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Autómatas finitos}
+\label{sec:automatas}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Estilo base para autómatas}
+\label{def:automata-style}
+El estilo canónico para autómatas en el template usa la librería
+\texttt{automata} de TikZ con los aliases semánticos del dominio
+\texttt{tikz-*}. El estado inicial usa \texttt{tikz-initial} (Blue),
+los estados finales \texttt{tikz-accept} (Green), y las aristas
+\texttt{tikz-edge} (Overlay1). Las etiquetas de transición aplican
+coloreado semántico de ecuaciones donde corresponda.
+\end{definicion}
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\tikzset{
+  state/.style = {
+    circle,
+    draw  = tikz-node-border,
+    fill  = background,
+    text  = maintext,
+    thick,
+    minimum size = 1cm,
+  },
+  every edge/.style = {draw=tikz-edge, thick, ->, >=latex},
+}
+\end{lstlisting}
+
+\subsection{DFA: autómata determinista}
+\label{subsec:dfa}
+
+DFA para el lenguaje $L = \{\eqvec{w} \in \eqdom{\{a,b\}^*} \mid
+\eqvec{w}$ contiene el sufijo $\eqk{abb}\}$~\cite{sipser2012introduction}:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    shorten >=1pt, node distance=2.5cm, on grid, auto, thick,
+    state/.style={circle, draw=tikz-node-border, fill=background,
+                  text=maintext, minimum size=1cm},
+    every edge/.style={draw=tikz-edge, ->, >=latex},
+  ]
+    \node[state, initial, initial text={}, draw=tikz-initial]
+      (A) {$\eqk{A}$};
+    \node[state, right=of A] (B) {$\eqk{B}$};
+    \node[state, right=of B] (D) {$\eqk{D}$};
+    \node[state, accepting, draw=tikz-accept, right=of D]
+      (E) {$\eqk{E}$};
+
+    \path[->]
+      (A) edge[loop above] node {$\eqk{b}$} (A)
+          edge              node {$\eqk{a}$} (B)
+      (B) edge[loop above] node {$\eqk{a}$} (B)
+          edge              node {$\eqk{b}$} (D)
+      (D) edge              node {$\eqk{b}$} (E)
+          edge[bend left]   node {$\eqk{a}$} (B)
+      (E) edge              node[swap] {$\eqk{a}$} (B)
+          edge[bend right]  node[swap] {$\eqk{b}$} (A);
+  \end{tikzpicture}
+  \caption{DFA mínimo para $L = \{\eqvec{w} \in \eqdom{\{a,b\}^*} \mid
+           \eqvec{w}$ termina en $\eqk{abb}\}$.
+           Estado inicial en azul; estado aceptador en verde.}
+  \label{fig:dfa-abb}
+\end{figure}
+
+\subsection{NFA con transiciones $\varepsilon$}
+\label{subsec:nfa}
+
+Construcción de Thompson para $(\eqk{a} \eqop{\mid} \eqk{b})\eqop{*}\eqk{abb}$.
+Los estados intermedios usan el color por defecto; el estado aceptador
+usa \texttt{tikz-accept}:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    shorten >=1pt, node distance=2cm, on grid, auto, thick,
+    state/.style={circle, draw=tikz-node-border, fill=background,
+                  text=maintext, minimum size=0.9cm},
+    every edge/.style={draw=tikz-edge, ->, >=latex},
+  ]
+    \node[state, initial, initial text={}, draw=tikz-initial]
+      (0) {$\eqk{0}$};
+    \node[state, right=of 0] (1) {$\eqk{1}$};
+    \node[state, right=of 1] (2) {$\eqk{2}$};
+    \node[state, accepting, draw=tikz-accept, right=of 2]
+      (3) {$\eqk{3}$};
+
+    \path[->]
+      (0) edge[loop above] node {$\eqk{a}\eqop{,}\eqk{b}$} (0)
+          edge              node {$\eqk{a}$}                 (1)
+      (1) edge              node {$\eqk{b}$}                 (2)
+      (2) edge              node {$\eqk{b}$}                 (3);
+  \end{tikzpicture}
+  \caption{NFA simplificado para $({\eqk{a} \eqop{|} \eqk{b}})^* \eqk{abb}$.
+           El estado aceptador $\eqk{3}$ en verde distingue el criterio
+           de aceptación.}
+  \label{fig:nfa-abb}
+\end{figure}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Árboles}
+\label{sec:arboles}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{Árbol binario de búsqueda con TikZ}
+\label{subsec:bst}
+
+Los árboles binarios se construyen con TikZ usando el estilo de nodo
+estándar. El nodo raíz puede destacarse con \texttt{tikz-highlight}:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    level distance  = 1.5cm,
+    level 1/.style  = {sibling distance=4cm},
+    level 2/.style  = {sibling distance=2cm},
+    level 3/.style  = {sibling distance=1.2cm},
+    every node/.style = {
+      circle, draw=tikz-node-border, fill=tikz-node-bg,
+      text=maintext, minimum size=0.8cm, thick,
+    },
+    edge from parent/.style = {draw=tikz-edge, thick},
+  ]
+    \node[fill=tikz-highlight] {$\eqk{50}$}
+      child { node {$\eqk{30}$}
+        child { node {$\eqk{20}$}
+          child { node {$\eqk{10}$} }
+          child[missing] {}
+        }
+        child { node {$\eqk{40}$} }
+      }
+      child { node {$\eqk{70}$}
+        child { node {$\eqk{60}$} }
+        child { node {$\eqk{80}$}
+          child[missing] {}
+          child { node {$\eqk{90}$} }
+        }
+      };
+  \end{tikzpicture}
+  \caption{BST con raíz $\eqk{50}$ destacada. La propiedad de orden:
+           todo nodo izquierdo $< \eqk{k} <$ nodo derecho~\cite{cormen2022algorithms}.}
+  \label{fig:bst}
+\end{figure}
+
+\subsection{Árbol sintáctico con forest}
+\label{subsec:parse-tree}
+
+El paquete \texttt{forest}~\cite{forest2017} es más expresivo que TikZ
+para árboles con muchos niveles. Ideal para árboles de derivación gramatical
+y árboles de expresión:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{forest}
+  for tree={
+    draw          = tikz-node-border,
+    fill          = tikz-node-bg,
+    text          = maintext,
+    rounded corners = 2pt,
+    s sep         = 1.5em,
+    l sep         = 2em,
+    edge          = {draw=tikz-edge, thick},
+  }
+  [$\eqop{+}$
+    [$\eqop{\times}$
+      [$\eqk{3}$]
+      [$\eqk{4}$]
+    ]
+    [$\eqk{5}$]
+  ]
+\end{forest}
+\end{lstlisting}
+
+\begin{observacion}{qtree para árboles simples}
+Para árboles lingüísticos o de derivación sencillos, \texttt{qtree} ofrece
+una sintaxis más compacta:
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\Tree [.S [.NP [.Det la ] [.N funcion ] ]
+          [.VP [.V converge ] [.PP [.P en ] [.NP \(L^2\) ] ] ] ]
+\end{lstlisting}
+\texttt{forest} es preferible cuando se necesita control fino sobre
+colores de nodos individuales o layouts no estándar.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Estructuras de datos}
+\label{sec:estructuras-datos}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los diagramas de estructuras de datos (arrays, tablas hash, listas enlazadas)
+comparten un vocabulario visual: celdas rectangulares para memoria, flechas
+para punteros, color para estado semántico (libre, ocupado, colisión).
+
+\subsection{Tabla hash con separate chaining}
+\label{subsec:hash-chaining}
+
+El diagrama muestra una tabla hash donde el índice $\eqop{h}(\eqk{k}) =
+\eqk{k} \eqop{\bmod} \eqk{m}$ mapea claves a buckets. Los buckets
+ocupados usan \texttt{tikz-accept} (Green); los vacíos, \texttt{tikz-node-bg}
+(Surface0); las colisiones resueltas por chaining extienden la cadena
+hacia la derecha~\cite{cormen2022algorithms}:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[font=\small,
+    cell/.style = {
+      draw=tikz-node-border, minimum width=1.4cm, minimum height=0.7cm,
+    },
+    occ/.style  = {cell, fill=tikz-accept,   text=background},
+    empty/.style= {cell, fill=tikz-node-bg,  text=maintext},
+    key/.style  = {cell, fill=tikz-initial,  text=background},
+    arr/.style  = {draw=tikz-edge, ->, >=latex, thick},
+  ]
+    % --- Buckets (índices 0-7) ---
+    \foreach \i in {0,...,7} {
+      \node[empty] (b\i) at (0, {-\i*0.9}) {};
+      \node[left=0.15cm of b\i, text=maintext] {\(\i\)};
+    }
+
+    % --- Buckets ocupados ---
+    \node[occ] at (b1) {\(\eqk{21}\)};
+    \node[occ] at (b3) {\(\eqk{12}\)};
+
+    % --- Chains desde índice 1: 21→31→41 ---
+    \node[occ] (n1a) at (2.2, {-1*0.9}) {\(\eqk{31}\)};
+    \node[occ] (n1b) at (4.0, {-1*0.9}) {\(\eqk{41}\)};
+    \draw[arr] (b1)  -- (n1a);
+    \draw[arr] (n1a) -- (n1b);
+
+    % --- Chain desde índice 3: 12→22 ---
+    \node[occ] (n3a) at (2.2, {-3*0.9}) {\(\eqk{22}\)};
+    \draw[arr] (b3) -- (n3a);
+
+    % --- Etiquetas ---
+    \node[above=0.4cm of b0, text=maintext] {\textbf{Índice}};
+    \node[above=0.4cm of n1a, text=maintext] {\textbf{Cadena}};
+  \end{tikzpicture}
+  \caption{Separate chaining: los buckets ocupados (verde) encadenan
+           los elementos con el mismo índice hash. Vacíos en gris.}
+  \label{fig:chaining}
+\end{figure}
+
+\subsection{Linear probing y colisión}
+\label{subsec:linear-probing}
+
+En linear probing, una colisión en el índice $\eqop{h}(\eqk{k})$ activa
+una búsqueda lineal del siguiente slot libre. El slot de colisión usa
+\texttt{tikz-highlight} para visualizar el conflicto; el slot final usa
+\texttt{tikz-accept}:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[font=\small,
+    cell/.style  = {draw=tikz-node-border, minimum width=0.9cm,
+                    minimum height=0.65cm},
+    occ/.style   = {cell, fill=tikz-accept,    text=background},
+    coll/.style  = {cell, fill=tikz-highlight, text=maintext},
+    empty/.style = {cell, fill=tikz-node-bg,   text=maintext},
+    arr/.style   = {draw=tikz-edge, ->, >=latex, thick, dashed},
+  ]
+    % Array de 10 celdas
+    \foreach \i in {0,...,9} {
+      \node[empty] (a\i) at ({\i*1.1}, 0) {};
+      \node[below=0.15cm of a\i, text=tikz-label, font=\scriptsize] {\(\i\)};
+    }
+
+    % Valor 15 en índice 5 (sin colisión)
+    \node[occ] at (a5) {\(\eqk{15}\)};
+
+    % Valor 25: colisiona en 5, va a 6
+    \node[coll] at (a5) {\(\eqk{15}\)};   % ya ocupado
+    \node[occ]  at (a6) {\(\eqk{25}\)};
+
+    % Flecha de probing
+    \draw[arr] (a5.north) to[bend left=40]
+      node[above, text=maintext, font=\scriptsize] {probing}
+      (a6.north);
+
+    % Etiquetas semánticas
+    \node[above=1.2cm of a5, text=tikz-highlight]
+      {\small colisión: $\eqop{h}(\eqk{25}) = \eqk{5}$};
+    \node[above=1.2cm of a6, text=tikz-accept]
+      {\small colocado en $\eqk{6}$};
+  \end{tikzpicture}
+  \caption{Linear probing: $\eqk{25}$ colisiona en índice $\eqop{h}(\eqk{25}) = \eqk{5}$
+           y se desplaza al siguiente slot libre $\eqk{6}$.}
+  \label{fig:linear-probing}
+\end{figure}
+
+\subsection{Diagrama de hashing completo}
+\label{subsec:hash-completo}
+
+El diagrama más informativo muestra claves, función hash y buckets
+como tres columnas conectadas. La función hash usa \texttt{env-phys}
+(Sapphire) por ser una transformación matemática; las claves de entrada
+usan \texttt{tikz-initial} (Blue):
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[font=\small,
+    key/.style   = {draw=tikz-node-border, fill=tikz-initial,
+                    text=background, minimum width=2.2cm,
+                    minimum height=0.7cm},
+    fn/.style    = {draw=tikz-node-border, fill=env-phys,
+                    text=background, minimum width=1.3cm,
+                    minimum height=3.8cm, align=center},
+    occ/.style   = {draw=tikz-node-border, fill=tikz-accept,
+                    text=background, minimum width=1.4cm,
+                    minimum height=0.55cm},
+    empty/.style = {draw=tikz-node-border, fill=tikz-node-bg,
+                    text=maintext, minimum width=1.4cm,
+                    minimum height=0.55cm},
+    arr/.style   = {draw=tikz-edge, ->, >=latex, thick},
+  ]
+    % --- Claves ---
+    \node[key] (k1) at (-4.5,  1.2) {John Smith};
+    \node[key] (k2) at (-4.5,  0.0) {Lisa Smith};
+    \node[key] (k3) at (-4.5, -1.2) {Sandra Dee};
+
+    % --- Función hash ---
+    \node[fn] (hf) at (-2, 0) {$\eqop{h}$\\function};
+
+    % --- Buckets ---
+    \foreach \i in {0,...,5} {
+      \node[empty] (bk\i) at (1, {1.5 - \i*0.6}) {};
+      \node[left=0.1cm of bk\i, text=tikz-label,
+            font=\scriptsize] {\(\i\)};
+    }
+    \node[occ] at (bk1) {\footnotesize 521-8976};
+    \node[occ] at (bk2) {\footnotesize 521-1234};
+    \node[occ] at (bk4) {\footnotesize 521-9655};
+
+    % --- Aristas claves → hash ---
+    \draw[arr] (k1) -- (hf);
+    \draw[arr] (k2) -- (hf);
+    \draw[arr] (k3) -- (hf);
+
+    % --- Aristas hash → buckets ---
+    \draw[arr] (hf.east) to[out=0, in=180] (bk1.west);
+    \draw[arr] (hf.east) to[out=0, in=180] (bk2.west);
+    \draw[arr] (hf.east) to[out=0, in=180] (bk4.west);
+
+    % --- Etiquetas ---
+    \node[above=0.4cm of k1,   text=maintext] {\textbf{Claves}};
+    \node[above=0.4cm of hf,   text=maintext] {\textbf{Función hash}};
+    \node[above=0.4cm of bk0,  text=maintext] {\textbf{Buckets}};
+  \end{tikzpicture}
+  \caption{Hashing: claves (azul) transformadas por
+           $\eqop{h}$ (sapphire) a buckets (verde=ocupado, gris=libre).
+           La función hash tiene rol de transformación, análogo a un
+           operador físico.}
+  \label{fig:hashing}
+\end{figure}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Grafos}
+\label{sec:grafos}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{Grafo dirigido ponderado}
+\label{subsec:grafo-dirigido}
+
+Los pesos de aristas son datos conocidos del problema — usan
+\texttt{eq-known} (Mauve). Los nodos son genéricos salvo el nodo fuente
+que usa \texttt{tikz-initial} y el nodo destino \texttt{tikz-accept}:
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance = 2.5cm,
+    vertex/.style = {circle, draw=tikz-node-border, fill=tikz-node-bg,
+                     text=maintext, minimum size=0.9cm, thick},
+    every edge/.style = {draw=tikz-edge, ->, >=latex, thick},
+    wlabel/.style = {text=eq-known, font=\small},
+  ]
+    \node[vertex, draw=tikz-initial, fill=tikz-initial!15] (s) {$\eqk{s}$};
+    \node[vertex, right=of s]  (u) {$\eqk{u}$};
+    \node[vertex, right=of u]  (v) {$\eqk{v}$};
+    \node[vertex, below=of u]  (x) {$\eqk{x}$};
+    \node[vertex, draw=tikz-accept, fill=tikz-accept!15,
+          right=of x]          (t) {$\eqk{t}$};
+
+    \path[->]
+      (s) edge node[above, wlabel] {$\eqk{6}$} (u)
+      (s) edge node[left,  wlabel] {$\eqk{7}$} (x)
+      (u) edge node[above, wlabel] {$\eqk{5}$} (v)
+      (u) edge node[right, wlabel] {$\eqk{8}$} (x)
+      (u) edge node[right, wlabel] {$\eqk{-4}$}(t)
+      (x) edge node[right, wlabel] {$\eqk{9}$} (v)
+      (x) edge node[below, wlabel] {$\eqk{7}$} (t)
+      (v) edge node[right, wlabel] {$\eqk{-2}$}(t);
+  \end{tikzpicture}
+  \caption{Grafo dirigido ponderado. Fuente $\eqk{s}$ (azul),
+           destino $\eqk{t}$ (verde). Pesos en malva
+           como datos conocidos del problema de camino mínimo~\cite{cormen2022algorithms}.}
+  \label{fig:grafo-ponderado}
+\end{figure}
+
+\subsection{Nodo activo durante ejecución de algoritmo}
+\label{subsec:grafo-highlight}
+
+Para ilustrar la ejecución paso a paso de Dijkstra u otro algoritmo
+sobre un grafo, \texttt{tikz-highlight} marca el nodo activo en cada
+paso. El patrón es sobreescribir el estilo del nodo localmente:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Nodo activo en el paso actual del algoritmo
+\node[vertex, fill=tikz-highlight] (u) {$\eqk{u}$};
+
+% Arista relajada en este paso
+\path[->, draw=tikz-highlight, very thick]
+  (s) edge node[above, text=tikz-highlight] {$\eqk{6}$} (u);
+
+% Nodo ya resuelto (distancia final)
+\node[vertex, fill=tikz-accept!20, draw=tikz-accept] (s) {$\eqk{s}$};
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Diagramas conmutativos}
+\label{sec:tikz-cd}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{tikz-cd}
+\label{def:tikzcd}
+El paquete \texttt{tikz-cd}~\cite{tikzcd2021} extiende TikZ para producir
+diagramas conmutativos con sintaxis matricial. Cada celda es un nodo;
+las flechas se declaran con \texttt{\textbackslash arrow[dirección]\{etiqueta\}}.
+Las etiquetas de morfismos son objetos matemáticos y aplican el coloreado
+semántico de ecuaciones.
+\end{definicion}
+
+\subsection{Diagrama conmutativo: teorema del isomorfismo}
+\label{subsec:cd-isomorfismo}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzcd}[
+    every arrow/.append style = {draw=tikz-edge, thick},
+    every label/.append style = {text=maintext},
+  ]
+    \eqdom{G}
+      \arrow[r, "\eqop{\varphi}"]
+      \arrow[d, "\eqop{\pi}"', two heads]
+    & \eqdom{H} \\
+    \eqdom{G} \eqop{/} \eqdom{\ker\varphi}
+      \arrow[ur, dashed, "\eqop{\tilde{\varphi}}"', "\sim"']
+  \end{tikzcd}
+  \caption{Primer teorema de isomorfismo: $\eqdom{G}/\eqdom{\ker\varphi}
+           \cong \eqop{\mathrm{im}}(\eqop{\varphi})$.
+           $\eqop{\pi}$ es la proyección canónica (flecha doble);
+           $\eqop{\tilde{\varphi}}$ es el isomorfismo inducido (punteado).}
+  \label{fig:cd-isomorfismo}
+\end{figure}
+
+\subsection{Diagrama conmutativo: sucesión exacta corta}
+\label{subsec:cd-ses}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzcd}[
+    every arrow/.append style = {draw=tikz-edge, thick},
+  ]
+    \eqdom{0}
+      \arrow[r]
+    & \eqdom{A}
+      \arrow[r, "\eqop{f}"]
+      \arrow[d, "\eqop{\alpha}"']
+    & \eqdom{B}
+      \arrow[r, "\eqop{g}"]
+      \arrow[d, "\eqop{\beta}"']
+    & \eqdom{C}
+      \arrow[r]
+      \arrow[d, "\eqop{\gamma}"]
+    & \eqdom{0} \\
+    \eqdom{0}
+      \arrow[r]
+    & \eqdom{A'}
+      \arrow[r, "\eqop{f'}"']
+    & \eqdom{B'}
+      \arrow[r, "\eqop{g'}"']
+    & \eqdom{C'}
+      \arrow[r]
+    & \eqdom{0}
+  \end{tikzcd}
+  \caption{Diagrama del lema de los cinco: morfismo entre dos sucesiones
+           exactas cortas. La conmutatividad implica que si $\eqop{\alpha}$
+           y $\eqop{\gamma}$ son isomorfismos, también lo es
+           $\eqop{\beta}$~\cite{mac2013categories}.}
+  \label{fig:cd-five-lemma}
+\end{figure}
+
+\begin{observacion}{Estilos de flecha en tikz-cd}
+Las flechas más comunes en diagramas conmutativos y su declaración:
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\arrow[r]                  % flecha estandar ->
+\arrow[r, two heads]       % epimorfico ->>
+\arrow[r, hook]            % monomorfico (gancho)
+\arrow[r, dashed]          % morfismo inducido
+\arrow[r, Rightarrow]      % transformacion natural =>
+\arrow[r, no head]         % relacion de equivalencia
+\end{lstlisting}
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Patrones de código reutilizables}
+\label{sec:tikz-patrones}
+%───────────────────────────────────────────────────────────────────────────────
+
+El patrón de definición de estilos al inicio del entorno
+\texttt{tikzpicture} es el más limpio y portable: evita contaminar el
+ámbito global y hace el diagrama autocontenido.
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{tikzpicture}[
+  % Definir estilos locales que consumen aliases semanticos
+  vertex/.style = {
+    circle,
+    draw    = tikz-node-border,
+    fill    = tikz-node-bg,
+    text    = maintext,
+    thick,
+    minimum size = 1cm,
+  },
+  edge/.style = {
+    draw    = tikz-edge,
+    ->,
+    >=latex,
+    thick,
+  },
+  % Variantes semanticas por tipo de nodo
+  initial/.style  = {vertex, draw=tikz-initial},
+  accepted/.style = {vertex, draw=tikz-accept},
+  active/.style   = {vertex, fill=tikz-highlight},
+  error/.style    = {vertex, fill=fb-error, text=background},
+]
+  % ... contenido del diagrama
+\end{tikzpicture}
+\end{lstlisting}
+
+\begin{observacion}{Reutilización entre figuras}
+Si varios diagramas de un capítulo comparten el mismo vocabulario visual,
+los estilos se pueden declarar una sola vez con
+\texttt{\textbackslash tikzset\{...\}} al inicio del capítulo.
+Para estilos que aplican a todo el documento (como el estilo base de
+autómatas), declararlos en \texttt{config/} o en un bloque de
+\texttt{main.tex} después de cargar los paquetes.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]

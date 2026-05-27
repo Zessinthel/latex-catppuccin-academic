@@ -1,599 +1,591 @@
-# 📘 Template LaTeX para Libros Técnicos (Física, Matemáticas, ML, Computación)
+# latex-catppuccin-academic
 
-Documentación completa del template `latex-catppuccin-academic`. Esta guía describe cada comando, entorno, opción de color y convención para que una inteligencia artificial (o un humano) pueda generar archivos `.tex` completamente compatibles.
-
----
-
-## 1. Propósito y alcance
-
-Este template permite escribir libros estructurados (tesis, notas de clase, apuntes avanzados) con:
-
-- **Sintaxis semántica rica**: comandos para conjuntos, operadores, estatus epistémico.
-- **Entornos tipo `tcolorbox`**: definiciones, teoremas, ejemplos, ejercicios, etc.
-- **Sistema de coloreado semántico de ecuaciones** (tres ejes: rol sintáctico, estatus epistémico, tipo matemático).
-- **Paleta Catppuccin** completa con soporte claro/oscuro (Latte, Frappé, Macchiato, Mocha).
-- **Listings multilingüe** (10 lenguajes) con colores Catppuccin.
-- **Configuración modular**: cada aspecto en su propio archivo dentro de `config/`, `environments/`, `themes/`, etc.
+Template de LaTeX para documentación académica de doctorado con el sistema
+de color Catppuccin. Diseñado para producir notas de clase, apuntes,
+papers y reportes en **Computer and Information Science, Computational
+Physics, Mathematics y Machine Learning**.
 
 ---
 
-## 2. Motor y dependencias
+## Para la IA que lee este README
 
-- **Compilador**: LuaLaTeX (requerido por `catppuccinpalette` y listings UTF-8).
-- **Compilación típica**:
-  ```bash
-  lualatex main.tex
-  biber main
-  lualatex main.tex
-  makeindex main   # si se usa índice
-  lualatex main.tex
-  ```
-- **Paquetes críticos** (cargados en `config/packages.tex`):
-  - `physics`, `amsmath`, `amssymb`, `mathtools`, `bm`, `cancel`, `stmaryrd`
-  - `tcolorbox` (con librerías `theorems`, `breakable`, `skins`, `hooks`)
-  - `listings`, `inconsolata`
-  - `catppuccinpalette`
-  - `titlesec`, `fancyhdr`
-  - `hyperref`, `bookmark`, `cleveref` (configurado en español)
-  - `biblatex` (backend `biber`, estilo numérico, `refsection=chapter`)
-  - `pgfplots`, `tikz` (librerías varias)
-  - `algorithm2e`, `siunitx`, `booktabs`, `tabularx`, `longtable`, `multirow`, `colortbl`
-  - `enumitem`, `pifont`, `csquotes`, `microtype`, `footmisc`, `appendix`, `pdfpages`
+Este documento es tu guía operativa. El template tiene reglas estrictas
+que debes internalizar antes de generar cualquier contenido. Los errores
+más frecuentes de AI en este template son predecibles y evitables — todos
+están documentados aquí. Lee este README completo antes de escribir una
+sola línea de LaTeX.
+
+**Pipeline de trabajo habitual:**
+1. El usuario comparte este README y el contexto de la sesión.
+2. El usuario proporciona notas, scripts, datos o ideas en bruto.
+3. La IA formatea el contenido en el template, generando entornos,
+   ecuaciones con coloreado semántico, figuras TikZ, algoritmos,
+   tablas y código fuente.
+4. El usuario revisa y corrige. La IA itera.
 
 ---
 
-## 3. Estructura del proyecto
+## Arquitectura del proyecto
 
 ```
 .
-├── main.tex                       # Documento principal
-├── metadata.tex                   # Variables de metadatos
+├── main.tex                    ← punto de entrada; orquesta todos los \input
+├── metadata.tex                ← variables del documento (\docTitulo, \docAutor, ...)
 ├── config/
-│   ├── packages.tex               # Carga de todos los paquetes
-│   ├── geometry.tex               # Márgenes, interlineado, encabezados
-│   ├── hyperref.tex               # Configuración de enlaces y metadatos PDF
-│   ├── macros.tex                 # Comandos matemáticos propios
-│   ├── tcolorbox-config.tex       # Estilo base `basebox`
-│   ├── titles-config.tex          # Formato y color de capítulos/secciones
-│   ├── listings-catppuccin.tex    # Estilos de listings por lenguaje
-│   ├── algorithms.tex             # Estilo visual de algoritmos
-│   ├── tables-config.tex          # Columnas, colores, entornos de tablas
-│   ├── equation-styles.tex        # Coloreado semántico de ecuaciones
-│   ├── pgfplots-config.tex        # Estilos y colormaps para gráficas
-│   └── captions-config.tex        # Formato de captions (figura/tabla/código)
+│   ├── packages.tex            ← ÚNICA fuente de carga de paquetes
+│   ├── geometry.tex            ← márgenes, encabezados, espaciado
+│   ├── hyperref.tex            ← hipervínculos y metadatos PDF
+│   ├── tcolorbox.tex           ← estilo base (basebox, boxfig, boxtab)
+│   ├── titles.tex              ← jerarquía tipográfica de títulos
+│   ├── captions.tex            ← captions de flotantes por tipo
+│   ├── tables.tex              ← tablas: tipos de columna, entornos, colores
+│   ├── listings.tex            ← syntax highlighting (10 lenguajes)
+│   ├── algorithms.tex          ← estilo de algoritmos (algorithm2e)
+│   ├── equations.tex           ← macros de coloreado semántico de ecuaciones
+│   ├── pgfplots.tex            ← estilos, cycle list, colormaps
+│   └── notation.tex            ← vocabulario matemático del documento
 ├── environments/
-│   ├── generator.tex              # Constructor `\crearEntorno`
-│   ├── instances.tex              # Instancias concretas de entornos
-│   └── specials.tex               # Entornos/commandos especiales (dificultad, ejercicios, etc.)
+│   ├── generator.tex           ← macro \crearEntorno
+│   ├── instances.tex           ← los 8 entornos teoremáticos
+│   └── specials.tex            ← \dificultad, notasbib, ejercicio
 ├── themes/
-│   └── catppuccin-palette.tex     # Paleta completa, colores semánticos, soporte claro/oscuro
-├── frontmatter/
-│   ├── titlepage.tex              # Portada genérica
-│   ├── preliminary.tex            # Dedicatoria, epígrafe, agradecimientos
-│   └── preface.tex                # Prefacio (ejemplo)
-├── chapters/
-│   └── chapter1.tex               # Capítulo de demostración
-├── backmatter/
-│   └── appendixA.tex              # Apéndice de ejemplo (galería de código)
+│   └── catppuccin-palette.tex  ← ÚNICA fuente de verdad de color
+├── frontmatter/                ← titlepage, preliminary, preface
+├── chapters/                   ← un archivo .tex por capítulo
+├── backmatter/                 ← apéndices
 ├── references/
-│   └── references.bib             # Archivo de bibliografía
-└── figs/                          # Imágenes
+│   ├── references.bib          ← bibliografía global
+│   └── chapterN.bib            ← bibliografía por capítulo
+└── code/                       ← scripts externos para \lstinputlisting
 ```
 
 ---
 
-## 4. Metadatos del documento (`metadata.tex`)
+## Reglas absolutas
 
-Estas variables se definen al principio y se usan en portada, PDF y preliminares.
+### REGLA I — Sistema de color: las tres capas
 
-```latex
-\newcommand{\docTitulo}{Título del documento}
-\newcommand{\docSubtitulo}{Subtítulo del documento\\ con saltos de línea}
-\newcommand{\docAutor}{Autor del documento}
-\newcommand{\docFecha}{\the\year}               % Año actual
-\newcommand{\docEstado}{Versión preliminar}      % "Borrador", "Final", etc.
-\newcommand{\docCita}{``Cita representativa del documento.''}
-\newcommand{\docDedicatoria}{A quienes hicieron posible este trabajo.}
-\newcommand{\docEpigrafe}{``Epígrafe o cita inicial.''}
-\newcommand{\docAgradecimientos}{Quiero expresar mi gratitud...}
-\newcommand{\docKeywords}{palabra clave 1, palabra clave 2}
-\newcommand{\docSubject}{Área temática principal}
-```
+El sistema de color opera en tres niveles. **Nunca los mezcles.**
 
-El archivo de bibliografía se declara con:
+| Nivel | Qué contiene | Dónde vive |
+|-------|-------------|------------|
+| 0 — `Ctp*` | Valores hexadecimales del flavor (26 colores absolutos) | **SOLO** en `themes/catppuccin-palette.tex` |
+| 1 — Estructural | Roles de UI: `background`, `surface0`, `maintext`, `overlay0` | Cualquier archivo de config |
+| 2 — Semántico | Roles de dominio: `env-def`, `doc-chapter`, `code-keyword`, `tikz-accept` | Cualquier archivo de config o content |
+
+**NUNCA** escribas `CtpBlue`, `CtpGreen`, `CtpMauve`, etc. fuera de
+`catppuccin-palette.tex`. Si ves `Ctp*` en código existente del usuario,
+es un error previo — corrígelo al alias semántico correspondiente.
 
 ```latex
-\addbibresource{references/references.bib}
+% ❌ INCORRECTO — en cualquier archivo que no sea catppuccin-palette.tex
+\draw[color=CtpBlue] ...
+state/.style={fill=CtpBase, text=CtpText}
+
+% ✅ CORRECTO — aliases semánticos
+\draw[color=tikz-node-border] ...
+state/.style={fill=background, text=maintext}
 ```
 
-Uso en el documento: se emplean directamente (`\docTitulo`, `\docAutor`, etc.) en
-`titlepage.tex`, `preliminary.tex` y en la configuración de `hyperref` para los metadatos PDF.
+**SIEMPRE** pregunta: "¿existe ya un alias para este rol?" Busca en
+`catppuccin-palette.tex` por prefijo de dominio (`env-`, `tikz-`,
+`code-`, `plot-`, etc.). Si no existe, añádelo en la paleta — nunca
+uses `Ctp*` directamente en el archivo de destino.
 
 ---
 
-## 5. Paleta de colores y tema (`themes/catppuccin-palette.tex`)
+### REGLA II — Coloreado semántico de ecuaciones
 
-### 5.1 Selección del sabor
+**SIEMPRE** aplica coloreado semántico en **todas** las ecuaciones del
+documento. No existe ecuación no-trivial que no tenga al menos un símbolo
+con rol identificable.
 
-En `main.tex` se carga el archivo de tema:
+**REGLA CRÍTICA: las macros de ecuación SOLO funcionan dentro de modo
+matemático.** Fuera de `$...$` o `\[...\]`, el color se aplica sobre
+el glifo de texto incorrecto o no se renderiza.
 
 ```latex
-\input{themes/catppuccin-palette.tex}
+% ❌ INCORRECTO — fuera de modo matemático
+\eqop{\nabla} f(x)          % el color no aplica
+
+% ✅ CORRECTO — siempre dentro de $...$
+$\eqop{\nabla} \equ{f}(\eqk{x})$
+
+% ✅ En entornos matemáticos
+\[
+  \eqop{i}\eqcon{\hbar}\,\eqop{\partial_t}\equ{\Psi}
+  = \eqop{\hat{H}}\equ{\Psi}
+\]
 ```
 
-Dentro de ese archivo se elige un solo sabor descomentando la línea correspondiente:
+**Los tres ejes de coloreado:**
 
+| Macro | Color | Rol | Ejemplos |
+|-------|-------|-----|---------|
+| `\eqop{·}` | 🔵 Blue | Operador | `\eqop{\nabla}`, `\eqop{\partial}`, `\eqop{\sum}`, `\eqop{\delta}` |
+| `\eqfn{·}` | 🟢 Green | Función/mapa | `\eqfn{f}(\cdot)`, `\eqfn{\mathcal{L}}`, `\eqfn{\sigma}` |
+| `\eqdm{·}` | 🩵 Teal | Diferencial | `\eqdm{dx}`, `\eqdm{dt}`, `\eqdm{dW}` |
+| `\eqdom{·}` | 🔹 Sapphire | Dominio/conjunto | `\eqdom{\Omega}`, `\eqdom{\mathbb{R}^n}`, `\eqdom{\Sigma}` |
+| `\equ{·}` | 🍑 Peach | Incógnita | `\equ{u}`, `\equ{\theta}`, `\equ{\psi}` |
+| `\eqk{·}` | 💜 Mauve | Dato/parámetro | `\eqk{\lambda}`, `\eqk{m}`, `\eqk{q_0}` |
+| `\eqcon{·}` | 🪻 Lavender | Constante universal | `\eqcon{\hbar}`, `\eqcon{k_B}`, `\eqcon{\pi}` |
+| `\eqvec{·}` | 🔴 Red | Vector/campo | `\eqvec{\mathbf{E}}`, `\eqvec{\mathbf{u}}` |
+| `\eqten{·}` | 🌸 Rosewater | Tensor/matriz | `\eqten{\sigma_{ij}}`, `\eqten{W}` |
+
+**Aplica este coloreado en TODOS los contextos:**
+- Ecuaciones inline: `$\eqop{\nabla}\equ{u}$`
+- Ecuaciones display: `\[...\]`, `equation`, `align`
+- Dentro de entornos tcolorbox (definicion, teorema, etc.)
+- Celdas de tablas: `$\eqop{\delta}: \eqdom{Q} \eqop{\times} \eqdom{\Sigma} \to \eqdom{Q}$`
+- Labels de nodos TikZ: `node {$\eqk{a}$}`
+- Dentro de `algorithm2e`: `$\equ{U} \gets \eqop{E}(\eqop{move}(\equ{T}, \equ{a}))$`
+
+**Macros compuestos disponibles:**
 ```latex
-\usepackage[Latte,styleAll]{catppuccinpalette}   % Claro
-%\usepackage[Frappe,styleAll]{catppuccinpalette} % Oscuro
-%\usepackage[Macchiato,styleAll]{catppuccinpalette}
-%\usepackage[Mocha,styleAll]{catppuccinpalette}
+\eqpdv{f}{t}          % derivada parcial coloreada
+\eqgrad{u}            % gradiente coloreado
+\eqdvg{\mathbf{v}}    % divergencia (evita colisión con \div de physics)
+\eqSDE{X}{f(X)}{\sigma}  % SDE completa coloreada
 ```
 
-Además, se debe ajustar manualmente el toggle de tema oscuro:
-
+**Toggle para impresión B/N:**
 ```latex
-\newif\ifdarktheme
-\darkthemefalse   % para Latte
-%\darkthemetrue   % para Frappé/Macchiato/Mocha
-```
-
-Esto controla si el fondo de página es blanco o `CtpBase`, y si los colores «light» usan
-`white!97!color` (claro) o `CtpBase!95!color` (oscuro).
-
-### 5.2 Colores semánticos principales
-
-| Categoría | Color(es) |
-|-----------|-----------|
-| Fondo | CtpBase, CtpMantle, CtpCrust |
-| Superficie/solapas | CtpSurface0, CtpSurface1, CtpSurface2 |
-| Overlays (texto apagado) | CtpOverlay0, CtpOverlay1, CtpOverlay2 |
-| Texto | CtpText, CtpSubtext0, CtpSubtext1 |
-| Enlaces | linkcolor (azul), citecolor (verde), urlcolor (melocotón) |
-| Entornos | defcolor (azul), thmcolor (malva), propcolor (verde), ejemcolor (melocotón), obscolor (gris), fisicacolor (zafiro), estrellacolor (amarillo), compcolor (rosa) |
-| Mensajes funcionales | success (verde), warning (amarillo), error (rojo), info (turquesa) |
-| Código (listings) | keywordcolor (malva), stringcolor (verde), commentcolor (gris), typecolor (amarillo), etc. |
-| Títulos | chaptercolor (rosa), sectioncolor (celeste), subsectioncolor (lavanda), subsubsectioncolor (melocotón) |
-
-**Importante**: Los colores de entornos y títulos ya están mapeados a la paleta
-Catppuccin. No se deben redefinir a menos que se modifique `catppuccin-palette.tex`.
-
-### 5.3 Versiones «light» para fondos de cajas
-
-Se generan automáticamente con `\createLightColor{<nombre>}{<color base>}`. Por ejemplo,
-`defcolorlight` es el color de fondo de las cajas de definición (muy claro en modo claro,
-apenas tintado en modo oscuro). Todos los entornos definidos en `instances.tex` usan su
-correspondiente `-light`.
-
-### 5.4 Atajos de texto
-
-```latex
-\textsuccess{...}   % verde
-\textwarning{...}   % amarillo
-\texterror{...}     % rojo
-\textinfo{...}      % turquesa
-\textkeyword{...}   % malva
-\textstring{...}    % verde
-\textcomment{...}   % gris
-```
-
----
-
-## 6. Comandos matemáticos
-
-### 6.1 Macros generales (`config/macros.tex`)
-
-El paquete `physics` ya provee `\abs`, `\norm`, `\dv`, `\pdv`, `\grad`, `\div`, `\laplacian`, etc.
-
-Los comandos adicionales son:
-
-| Comando | Resultado | Uso |
-|--------|-----------|-----|
-| `\R`, `\N`, `\Z`, `\C`, `\Q` | ℝ, ℕ, ℤ, ℂ, ℚ | Conjuntos numéricos |
-| `\T` | `^\top` | Transpuesta |
-| `\argmin`, `\argmax` | arg min, arg max | Optimización |
-| `\Loss` | 𝒞 | Función de pérdida |
-| `\D` | 𝒟 | Dataset |
-| `\Params` | Θ | Parámetros (mayúscula) |
-| `\params` | θ | Parámetros (minúscula) |
-| `\KL`, `\Var`, `\Cov` | KL, Var, Cov | Estadística |
-| `\E{·}` | 𝔼[·] | Esperanza |
-| `\Lap` | ∇² | Laplaciano (alias) |
-| `\Div` | ∇· | Divergencia (alias) |
-| `\keff` | k_eff | Física de reactores |
-| `\score` | ∇_x log p | Score function |
-| `\Ep{·}` | ⟨·⟩ | Valor esperado (física) |
-| `\FP` | ℒ_FP | Fokker-Planck |
-| `\SDE{X}{a}{b}` | dX = a dt + b dW | Ecuación diferencial estocástica |
-| `\OK` | ✓ | Marca de verificación |
-
-### 6.2 Coloreado semántico de ecuaciones (`config/equation-styles.tex`)
-
-Sistema opt-in para colorear símbolos según su rol o estatus.
-
-**Eje 1 – Rol sintáctico** (estable entre contextos):
-
-- `\eqop{·}` → azul (operadores: ∫, ∑, ∇, ∂)
-- `\eqfn{·}` → verde (funciones: f(·), σ(·))
-- `\eqdm{·}` → turquesa (diferenciales: dx, dt, dW)
-- `\eqdom{·}` → zafiro (dominios: Ω, ℝⁿ)
-
-**Eje 2 – Estatus epistémico** (lo que la tipografía no puede codificar):
-
-- `\equ{·}` → melocotón (incógnita / a determinar)
-- `\eqk{·}` → malva (conocido / dato fijo)
-- `\eqcon{·}` → lavanda (constante universal)
-
-**Eje 3 – Tipo matemático** (refuerzo):
-
-- `\eqvec{·}` → rojo (campo vectorial)
-- `\eqten{·}` → rosa (tensor / matriz)
-
-**Comandos compuestos:**
-
-- `\eqpdv{ρ}{t}` → derivada parcial coloreada
-- `\eqgrad{u}` → gradiente coloreado
-- `\eqdvg{u}` → divergencia coloreada
-- `\eqSDE{X}{drift}{diff}` → SDE coloreada
-
-Toggle global: `\eqcolorstrue` (color) / `\eqcolorsfalse` (b/n).
-
-Ejemplo:
-
-```latex
-\eqop{\frac{\partial \equ{\phi}}{\partial \eqk{t}}} = \eqcon{D} \eqop{\nabla^2} \equ{\phi}
+\eqcolorsfalse   % desactiva todo el coloreado — macros transparentes
+\eqcolorstrue    % reactiva (por defecto)
 ```
 
 ---
 
-## 7. Entornos de caja (`tcolorbox`)
+### REGLA III — Selección de entornos
 
-### 7.1 Estilo base (`config/tcolorbox-config.tex`)
+**NO abuses de los entornos.** Cada uno tiene un rol epistémico preciso.
+Usarlos fuera de ese rol degrada el argumento matemático.
 
-Todas las cajas comparten `basebox`: bordes finos, fondo gris muy claro,
-breakable, sombra difusa.
+| Entorno | Color | Úsalo cuando... | NO lo uses para... |
+|---------|-------|----------------|--------------------|
+| `definicion` | Blue | Estableces vocabulario formal por primera vez | Enunciados que ya se conocen |
+| `teorema` | Mauve | El resultado principal al que apunta el argumento | Resultados secundarios o de apoyo |
+| `proposicion` | Green | Resultado correcto pero subordinado al teorema | El resultado más importante del capítulo |
+| `ejemplo` | Peach | Instancias concretas que iluminan lo abstracto | Demostraciones o definiciones |
+| `observacion` | Gray | Matices, advertencias, notas de implementación | Resultados matemáticos con demostración |
+| `fisicaconexion` | Sapphire | Conexión explícita entre matemática y física | Notas de diseño de software |
+| `estrella` | Yellow | El concepto pivote que orienta todo el capítulo | Como mucho 1 por capítulo |
+| `ejerciciocomp` | Pink | Tareas que requieren código, simulación, datos | Ejercicios matemáticos puros |
 
-### 7.2 Generador de entornos (`environments/generator.tex`)
-
+**Sintaxis:**
 ```latex
-\crearEntorno{nombre}{color}{título base}{contador}{opciones}
-```
-
-Si `#4=1`: crea un contador `nombrecounter` (numeración capítulo.contador).
-
-El entorno resultante se llama con `\begin{nombre}{Título} ... \end{nombre}`.
-
-### 7.3 Entornos instanciados (`environments/instances.tex`)
-
-| Entorno | Color | Título base | Contador | Notas |
-|---------|-------|-------------|----------|-------|
-| `definicion` | defcolor | Definición | Sí | |
-| `teorema` | thmcolor | Teorema | Sí | |
-| `proposicion` | propcolor | Proposición | Sí | |
-| `ejemplo` | ejemcolor | Ejemplo | Sí | |
-| `observacion` | obscolor | Observación | No | |
-| `fisicaconexion` | fisicacolor | [F] Conexión física | No | Texto pequeño (`\small`) |
-| `estrella` | estrellacolor | ★ Estrella Polar | Sí | Texto pequeño |
-| `ejerciciocomp` | compcolor | ▷ Ejercicio Computacional | Sí | Texto pequeño |
-
-Sintaxis exacta (para todos):
-
-```latex
-\begin{definicion}{Espacio de Hilbert}
-...
+\begin{definicion}{Título descriptivo de esta instancia}
+\label{def:etiqueta}
+Contenido...
 \end{definicion}
 ```
 
-### 7.4 Entornos y comandos especiales (`environments/specials.tex`)
-
-#### `\dificultad{mat}{fis}`
-
-Muestra estrellas de 1 a 5 para dificultad matemática y física.
-
+**Indicador de dificultad** — colocar al inicio de secciones densas:
 ```latex
-\dificultad{3}{2}
+\dificultad{3}{4}   % matemática: ★★★☆☆   física: ★★★★☆
 ```
-
-Resultado: **Nivel: Matemática: ★★★☆☆ Física: ★★☆☆☆**
-
-#### `notasbib`
-
-Entorno para «Notas bibliográficas» al final del capítulo.
-
-```latex
-\begin{notasbib}
-\item Para el teorema 2.1, ver \cite{...}.
-\end{notasbib}
-```
-
-#### `ejercicio`
-
-Ejercicio simple (sin caja, numerado por capítulo).
-
-```latex
-\begin{ejercicio}
-Demuestre que...
-\end{ejercicio}
-```
-
-Se renderiza como **Ejercicio X.Y.** seguido del texto.
 
 ---
 
-## 8. Listings multilingüe (`config/listings-catppuccin.tex`)
+### REGLA IV — Referencias bibliográficas
 
-Estilos disponibles (alias entre paréntesis):
+**SIEMPRE** incluye `\cite` en cada afirmación no trivial. Si no conoces
+la referencia correcta, **pregunta al usuario** — nunca inventes una cita.
 
-| Alias | Lenguaje |
-|-------|----------|
-| `python` | Python |
-| `c` | C |
-| `cpp` | C++ |
-| `rust` | Rust |
-| `go` | Go |
-| `julia` | Julia |
-| `matlab` | MATLAB/Octave |
-| `fortran` | Fortran (2008) |
-| `asm` | x86-64 Assembly |
-| `mathematica` | Wolfram Language |
+**Estructura de bibliografía por capítulo:**
+```latex
+% Cada capítulo tiene su propio .bib en references/
+% Registrado en metadata.tex:
+\addbibresource{references/chapterN.bib}
 
-Uso:
+% Al final de cada capítulo .tex:
+\printbibliography[heading=subbibliography]
+```
+
+**Cuándo pedir referencias al usuario:**
+- Definiciones formales tomadas de un libro
+- Teoremas con nombre propio (Riesz, Fokker-Planck, Bayes)
+- Algoritmos con autor conocido (Dijkstra, Euler-Maruyama, Thompson)
+- Afirmaciones sobre complejidad computacional
+- Resultados experimentales o numéricos
 
 ```latex
-\begin{lstlisting}[style=python, caption={Descripción}]
+% ✅ Correcto — citar la fuente
+\begin{definicion}{Espacio de Hilbert}
+Un espacio de Hilbert es...~\cite{reed1980}
+\end{definicion}
+
+% ❌ Incorrecto — afirmación sin fuente
+\begin{teorema}{Completitud de $L^2$}
+El espacio $L^2$ es completo.
+\end{teorema}
+```
+
+---
+
+### REGLA V — Flotantes y tcolorbox
+
+`figure` y `table` son flotantes que invocan `\@float` — incompatible
+con el interior de `tcolorbox`. El error es `Not in outer par mode`.
+
+| Contexto | Figuras | Tablas | Ancho |
+|----------|---------|--------|-------|
+| Flujo normal de texto | `figure` | `acadtable` | `\textwidth` |
+| Dentro de tcolorbox | `boxfig` | `boxtab` | `\linewidth` |
+
+```latex
+% ✅ Figura dentro de un entorno
+\begin{ejemplo}{Distribución gaussiana}
+  \begin{boxfig}{fig:gauss}{Densidad $\mathcal{N}(0,1)$}
+    \includegraphics[width=\linewidth]{figs/gauss.pdf}
+  \end{boxfig}
+\end{ejemplo}
+
+% ✅ Tabla dentro de un entorno
+\begin{definicion}{Propiedades}
+  \begin{boxtab}{tab:props}{Resumen}
+    \begin{tabularx}{\linewidth}{l X}   % ← linewidth, no textwidth
+      ...
+    \end{tabularx}
+  \end{boxtab}
+\end{definicion}
+```
+
+**`\label` dentro de tcolorbox:** siempre *dentro* del entorno,
+nunca en el argumento del título:
+```latex
+\begin{definicion}{Espacio métrico}
+\label{def:espacio-metrico}   % ← aquí, no en {Espacio métrico}
 ...
-\end{lstlisting}
-```
-
-O para archivos externos:
-
-```latex
-\lstinputlisting[style=rust]{codigo/main.rs}
 ```
 
 ---
 
-## 9. Formato de títulos (`config/titles-config.tex`)
+### REGLA VI — Diagramas TikZ con coloreado correcto
 
-- **Capítulo**: `\Huge\bfseries\color{chaptercolor}` (rosa)
-- **Sección**: `\Large\bfseries\color{sectioncolor}` (celeste)
-- **Subsección**: `\large\bfseries\color{subsectioncolor}` (lavanda)
-- **Subsubsección**: `\normalsize\bfseries\color{subsubsectioncolor}` (melocotón)
+**NUNCA** uses `CtpBlue`, `CtpBase`, `CtpText` en nodos TikZ.
 
-Los colores se definen en `catppuccin-palette.tex`.
+```latex
+% ❌ INCORRECTO — viola la arquitectura de color
+state/.style={circle, draw=CtpBlue, fill=CtpBase, text=CtpText}
+
+% ✅ CORRECTO — aliases semánticos
+state/.style={circle, draw=tikz-node-border, fill=background, text=maintext}
+```
+
+**Aliases TikZ disponibles:**
+
+| Alias | Uso |
+|-------|-----|
+| `tikz-node-bg` | Fondo de nodo genérico |
+| `tikz-node-border` | Borde de nodo genérico |
+| `tikz-edge` | Arista estándar |
+| `tikz-label` | Label / anotación |
+| `tikz-initial` | Estado inicial (autómata) |
+| `tikz-accept` | Estado aceptador |
+| `tikz-reject` | Estado rechazador |
+| `tikz-highlight` | Nodo activo en explicación paso a paso |
+| `env-phys` | Caja de función / transformación (Sapphire) |
+| `fb-error` | Colisión / error |
+| `eq-known` | Peso de arista (dato conocido) |
+
+**Patrón canónico para autómatas:**
+```latex
+\begin{tikzpicture}[
+  shorten >=1pt, node distance=2.5cm, on grid, auto, thick,
+  state/.style={circle, draw=tikz-node-border, fill=background,
+                text=maintext, minimum size=1cm},
+  every edge/.style={draw=tikz-edge, ->, >=latex},
+]
+  \node[state, initial, initial text={}, draw=tikz-initial] (q0) {$\eqk{q_0}$};
+  \node[state, accepting, draw=tikz-accept, right=of q0]    (q1) {$\eqk{q_1}$};
+  \path[->]
+    (q0) edge node {$\eqk{a}$} (q1);
+\end{tikzpicture}
+```
+
+**Labels de nodos y aristas:** siempre en modo matemático con coloreado semántico:
+```latex
+edge node {$\eqk{a}$}           % ← símbolo conocido del alfabeto
+node {$\eqcon{\varepsilon}$}    % ← constante epsilon
+node[above] {$\eqk{w}$}        % ← peso conocido
+```
 
 ---
 
-## 10. Tablas (`config/tables-config.tex`)
+### REGLA VII — Algoritmos (algorithm2e)
 
-### 10.1 Tipos de columna
-
-- `L{ancho}`, `C{ancho}`, `R{ancho}`: columnas de ancho fijo con wrapping y alineación vertical centrada (`m{}`).
-- `X` (redefinida): columna proporcional izquierda con centrado vertical.
-- `Y`, `Z`: columnas proporcionales centrada y derecha respectivamente.
-- `S{...}`: columna de `siunitx` para alineación decimal.
-
-### 10.2 Colores y comandos
-
-- `\thead{...}`: fuente negrita + color de texto del encabezado.
-- `\headerrow`: aplica `\rowcolor{tableheadcolor}` (fondo azul claro).
-- `\tablenote{}{...}`: nota al pie de tabla.
-- `\arrayrulecolor{tablerule}` se aplica automáticamente.
-
-### 10.3 Entornos útiles
-
-#### `fittable`
-
-Reescala la tabla solo si excede `\textwidth`.
-
-```latex
-\begin{fittable}
-  \begin{tabular}{...} ... \end{tabular}
-\end{fittable}
-```
-
-#### `acadtable`
-
-Crea un `table` flotante con caption y etiqueta.
-
-```latex
-\begin{acadtable}[htbp]{tab:mi_tabla}{Título de la tabla}
-  \begin{tabularx}{\textwidth}{l Y Y}
-    ...
-  \end{tabularx}
-\end{acadtable}
-```
-
----
-
-## 11. Algoritmos (`config/algorithms.tex`)
-
-Basado en `algorithm2e` con líneas coloreadas. Los keywords se muestran en malva,
-comentarios en gris, números en celeste.
-
-Sintaxis típica:
+`algorithm2e` **no** está envuelto en tcolorbox — rompe el paginado.
+Úsalo directamente, sin wrapper. Aplica coloreado semántico de ecuaciones
+en todas las expresiones matemáticas del pseudocódigo:
 
 ```latex
 \begin{algorithm}[H]
-\caption{Mi algoritmo}
-\label{alg:algo}
-\LinesNumbered
-\KwIn{Entrada}
-\KwOut{Salida}
-... \\
-\While{condición}{
-  ... \\
-}
-\Return resultado\;
+  \DontPrintSemicolon
+  \KwIn{$\eqk{A} \in \eqdom{\mathbb{R}^{n \times n}}$ SPD, $\eqk{b}$}
+  \KwOut{$\equ{x} \approx \eqk{A}^{-1}\eqk{b}$}
+  $\equ{x} \gets \mathbf{0}$\;
+  \While{$\|\equ{r}\| > \eqk{\epsilon}$}{
+    $\equ{\alpha} \gets \equ{\rho} / (\equ{p}^\top \eqk{A}\equ{p})$\;
+    $\equ{x} \gets \equ{x} + \equ{\alpha}\equ{p}$\;
+  }
+  \caption{Gradiente conjugado}
+  \label{alg:cg}
 \end{algorithm}
 ```
 
 ---
 
-## 12. Gráficas con pgfplots (`config/pgfplots-config.tex`)
+### REGLA VIII — Código fuente (listings)
 
-**Cycle list**: 8 colores Catppuccin automáticos para `\addplot`.
-
-**Estilos predefinidos**:
-- `catppuccin-clean`: grid mayor, leyenda estándar.
-- `catppuccin-filled`: igual pero con fondo `CtpMantle`.
-
-**Colormaps**:
-- `catppuccin-heat`: secuencial (oscuro → azul → rojo → amarillo).
-- `catppuccin-diverge`: divergente (azul → neutro → rojo).
-
-Ejemplo:
+**Siempre** especifica el estilo del lenguaje. Para código LaTeX
+(cuando muestras ejemplos del template), usa `style=latex`:
 
 ```latex
-\begin{tikzpicture}
-  \begin{axis}[catppuccin-clean, width=0.8\textwidth, height=6cm,
-               xlabel={Época}, ylabel={Pérdida}]
-    \addplot+[thick, no markers, domain=0:100] {2*exp(-0.05*x)};
-    \addlegendentry{Adam}
-  \end{axis}
-\end{tikzpicture}
+\begin{lstlisting}[style=python, caption={Descripción}, label={lst:etiqueta}]
+...
+\end{lstlisting}
+```
+
+Estilos disponibles: `python`, `c`, `cpp`, `rust`, `go`, `julia`,
+`matlab`, `fortran`, `asm`, `mathematica`, `latex`.
+
+Para importar archivos externos:
+```latex
+\lstinputlisting[style=python, caption={...}, label={lst:...}]{code/archivo.py}
+% Fragmento: solo líneas 15-40
+\lstinputlisting[style=python, firstline=15, lastline=40, ...]{code/archivo.py}
 ```
 
 ---
 
-## 13. Captions (`config/captions-config.tex`)
+## Árbol de decisión: ¿qué entorno uso?
 
-Formato general: fuente `small`, etiqueta en negrita coloreada, texto en `CtpSubtext0`,
-separador endash.
-
-- Figuras: etiqueta azul.
-- Tablas: etiqueta malva, posición `above`.
-- Listings: etiqueta verde.
-- Subfiguras: etiqueta zafiro.
-
-Las leyendas se escriben con `\caption{...}` dentro del flotante.
+```
+¿Qué tipo de contenido es?
+│
+├── Vocabulario nuevo que se usará formalmente    → definicion
+├── Resultado principal demostrado/demostrable
+│   ├── Es el resultado central del capítulo      → teorema
+│   └── Es un resultado de apoyo                  → proposicion
+├── Caso concreto que ilustra algo abstracto      → ejemplo
+├── Nota, matiz, advertencia técnica              → observacion
+├── Conexión explícita con física real            → fisicaconexion
+├── El concepto más importante del capítulo
+│   (máx. 1 por capítulo)                         → estrella
+├── Tarea que requiere código/simulación           → ejerciciocomp
+├── Notas de lectura / contexto bibliográfico     → notasbib
+└── Ejercicio matemático sin código               → ejercicio (comando)
+```
 
 ---
 
-## 14. Hipervínculos y metadatos PDF (`config/hyperref.tex`)
+## Árbol de decisión: ¿qué color de ecuación uso?
 
-Colores: `linkcolor` para referencias internas, `citecolor` para citas, `urlcolor` para URLs.
-Metadatos del PDF: título, autor, tema, palabras clave.
+```
+¿Cuál es el rol del símbolo?
+│
+├── ¿Es un operador? (∇, ∂, ∑, ∫, δ, ×, ∘)       → \eqop{·}
+├── ¿Es una función o mapa? (f(·), σ(·), L)        → \eqfn{·}
+├── ¿Es un diferencial o medida? (dx, dt, dW, dμ)  → \eqdm{·}
+├── ¿Es un dominio o conjunto? (Ω, Σ, ℝⁿ, Q)      → \eqdom{·}
+│
+├── ¿Es la cantidad buscada / aprendida?            → \equ{·}
+├── ¿Es un dato fijo / parámetro conocido?          → \eqk{·}
+├── ¿Es una constante universal? (ℏ, kB, π, c)     → \eqcon{·}
+│
+├── ¿Es un vector o campo? (u, E, B, J)             → \eqvec{·}
+└── ¿Es un tensor o matriz? (σᵢⱼ, gμν, W, Σ)     → \eqten{·}
+```
 
 ---
 
-## 15. Capítulos y estructura del contenido
-
-### 15.1 Esqueleto de un capítulo
+## Mapa de aliases de color por dominio
 
 ```latex
-\chapter{Título del capítulo}
-\label{ch:mi_capitulo}
+% Estructura del documento
+doc-chapter  doc-section  doc-subsection  doc-subsubsection
 
-\section{Sección 1}
-...
+% Hipervínculos
+link-internal  link-external  link-cite  link-visited
 
-\begin{definicion}{...}
+% Entornos
+env-def  env-thm  env-prop  env-ex  env-obs  env-phys  env-star  env-comp
+
+% Ecuaciones
+eq-op  eq-fn  eq-dm  eq-dom     % eje sintáctico
+eq-unknown  eq-known  eq-const  % eje epistémico
+eq-vec  eq-ten                  % eje de tipo
+
+% Código
+code-keyword  code-string  code-comment  code-operator  code-type
+code-fn  code-mod  code-macro  code-builtin  code-const  code-param
+
+% Algoritmos
+alg-keyword  alg-arg  alg-comment  alg-linenum  alg-caption  alg-line
+
+% Plots
+plot-series-1..8  plot-axis  plot-grid  plot-label  plot-tick-label
+plot-legend-bg  plot-legend-border  plot-errorbar
+
+% TikZ
+tikz-node-bg  tikz-node-border  tikz-edge  tikz-label
+tikz-initial  tikz-accept  tikz-reject  tikz-highlight
+
+% Tablas
+table-head  table-head-text  table-row-alt  table-rule
+
+% Captions
+caption-fig  caption-tab  caption-code  caption-alg  caption-sub  caption-text
+
+% Feedback
+fb-success  fb-warning  fb-error  fb-info  fb-difficulty
+
+% Infraestructura
+background  surface0/1/2  overlay0/1/2  maintext  subtext0/1
+```
+
+---
+
+## Errores comunes de IA en este template
+
+### ❌ Error 1: replicar `Ctp*` del código existente
+Si el usuario te muestra código con `CtpBlue` o `fill=CtpGreen`, eso es
+un error en el código fuente. No lo repliques — corrígelo.
+
+### ❌ Error 2: ecuaciones fuera de modo matemático
+`\eqop{\nabla}` en prosa no colorea nada. Siempre `$\eqop{\nabla}$`.
+
+### ❌ Error 3: usar `teorema` para todo lo que parece importante
+`teorema` es para el resultado principal. Una observación interesante
+es `observacion`. Un hecho auxiliar es `proposicion`.
+
+### ❌ Error 4: inventar referencias bibliográficas
+Si no sabes la cita correcta, escribe `\cite{???}` como placeholder
+y pide la referencia al usuario. Nunca inventes autores ni títulos.
+
+### ❌ Error 5: `\textwidth` dentro de tcolorbox
+Dentro de `boxtab`, `boxfig` o cualquier entorno tcolorbox, el ancho
+correcto es `\linewidth`. Con `\textwidth` la tabla o imagen desborda.
+
+### ❌ Error 6: `figure`/`table` dentro de tcolorbox
+Produce `Not in outer par mode`. Usar `boxfig`/`boxtab`.
+
+### ❌ Error 7: `\label` fuera del entorno
+```latex
+% ❌ El anchor de hyperref queda mal
+\begin{definicion}{Título}\label{def:x}\end{definicion}
+% ✅ Correcto
+\begin{definicion}{Título}
+\label{def:x}
 ...
 \end{definicion}
-
-\begin{teorema}{...}
-...
-\end{teorema}
-
-\begin{ejemplo}{...}
-...
-\end{ejemplo}
-
-\begin{ejercicio}
-...
-\end{ejercicio}
 ```
 
-### 15.2 Frontmatter
+### ❌ Error 8: headers de columna `S` de siunitx sin `\multicolumn`
+Cualquier header de columna `S` que contenga texto (incluyendo `Acc. (%)`
+o `$\|\mathbf{e}\|_\infty$`) debe ir en `\multicolumn{1}{c}{\thead{...}}`.
 
-- `titlepage.tex`: usa `\docTitulo`, `\docSubtitulo`, etc. y una caja para la cita.
-- `preliminary.tex`: muestra dedicatoria, epígrafe y agradecimientos si no están vacíos.
-- `preface.tex`: capítulo sin numerar agregado al TOC.
+---
 
-### 15.3 Apéndices
+## Vocabulario de notación matemática disponible
 
-Se incluyen con:
+Definido en `config/notation.tex`. Úsalo en lugar de redefinir:
 
 ```latex
-\begin{appendices}
-\include{backmatter/appendixA}
-\end{appendices}
-```
+% Conjuntos numéricos
+\R \N \Z \C \Q \F
 
-Cada apéndice es un capítulo normal (`\chapter{...}`) dentro del entorno `appendices`.
-Las referencias a apéndices usan `\cref{ap:...}`.
+% Álgebra lineal
+\T          % transpuesta: A\T
+\HH         % adjunto: A\HH
+\Id         % identidad
+\diag \spec \argmin \argmax
+
+% Probabilidad y estadística
+\E{X}       % E[X]
+\Prob{A}    % P(A)
+\Ep{f}      % ⟨f⟩
+\KL \Var \Cov
+\Normal \Uniform \Bernoulli \Poisson
+
+% Machine Learning
+\Loss       % ℒ (cal)
+\Lscr       % ℒ (script)
+\D          % 𝒟 dataset
+\Params     % Θ
+\params     % θ
+\score      % ∇_x log p  (arg opcional: \score[\mathbf{z}])
+\SDE{X}{a}{b}   % dX = a dt + b dW (sin color, para inline)
+
+% Física
+\Ham        % Ĥ
+\Hscr       % ℋ (Hilbert)
+\Fscr       % ℱ (Fourier)
+\kB         % k_B
+\keff       % k_eff
+\FP         % ℒ_FP (Fokker-Planck)
+```
 
 ---
 
-## 16. Bibliografía (`references/references.bib`)
-
-Archivo BibTeX estándar. Se carga con `\addbibresource{references/references.bib}`.
-Para mostrar la bibliografía al final de cada capítulo (debido a `refsection=chapter`):
+## Protocolo de extensión (dominio nuevo)
 
 ```latex
-\printbibliography[heading=subbibliography]
-```
+% 1. En themes/catppuccin-palette.tex:
+% ─── {Dominio} ───────────────────────────────────────────────────────────────
+\colorlet{dom-role1}{CtpAlgo}
+\colorlet{dom-role2}{CtpOtro}
+\createback{dom-role1}   % si se usa como fondo en tcolorbox
 
-Las citas se hacen con `\cite{clave}`, `\citet{clave}`, `\citep{clave}` (compatibles con `natbib`).
+% 2. Crear config/{dominio}.tex consumiendo SOLO aliases (nunca Ctp*):
+\tikzset{
+  mi-estilo/.style={draw=dom-role1, fill=dom-role2},
+}
 
----
-
-## 17. Convenciones para generación por IA
-
-Al generar contenido `.tex` para este template, observar estrictamente:
-
-- **Entornos**: siempre usar `\begin{entorno}{Título} ... \end{entorno}`.
-- **Ecuaciones coloreadas**: envolver símbolos con los macros `\eqop`, `\equ`, `\eqk`, etc.
-- **Colores**: no usar colores explícitos, confiar en los definidos en la paleta.
-- **Tablas**: preferir `acadtable` + `tabularx` con columnas `Y`, `Z`, `L`, `C`, `R`.
-- **Algoritmos**: usar `algorithm2e` como en los ejemplos.
-- **Listings**: usar `style=<alias>`.
-- **Ejercicios**: teóricos con `ejercicio`, computacionales con `ejerciciocomp`.
-- **Dificultad**: `\dificultad{mat}{fis}`.
-- **Bibliografía**: `\cite{...}`, mostrar con `\printbibliography` al final.
-- **Apéndices**: dentro de `\begin{appendices}...\end{appendices}`.
-
----
-
-## 18. Ejemplo mínimo funcional
-
-```latex
-\documentclass[12pt, oneside]{book}
-\input{config/packages.tex}
-\input{config/geometry.tex}
-\input{metadata.tex}
-\input{themes/catppuccin-palette.tex}
-\input{config/hyperref.tex}
-\input{config/macros.tex}
-\input{config/tcolorbox-config.tex}
-\input{environments/generator.tex}
-\input{environments/instances.tex}
-\input{environments/specials.tex}
-\input{config/titles-config.tex}
-\input{config/listings-catppuccin.tex}
-\input{config/algorithms.tex}
-\input{config/tables-config.tex}
-\input{config/equation-styles.tex}
-\input{config/pgfplots-config.tex}
-\input{config/captions-config.tex}
-
-\docTitulo{Mi Libro}
-\docAutor{Autor}
-
-\begin{document}
-\input{frontmatter/titlepage.tex}
-\input{frontmatter/preliminary.tex}
-\tableofcontents
-\include{chapters/chapter1}
-\begin{appendices}
-\include{backmatter/appendixA}
-\end{appendices}
-\end{document}
+% 3. En main.tex, paso 8 (configs de dominio):
+\input{config/{dominio}.tex}
 ```
 
 ---
 
-**Versión del template**: 0.2  
-**Mantenido por**: [J. A. Chala‑Casanova](https://github.com/Zessinthel/)  
-**Licencia**: MIT – ver archivo [`LICENSE`](LICENSE)
+## Contexto de dominio
+
+El contenido producido pertenece a los siguientes campos. Usa esta
+información para elegir la notación correcta y las referencias apropiadas:
+
+- **Computer and Information Science**: complejidad computacional, estructuras
+  de datos, compiladores, teoría de lenguajes formales, autómatas,
+  algoritmos, análisis de algoritmos.
+
+- **Computational Physics**: métodos numéricos (diferencias finitas,
+  elementos finitos, Monte Carlo), ecuaciones diferenciales parciales
+  (Poisson, calor, onda, Schrödinger), mecánica estadística, procesos
+  estocásticos, simulación de Monte Carlo.
+
+- **Mathematics**: análisis funcional, espacios de Hilbert y Banach,
+  operadores, álgebra abstracta, topología, teoría de medida, ecuaciones
+  diferenciales estocásticas, procesos de Markov.
+
+- **Machine Learning**: aprendizaje profundo, redes neuronales, métodos
+  variacionales (ELBO, VAE), modelos de difusión, descenso de gradiente,
+  optimización estocástica, inferencia bayesiana.
+
+---
+
+## Referencias de implementación
+
+La documentación completa del template vive en `chapters/` y `backmatter/`:
+
+- **Apéndice A** — Style Guide: arquitectura, árbol de decisión, inventario
+  de aliases, protocolo de extensión.
+- **Apéndice C** — Referencia de comandos: firma completa de todos los
+  comandos, entornos y macros del template.
+- **Capítulo 4** — Matemáticas semánticas: ejemplos detallados del
+  coloreado de ecuaciones en todos los contextos.
+- **Capítulo 8** — Diagramas: patrones TikZ con theming correcto.
+
+---
+
+*Motor requerido: LuaLaTeX. Distribución: TeX Live 2022 o superior.*
+*Compilación: `lualatex → biber → lualatex × 2`*

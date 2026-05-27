@@ -1,0 +1,427 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Matemáticas semánticas}
+\label{ch:ecuaciones}
+%───────────────────────────────────────────────────────────────────────────────
+
+La tipografía matemática estándar codifica una sola dimensión de información:
+el tipo matemático. Los vectores van en negrita, los operadores en redonda,
+los escalares en itálica. Pero una ecuación contiene al menos tres dimensiones
+de información simultáneas que la tipografía convencional no distingue: el
+\textit{rol sintáctico} del símbolo (¿es un operador, una función, un dominio?),
+su \textit{estatus epistémico} (¿es una incógnita, un dato fijo, una constante
+universal?) y su \textit{tipo matemático} (¿es un vector, un tensor, un escalar?).
+
+El sistema de coloreado semántico de este template codifica estas tres
+dimensiones mediante color, con un mapa fijo entre rol y tono que es
+consistente en todo el documento.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Regla fundamental: siempre en modo matemático}
+\label{sec:regla-matmode}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Modo matemático obligatorio}
+\label{def:matmode}
+Todas las macros de coloreado semántico (\texttt{\textbackslash eqop},
+\texttt{\textbackslash equ}, \texttt{\textbackslash eqk}, etc.) deben usarse
+\textbf{dentro de un entorno matemático}. Fuera de modo matemático, los
+símbolos que colorean son glifos de texto, no glifos matemáticos: el color
+se aplica sobre el carácter incorrecto o no se aplica en absoluto.
+\end{definicion}
+
+La forma correcta e incorrecta es:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% CORRECTO: dentro de modo matematico
+$\eqop{\nabla} \equ{f}$          % inline
+\[ \eqop{\nabla}^2 \equ{\phi} = \eqk{\rho} / \eqcon{\varepsilon_0} \]
+
+% INCORRECTO: fuera de modo matematico
+\eqop{\nabla} \equ{f}   % el color se aplica sobre texto, no glifo matematico
+\end{lstlisting}
+
+Esto aplica en todos los contextos: texto corrido, tablas, títulos de
+entornos, labels de ejes en pgfplots, labels de nodos en TikZ. En cada
+caso, el wrapper matemático es obligatorio.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Los tres ejes de coloreado}
+\label{sec:tres-ejes}
+%───────────────────────────────────────────────────────────────────────────────
+
+\dificultad{2}{3}
+
+\subsection{Eje 1 — Rol sintáctico}
+\label{subsec:eje-sintactico}
+
+El rol sintáctico de un símbolo es estable entre contextos: $\nabla$ es
+siempre un operador diferencial, independientemente de qué ecuación aparezca
+o cuál sea la incógnita.
+
+\begin{acadtable}[H]{tab:eje-sintactico}{Eje 1: Rol sintáctico}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Alias} & \thead{Color} & \thead{Cubre} \\
+    \midrule
+    \texttt{\textbackslash eqop\{·\}}
+      & \texttt{eq-op} & \textcolor{eq-op}{\textbf{Blue}}
+      & Operadores: $\eqop{\int}$, $\eqop{\sum}$, $\eqop{\partial}$,
+        $\eqop{\nabla}$, $\eqop{\times}$, $\eqop{\delta}(\cdot,\cdot)$ \\
+    \texttt{\textbackslash eqfn\{·\}}
+      & \texttt{eq-fn} & \textcolor{eq-fn}{\textbf{Green}}
+      & Funciones/mapas: $\eqfn{f}(\cdot)$, $\eqfn{\sigma}(\cdot)$,
+        $\eqfn{V}(\mathbf{r})$, $\eqfn{\mathcal{L}}$ \\
+    \texttt{\textbackslash eqdm\{·\}}
+      & \texttt{eq-dm} & \textcolor{eq-dm}{\textbf{Teal}}
+      & Diferenciales/medidas: $\eqdm{dx}$, $\eqdm{dt}$,
+        $\eqdm{dW}$, $\eqdm{d^3r}$, $\eqdm{d\mu}$ \\
+    \texttt{\textbackslash eqdom\{·\}}
+      & \texttt{eq-dom} & \textcolor{eq-dom}{\textbf{Sapphire}}
+      & Dominios/conjuntos: $\eqdom{\Omega}$, $\eqdom{\partial\Omega}$,
+        $\eqdom{\mathbb{R}^n}$, $\eqdom{\Sigma}$, $\eqdom{Q}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Eje 2 — Estatus epistémico}
+\label{subsec:eje-epistemico}
+
+El estatus epistémico es la dimensión que la tipografía convencional
+\textit{no} codifica. En $f(\mathbf{x};\boldsymbol{\theta})$, $\mathbf{x}$
+es dato de entrada y $\boldsymbol{\theta}$ es el parámetro a aprender ---
+en inferencia estadística es exactamente al revés. El color hace explícita
+esta inversión sin texto adicional.
+
+\begin{acadtable}[H]{tab:eje-epistemico}{Eje 2: Estatus epistémico}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Alias} & \thead{Color} & \thead{Cubre} \\
+    \midrule
+    \texttt{\textbackslash equ\{·\}}
+      & \texttt{eq-unknown} & \textcolor{eq-unknown}{\textbf{Peach}}
+      & Incógnita / buscado / aprendido: la cantidad que se desea hallar \\
+    \texttt{\textbackslash eqk\{·\}}
+      & \texttt{eq-known} & \textcolor{eq-known}{\textbf{Mauve}}
+      & Conocido / dato / parámetro fijado: entra al sistema como input \\
+    \texttt{\textbackslash eqcon\{·\}}
+      & \texttt{eq-const} & \textcolor{eq-const}{\textbf{Lavender}}
+      & Constante universal/estructural: $\eqcon{\hbar}$, $\eqcon{k_B}$,
+        $\eqcon{\pi}$, $\eqcon{\varepsilon}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Eje 3 — Tipo matemático}
+\label{subsec:eje-tipo}
+
+El eje de tipo refuerza lo que la tipografía ya comunica: la negrita indica
+vector, la doble barra indica espacio. El color añade un canal redundante
+útil en documentos donde la distinción rango-tensor es semánticamente
+importante y el lector necesita identificarla de un vistazo.
+
+\begin{acadtable}[H]{tab:eje-tipo}{Eje 3: Tipo matemático}
+  \begin{tabularx}{\textwidth}{l l l X}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Alias} & \thead{Color} & \thead{Cubre} \\
+    \midrule
+    \texttt{\textbackslash eqvec\{·\}}
+      & \texttt{eq-vec} & \textcolor{eq-vec}{\textbf{Red}}
+      & Vectores/campos: $\eqvec{\mathbf{u}}$, $\eqvec{\mathbf{E}}$,
+        $\eqvec{\mathbf{B}}$, $\eqvec{\mathbf{J}}$ \\
+    \texttt{\textbackslash eqten\{·\}}
+      & \texttt{eq-ten} & \textcolor{eq-ten}{\textbf{Rosewater}}
+      & Tensores/matrices: $\eqten{\sigma_{ij}}$, $\eqten{g_{\mu\nu}}$,
+        $\eqten{W}$, $\eqten{\Sigma}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Ecuaciones completas con los tres ejes}
+\label{sec:ecuaciones-completas}
+%───────────────────────────────────────────────────────────────────────────────
+
+La riqueza del sistema aparece cuando los tres ejes se aplican
+simultáneamente en una ecuación completa. Los ejemplos siguientes
+usan física y machine learning para mostrar el sistema bajo carga real.
+
+\subsection{Mecánica cuántica: ecuación de Schrödinger}
+\label{subsec:schrodinger}
+
+\begin{fisicaconexion}{Ecuación de Schrödinger~\cite{griffiths2017quantum}}
+La ecuación de Schrödinger dependiente del tiempo:
+\[
+  \eqop{i}\eqcon{\hbar}\,\eqop{\frac{\partial}{\partial t}}\equ{\Psi}
+  = \eqop{\hat{H}}\equ{\Psi}
+  = \left(\eqop{-}\frac{\eqcon{\hbar}^2}{2\eqk{m}}\eqop{\nabla}^2
+    + \eqk{V}(\eqvec{\mathbf{r}},t)\right)\equ{\Psi}
+\]
+El color comunica: $\eqcon{\hbar}$ y $\eqcon{i}$ son constantes estructurales.
+$\eqk{m}$ es la masa, un parámetro fijado del sistema.
+$\eqk{V}(\mathbf{r},t)$ es el potencial, conocido.
+$\equ{\Psi}(\mathbf{r},t)$ es la función de onda, la incógnita que se busca.
+$\eqop{\partial/\partial t}$ y $\eqop{\nabla^2}$ son operadores diferenciales.
+\end{fisicaconexion}
+
+\subsection{Electrodinámica: ecuaciones de Maxwell}
+\label{subsec:maxwell}
+
+\begin{fisicaconexion}{Ecuaciones de Maxwell~\cite{jackson1999electrodynamics}}
+En forma diferencial, con unidades SI:
+\begin{align}
+  \eqop{\nabla \cdot} \eqvec{\mathbf{E}}
+    &= \frac{\eqk{\rho}}{\eqcon{\varepsilon_0}}
+  \label{eq:gauss-e} \\
+  \eqop{\nabla \cdot} \eqvec{\mathbf{B}}
+    &= 0
+  \label{eq:gauss-b} \\
+  \eqop{\nabla \times} \eqvec{\mathbf{E}}
+    &= \eqop{-}\eqop{\frac{\partial}{\partial t}}\eqvec{\mathbf{B}}
+  \label{eq:faraday} \\
+  \eqop{\nabla \times} \eqvec{\mathbf{B}}
+    &= \eqcon{\mu_0}\left(\eqvec{\mathbf{J}}
+      + \eqcon{\varepsilon_0}\eqop{\frac{\partial}{\partial t}}
+      \eqvec{\mathbf{E}}\right)
+  \label{eq:ampere}
+\end{align}
+Los campos $\eqvec{\mathbf{E}}$ y $\eqvec{\mathbf{B}}$ son incógnitas
+vectoriales en rojo. Las fuentes $\eqk{\rho}$ y $\eqvec{\mathbf{J}}$ son
+datos del problema en malva. Las constantes $\eqcon{\varepsilon_0}$ y
+$\eqcon{\mu_0}$ en lavanda son universales.
+\end{fisicaconexion}
+
+\subsection{Machine learning: ELBO variacional}
+\label{subsec:elbo}
+
+\begin{ejemplo}{Evidence Lower BOund (ELBO)~\cite{goodfellow2016deep}}
+\label{ex:elbo}
+En inferencia variacional, el objetivo es maximizar:
+\[
+  \eqfn{\mathcal{L}}(\eqk{\phi}, \eqk{\theta})
+  = \eqop{\mathbb{E}}_{\equ{z} \sim \eqfn{q}_{\eqk{\phi}}}
+    \!\left[\log \eqfn{p}_{\eqk{\theta}}(\eqk{x} \mid \equ{z})\right]
+  \eqop{-} \eqop{D_{\mathrm{KL}}}\!\left(
+    \eqfn{q}_{\eqk{\phi}}(\equ{z} \mid \eqk{x})
+    \,\|\, \eqfn{p}(\equ{z})
+  \right)
+\]
+El color hace explícita la estructura: $\eqk{\phi}$ y $\eqk{\theta}$ son los
+parámetros del encoder y decoder, datos del sistema de optimización.
+$\equ{z}$ es la variable latente, la incógnita que se integra.
+$\eqfn{q}_\phi$ y $\eqfn{p}_\theta$ son las distribuciones (funciones del
+modelo). $\eqop{\mathbb{E}}$ y $\eqop{D_{\mathrm{KL}}}$ son operadores.
+\end{ejemplo}
+
+\subsection{Física computacional: ecuación de Fokker-Planck}
+\label{subsec:fokker-planck}
+
+\begin{definicion}{Ecuación de Fokker-Planck}
+\label{def:fokker-planck}
+La evolución de la densidad de probabilidad $\equ{p}(\eqvec{\mathbf{x}},t)$
+de un proceso de difusión gobernado por la SDE
+$\eqdm{d}\equ{X} = \eqfn{f}(\equ{X})\eqdm{dt} + \eqk{\sigma}\eqdm{dW}$
+está dada por:
+\[
+  \eqop{\frac{\partial}{\partial t}}\equ{p}
+  = \eqop{-}\eqop{\nabla_x \cdot}
+    \!\left(\eqfn{f}\,\equ{p}\right)
+  + \frac{\eqk{\sigma}^2}{2}\,\eqop{\nabla_x^2}\,\equ{p}
+\]
+donde $\eqop{\nabla_x \cdot}$ es el operador divergencia y
+$\eqop{\nabla_x^2}$ es el Laplaciano, ambos actuando sobre la
+variable espacial $\eqvec{\mathbf{x}}$. El coeficiente de difusión
+$\eqk{\sigma}^2/2$ es un parámetro conocido.
+\end{definicion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Macros compuestos}
+\label{sec:macros-compuestos}
+%───────────────────────────────────────────────────────────────────────────────
+
+\texttt{config/equations.tex} define macros compuestos para patrones
+frecuentes en física y machine learning. Usan los ejes semánticos
+internamente.
+
+\begin{acadtable}[H]{tab:macros-compuestos}{Macros compuestos de equations.tex}
+  \begin{tabularx}{\textwidth}{l X X}
+    \toprule
+    \headerrow
+    \thead{Macro} & \thead{Uso} & \thead{Produce} \\
+    \midrule
+    \texttt{\textbackslash eqpdv\{f\}\{t\}}
+      & Derivada parcial coloreada
+      & $\eqpdv{f}{t}$ \\
+    \texttt{\textbackslash eqgrad\{u\}}
+      & Gradiente coloreado
+      & $\eqgrad{u}$ \\
+    \texttt{\textbackslash eqdvg\{\textbackslash mathbf\{u\}\}}
+      & Divergencia coloreada
+      & $\eqdvg{\mathbf{u}}$ \\
+    \texttt{\textbackslash eqSDE\{X\}\{f(X)\}\{\textbackslash sigma\}}
+      & SDE coloreada completa
+      & $\eqSDE{X}{f(X)}{\sigma}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+El macro \texttt{\textbackslash eqpdv} aplica la convención epistémica
+natural de las derivadas parciales: el numerador es siempre la incógnita
+(lo que cambia, lo que se busca entender) y el denominador es la variable
+independiente, dato del problema:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Ecuacion de calor: u es la incognita, t y x son variables independientes
+\[
+  \eqpdv{u}{t} = \eqk{\alpha}\, \eqpdv[2]{u}{x}
+\]
+\end{lstlisting}
+
+\[
+  \eqpdv{u}{t} = \eqk{\alpha}\, \eqop{\frac{\partial^2 \equ{u}}{\partial \eqk{x}^2}}
+\]
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Coloreado en contextos distintos}
+\label{sec:contextos}
+%───────────────────────────────────────────────────────────────────────────────
+
+El sistema funciona en cualquier contexto donde se pueda escribir matemáticas.
+La regla del modo matemático (\cref{def:matmode}) aplica en todos.
+
+\subsection{En tablas}
+\label{subsec:eq-en-tablas}
+
+El documento de referencia muestra el caso de expresiones regulares con
+theming en tablas: $\eqk{a} \eqop{\mid} \eqk{b}$ en una celda de
+\texttt{tabularx}. El patrón es simplemente matemáticas normales dentro de la celda:
+
+\begin{acadtable}[H]{tab:regexp-coloreado}{Expresiones regulares con coloreado semántico}
+  \begin{tabularx}{\textwidth}{X X}
+    \toprule
+    \headerrow
+    \thead{Expresión regular} & \thead{Lenguaje descrito} \\
+    \midrule
+    $\eqk{a} \eqop{\mid} \eqk{b}$
+      & $\eqdom{\{}\eqk{a}, \eqk{b}\eqdom{\}}$ \\
+    $\eqk{a}\eqop{*}$
+      & $\eqdom{\{}\eqcon{\varepsilon}, \eqk{a}, \eqk{aa}, \ldots\eqdom{\}}$ \\
+    $(\eqk{a} \eqop{\mid} \eqk{b})\eqop{*}\eqk{a}\eqk{b}\eqk{b}$
+      & Cadenas sobre $\eqdom{\{a,b\}}$ con sufijo $\eqk{abb}$ \\
+    $\eqop{\delta} : \eqdom{Q} \eqop{\times} \eqdom{\Sigma}
+      \eqop{\rightarrow} \eqdom{Q}$
+      & Función de transición de un DFA \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{En algoritmos}
+\label{subsec:eq-en-algoritmos}
+
+Dentro de \texttt{algorithm2e}, el theming funciona directamente en modo
+matemático. El documento de referencia muestra algoritmos de construcción
+de subconjuntos con $\eqk{q'_0} \eqop{\gets} \eqop{E}(\eqdom{\{}\eqk{q_0}\eqdom{\}})$ ---
+el estado inicial (conocido) se inicializa con el operador de clausura:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{algorithm}[H]
+  \KwIn{NFA $\eqk{N} = (\eqdom{Q}, \eqdom{\Sigma}, \eqop{\delta},
+               \eqk{q_0}, \eqdom{F})$}
+  $\eqk{q'_0} \eqop{\gets} \eqop{E}(\eqdom{\{}\eqk{q_0}\eqdom{\}})$\;
+  \While{$\equ{T} \eqop{\in} \eqdom{Q'}$ no marcado}{
+    $\equ{U} \eqop{\gets} \eqop{E}(\eqop{move}(\equ{T}, \equ{a}))$\;
+  }
+\end{algorithm}
+\end{lstlisting}
+
+\subsection{En TikZ}
+\label{subsec:eq-en-tikz}
+
+En nodos y aristas de TikZ, los labels matemáticos van dentro de \texttt{\$...\$}.
+El theming es idéntico al de cualquier ecuación:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\path[->]
+  (q0) edge node {$\eqk{a}$} (q1)
+  (q0) edge node {$\eqcon{\varepsilon}$} (q2);
+\end{lstlisting}
+
+\begin{observacion}{Colores en TikZ: usar aliases, no Ctp*}
+El documento de referencia usa \texttt{CtpBlue}, \texttt{CtpBase},
+\texttt{CtpText} directamente en los estilos de nodos TikZ.
+Esto viola la filosofía del template: los colores \texttt{Ctp*}
+deben vivir \textit{únicamente} en \texttt{themes/catppuccin-palette.tex}.
+El uso correcto es:
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% INCORRECTO: Ctp* en un archivo de contenido
+state/.style={draw=CtpBlue, fill=CtpBase, text=CtpText}
+
+% CORRECTO: aliases semanticos
+state/.style={draw=tikz-node-border, fill=background, text=maintext}
+\end{lstlisting}
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Toggle de impresión en blanco y negro}
+\label{sec:toggle-bn}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Toggle \texttt{eqcolors}}
+\label{def:toggle}
+El toggle global \texttt{\textbackslash ifeqcolors} controla si las macros
+aplican color o pasan el argumento sin modificar. Esto permite generar una
+versión B/N del documento sin editar ninguna ecuación:
+\end{definicion}
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% En config/equations.tex (activo por defecto):
+\eqcolorstrue    % color activado
+\eqcolorsfalse   % color desactivado: todas las macros son transparentes
+
+% Para desactivar en un grupo local:
+{\eqcolorsfalse
+  \begin{equation}
+    i\hbar \frac{\partial \Psi}{\partial t} = \hat{H}\Psi
+  \end{equation}
+}
+\end{lstlisting}
+
+Con \texttt{\textbackslash eqcolorsfalse}, \texttt{\textbackslash eqop\{\textbackslash nabla\}}
+produce $\nabla$ sin color --- funcionalmente idéntico a escribir
+$\nabla$ directamente. El documento compila sin cambios.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Integración con el paquete \texttt{physics}}
+\label{sec:physics-pkg}
+%───────────────────────────────────────────────────────────────────────────────
+
+El paquete \texttt{physics}~\cite{physics-pkg} provee comandos de alto nivel
+que se integran naturalmente con el coloreado semántico. La norma, el valor
+absoluto y los operadores de Dirac se colorean envolviendo el comando de
+\texttt{physics} en la macro semántica correcta:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\norm{\equ{f}}_{\eqdom{L^2}}         % norma de la incognita en L2
+\abs{\eqk{z} - \eqk{z_0}}            % valor absoluto de datos
+\bra{\eqk{\phi}}\hat{H}\ket{\equ{\psi}}   % elemento de matriz
+\end{lstlisting}
+
+\[
+  \|\equ{f}\|_{\eqdom{L^2}}^2
+  = \eqop{\int}_{\eqdom{\Omega}} \abs{\equ{f}(\eqvec{\mathbf{x}})}^2
+    \eqdm{d\mu}(\eqvec{\mathbf{x}})
+\]
+
+\begin{observacion}{Conflicto de \texttt{\textbackslash div}}
+El paquete \texttt{physics} redefine \texttt{\textbackslash div} como
+el operador divergencia ($\nabla\cdot$). Para la divergencia coloreada
+usar \texttt{\textbackslash eqdvg\{\}}, definido en
+\texttt{config/equations.tex} precisamente para evitar este conflicto.
+Para la división aritmética usar \texttt{\textbackslash frac\{\}\{\}} o
+el operador \texttt{/}.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]

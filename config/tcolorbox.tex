@@ -1,0 +1,108 @@
+%───────────────────────────────────────────────────────────────────────────────
+% TCOLORBOX.TEX — Estilo base y entornos auxiliares para cajas
+%───────────────────────────────────────────────────────────────────────────────
+% Define basebox: estilo heredado por todos los entornos de environments/.
+% Define boxfig y boxtab: versiones no-flotantes para usar DENTRO de cajas.
+%
+% PROBLEMA FUNDAMENTAL — flotantes dentro de tcolorbox:
+%   tcolorbox construye internamente un \vbox. Cualquier entorno flotante
+%   (\begin{figure}, \begin{table}, \begin{acadtable}) invoca \@float, que
+%   requiere "outer par mode". Dentro de un \vbox ese modo no existe →
+%   error "Not in outer par mode".
+%
+%   Entornos afectados dentro de cualquier caja basada en basebox:
+%     \begin{figure}      → usar \begin{boxfig}
+%     \begin{table}       → usar \begin{boxtab}
+%     \begin{acadtable}   → usar \begin{boxtab}
+%     \begin{lstlisting}[float=...] → quitar la opción float=
+%     \begin{longtable}   → incompatible; usar tabularx sin float
+%
+%   La solución usa \captionof{tipo}{texto} del paquete caption (ya cargado),
+%   que genera el caption y actualiza el contador sin invocar el mecanismo
+%   de flotante. \phantomsection corrige el anchor del PDF con hyperref.
+%
+% ANCHO DENTRO DE CAJAS:
+%   Dentro de tcolorbox, \linewidth = ancho del área de contenido de la caja
+%   (descontando left=6pt + right=6pt). Usar siempre \linewidth, no \textwidth,
+%   para tabularx, \includegraphics[width=...], etc.
+%───────────────────────────────────────────────────────────────────────────────
+
+
+% ─── Estilo base: heredado por todos los entornos teoremáticos ───────────────
+\tcbset{
+  basebox/.style={
+    enhanced,
+    breakable,
+    colback    = surface0,
+    colframe   = overlay0!30,
+    coltext    = maintext,
+    arc        = 0.5pt,
+    outer arc  = 0.5pt,
+    boxrule    = 0.5pt,
+    left       = 6pt,
+    right      = 6pt,
+    top        = 8pt,
+    bottom     = 8pt,
+    drop fuzzy shadow = background,
+    fonttitle  = \bfseries,
+    before title = {\vspace{2pt}},
+    after title  = {\vspace{2pt}},
+  }
+}
+
+
+% ─── boxfig: figura no-flotante para usar dentro de cajas ────────────────────
+% Uso:
+%   \begin{boxfig}{fig:label}{Caption de la figura}
+%     \includegraphics[width=\linewidth]{ruta/imagen}
+%   \end{boxfig}
+%
+% Nota: el label va DESPUÉS de \captionof para que hyperref ancle
+% correctamente. \phantomsection asegura el anchor del PDF.
+\NewDocumentEnvironment{boxfig}{ m m }{%
+  \begin{center}
+}{%
+  \phantomsection
+  \captionof{figure}{#2}%
+  \label{#1}%
+  \end{center}
+}
+
+
+% ─── boxtab: tabla no-flotante para usar dentro de cajas ─────────────────────
+% Reemplaza \begin{acadtable} y \begin{table} dentro de tcolorbox.
+%
+% Uso:
+%   \begin{boxtab}{tab:label}{Caption de la tabla}
+%     \begin{tabularx}{\linewidth}{l Y Z}
+%       ...
+%     \end{tabularx}
+%   \end{boxtab}
+%
+% Nota: usar \linewidth (no \textwidth) para tabularx dentro de la caja.
+% La posición del caption sigue la convención de tablas: arriba del contenido.
+\NewDocumentEnvironment{boxtab}{ m m }{%
+  \begin{center}
+  \phantomsection
+  \captionof{table}{#2}%
+  \label{#1}%
+}{%
+  \end{center}
+}
+
+
+% ─── Entornos anidados: cajas dentro de cajas ────────────────────────────────
+% tcolorbox permite anidar cajas solo si la caja interna tiene breakable=false.
+% Estilo para cajas secundarias dentro de un entorno teoremático:
+\tcbset{
+  innerbox/.style={
+    basebox,
+    breakable = false,        % obligatorio para anidar dentro de basebox
+    boxrule   = 0.3pt,
+    left      = 4pt,
+    right     = 4pt,
+    top       = 4pt,
+    bottom    = 4pt,
+    drop fuzzy shadow = none, % sin sombra en cajas internas
+  }
+}

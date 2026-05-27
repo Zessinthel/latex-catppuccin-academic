@@ -1,0 +1,106 @@
+%───────────────────────────────────────────────────────────────────────────────
+% TABLES.TEX — Estilo global de tablas con colores semánticos Catppuccin
+%───────────────────────────────────────────────────────────────────────────────
+% Consume aliases del dominio table-* definidos en catppuccin-palette.tex.
+% No usa Ctp* directamente ni define colorlets propios.
+%
+% ENTORNOS DISPONIBLES:
+%   acadtable   → tabla flotante (fuera de tcolorbox)
+%   boxtab      → tabla no-flotante para DENTRO de tcolorbox (en tcolorbox.tex)
+%   fittable    → reescala automática si la tabla excede el ancho disponible
+%───────────────────────────────────────────────────────────────────────────────
+
+
+% ─── Espaciado global de booktabs ────────────────────────────────────────────
+\setlength{\heavyrulewidth}{0.08em}
+\setlength{\lightrulewidth}{0.04em}
+\setlength{\cmidrulewidth}{0.03em}
+\renewcommand{\arraystretch}{1.25}
+
+% ─── Alineación vertical: m (middle) en lugar de p (top) ────────────────────
+% tabularx usa p{} por defecto → desalineación vertical al mezclar con l/c/r.
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+
+% ─── Tipos de columna ────────────────────────────────────────────────────────
+% L/C/R: ancho fijo con wrapping y centrado vertical
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}m{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}m{#1}}
+
+% Y/Z: columnas proporcionales para tabularx (centrada / derecha)
+% X ya existe en tabularx (izquierda, proporcional, ahora con m{})
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{Z}{>{\raggedleft\arraybackslash}X}
+
+% ─── Color de reglas booktabs ─────────────────────────────────────────────────
+\AtBeginDocument{\arrayrulecolor{table-rule}}
+
+% ─── Encabezado de columna ───────────────────────────────────────────────────
+\newcommand{\thead}[1]{%
+  \bfseries\color{table-head-text}#1%
+}
+
+% Colorear la fila de encabezado completa vía \rowcolor
+\newcommand{\headerrow}{\rowcolor{table-head}}
+
+
+% ─── fittable: reescala si excede el ancho disponible ────────────────────────
+% Funciona tanto en texto normal (\textwidth) como dentro de tcolorbox
+% (\linewidth). Usa \linewidth en ambos contextos: fuera de una caja
+% \linewidth == \textwidth; dentro, \linewidth es el ancho de la caja.
+%
+% Uso:
+%   \begin{fittable}
+%     \begin{tabular}{llll} ... \end{tabular}
+%   \end{fittable}
+\newsavebox{\fittablebox}
+\NewDocumentEnvironment{fittable}{}{%
+  \begin{lrbox}{\fittablebox}%
+}{%
+  \end{lrbox}%
+  \ifdim\wd\fittablebox>\linewidth
+    \resizebox{\linewidth}{!}{\usebox{\fittablebox}}%
+  \else
+    \usebox{\fittablebox}%
+  \fi
+}
+
+
+% ─── acadtable: tabla flotante (SOLO fuera de tcolorbox) ─────────────────────
+% Produce \begin{table}[placement] → flotante.
+% DENTRO de un entorno tcolorbox (definicion, ejemplo, etc.) usar boxtab
+% de config/tcolorbox.tex en su lugar.
+%
+% Uso:
+%   \begin{acadtable}[htbp]{tab:label}{Caption text}
+%     \begin{tabularx}{\textwidth}{l Y Z}
+%       ...
+%     \end{tabularx}
+%   \end{acadtable}
+\NewDocumentEnvironment{acadtable}{ O{htbp} m m }{%
+  \begin{table}[#1]%
+    \centering
+    \captionof{table}{#3}\label{#2}%
+}{%
+  \end{table}%
+}
+
+
+% ─── Renombrar "Cuadro" → "Tabla" en español ─────────────────────────────────
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+
+
+% ─── Nota al pie de tabla ────────────────────────────────────────────────────
+\newcommand{\tablenote}[2]{%
+  \par\vspace{2pt}%
+  {\footnotesize\textsuperscript{#1}\,#2}%
+}
+
+
+%───────────────────────────────────────────────────────────────────────────────
+% NOTA: tabularx NO puede envolverse en \NewDocumentEnvironment porque
+% escanea el cuerpo literalmente buscando \end{tabularx}.
+% Usar siempre directamente:
+%   \begin{tabularx}{\textwidth}{l Y Z}   ← fuera de caja
+%   \begin{tabularx}{\linewidth}{l Y Z}   ← dentro de tcolorbox
+%───────────────────────────────────────────────────────────────────────────────

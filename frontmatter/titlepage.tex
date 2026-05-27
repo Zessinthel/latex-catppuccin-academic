@@ -1,49 +1,66 @@
 %───────────────────────────────────────────────────────────────────────────────
-% PORTADA GENÉRICA CON CATPPUCCIN
-% Usa metadatos de metadata.tex y colores del tema Catppuccin
+% TITLEPAGE.TEX — Portada genérica
+%───────────────────────────────────────────────────────────────────────────────
+% Consume: \docTitulo, \docSubtitulo, \docAutor, \docEstado, \docFecha,
+%          \docCita (de metadata.tex)
+%          titlepage-accent (de themes/catppuccin-palette.tex)
+%
+% NOTA — imagen del footer:
+%   figs/gray0_ctp_on_line.svg debe convertirse a PDF antes de compilar:
+%   inkscape --export-filename=figs/gray0_ctp_on_line.pdf \
+%             figs/gray0_ctp_on_line.svg
+%   LuaLaTeX no acepta SVG directamente con \includegraphics.
 %───────────────────────────────────────────────────────────────────────────────
 \begin{titlepage}
   \centering
   \vspace*{2cm}
 
-  % Título principal
+  % ─── Título principal ──────────────────────────────────────────────────────
   {\fontsize{48}{60}\selectfont\bfseries
    \docTitulo\par}
   \vspace{0.8cm}
 
-  % Línea decorativa
-  {\color{defcolor}\rule{0.6\textwidth}{0.5pt}}\par
+  % ─── Línea decorativa ──────────────────────────────────────────────────────
+  {\color{titlepage-accent}\rule{0.6\textwidth}{0.5pt}}\par
   \vspace{1.2cm}
 
-  % Subtítulo
-  {\large
-   \docSubtitulo\par}
+  % ─── Subtítulo ─────────────────────────────────────────────────────────────
+  {\large\docSubtitulo\par}
   \vspace{2cm}
 
-  % Cita en caja (fondo sutil con surface0)
+  % ─── Caja de cita ──────────────────────────────────────────────────────────
   \begin{tcolorbox}[
-    enhanced, blanker,
-    colback=surface0,          
-    colframe=defcolor,
-    width=0.75\textwidth,
-    halign=center,
+    enhanced,
+    blanker,
+    colback   = surface0,
+    colframe  = titlepage-accent,
+    coltext   = titlepage-accent,
+    width     = 0.75\textwidth,
+    halign    = center,
     left=6pt, right=6pt, top=6pt, bottom=6pt,
-    arc=2pt,
-    boxrule=0.3pt
+    arc       = 2pt,
+    boxrule   = 0.3pt,
   ]
-  \itshape\small
-  \docCita
+    \itshape\small\docCita
   \end{tcolorbox}
 
   \vfill
 
-  % Autor, estado y fecha
-  {\normalsize
-   \docAutor\par}
+  % ─── Autor, estado y fecha ─────────────────────────────────────────────────
+  {\normalsize\docAutor\par}
   \medskip
-  {\normalsize
-   \docEstado\ --- \docFecha\par}
+  {\normalsize\docEstado\ ---\ \docFecha\par}
   \smallskip
-  {\footnotesize\color{overlay0}          
-   Compilado con \LaTeX}
+  {\footnotesize\color{overlay0}Compilado con \LaTeX}
+
+  % ─── Footer: imagen decorativa ────────────────────────────────────────────
+  % textblock* usa coordenadas absolutas en la unidad del segundo argumento.
+  % (0cm, 0.93\paperheight) posiciona la esquina superior izquierda del bloque
+  % al 93% de la altura del papel desde el borde superior.
+  % overlay (opción de textpos) garantiza que no desplace el contenido normal.
+  \begin{textblock*}{\paperwidth}(0cm, 0.93\paperheight)
+    \noindent
+    \includegraphics[width=0.7\paperwidth]{figs/gray0_ctp_on_line.pdf}
+  \end{textblock*}
+
 \end{titlepage}

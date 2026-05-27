@@ -1,31 +1,29 @@
 %───────────────────────────────────────────────────────────────────────────────
-% LISTINGS-CATPPUCCIN.TEX — Syntax highlighting con la paleta Catppuccin
+% LISTINGS-CATPPUCCIN.TEX — Syntax highlighting con colores semánticos Catppuccin
 %───────────────────────────────────────────────────────────────────────────────
-% Basado en la guía de estilo: https://catppuccin.com/style-guide
+% Consume aliases del dominio code-* definidos en catppuccin-palette.tex.
+% No usa Ctp* directamente.
 %
-% Mapa de colores por clase de keyword:
+% Mapa de clases de keyword → alias semántico:
 %
-%   Clase           Color         Rol
-%   ─────           ─────         ───
-%   keywords[1]     Mauve         Palabras clave del lenguaje
-%   keywords[2]     Red           Builtins / atoms / symbols
-%   keywords[3]     Peach         Constantes especiales (Inf, NaN, etc.)
-%   keywords[4]     Sky           Operadores como keywords (not, and, or)
-%   keywords[5]     Blue          Funciones / métodos estándar
-%   keywords[6]     Yellow        Tipos / clases
-%   keywords[7]     Teal          Módulos / enums / variants
-%   keywords[8]     Rosewater     Macros / decoradores / atributos / pragmas
+%   Clase         Alias          Rol
+%   ─────         ─────          ───
+%   keywords[1]   code-keyword   Palabras clave del lenguaje
+%   keywords[2]   code-builtin   Builtins / atoms / symbols
+%   keywords[3]   code-const     Constantes especiales (Inf, NaN, ...)
+%   keywords[4]   code-operator  Operadores como keywords (not, and, or)
+%   keywords[5]   code-fn        Funciones / métodos estándar
+%   keywords[6]   code-type      Tipos / clases / interfaces
+%   keywords[7]   code-mod       Módulos / namespaces / enums
+%   keywords[8]   code-macro     Macros / decoradores / atributos / pragmas
 %
 % Colores automáticos (no requieren keywords):
-%   Strings         Green
-%   Comentarios     Overlay2 (itálica)
-%   Números línea   Overlay1
-%   Fondo           Base
-%   Texto base      Text
-%   Bordes          Surface0
-%
-% Paquetes requeridos (cargados en packages.tex):
-%   listings, inconsolata
+%   Strings        code-string
+%   Comentarios    code-comment  (itálica)
+%   Números línea  code-linenum
+%   Fondo          code-bg       (desactivado por defecto → transparente)
+%   Texto base     maintext
+%   Bordes         code-border
 %───────────────────────────────────────────────────────────────────────────────
 
 
@@ -46,59 +44,58 @@
   belowskip=10pt,
   frame=lines,
   framesep=5pt,
-  % ── Soporte UTF-8 ─────────────────────────────────────────────────────────
+  % ── Soporte UTF-8 ──────────────────────────────────────────────────────────
   extendedchars=true,
   inputencoding=utf8,
   literate=
-    {á}{{\'a}}1  {é}{{\'e}}1  {í}{{\'i}}1  {ó}{{\'o}}1  {ú}{{\'u}}1
-    {Á}{{\'A}}1  {É}{{\'E}}1  {Í}{{\'I}}1  {Ó}{{\'O}}1  {Ú}{{\'U}}1
-    {ñ}{{\~n}}1  {Ñ}{{\~N}}1  {ü}{{\"u}}1  {Ü}{{\"U}}1
-    {¡}{{!`}}1   {¿}{{?`}}1
+    {á}{{\\'a}}1  {é}{{\\'e}}1  {í}{{\\'i}}1  {ó}{{\\'o}}1  {ú}{{\\'u}}1
+    {Á}{{\\'A}}1  {É}{{\\'E}}1  {Í}{{\\'I}}1  {Ó}{{\\'O}}1  {Ú}{{\\'U}}1
+    {ñ}{{\~n}}1   {Ñ}{{\~N}}1   {ü}{{\"u}}1   {Ü}{{\"U}}1
+    {¡}{{!`}}1    {¿}{{?`}}1
     {°}{{\textdegree}}1
     {²}{{\textsuperscript{2}}}1  {³}{{\textsuperscript{3}}}1
     {×}{{\texttimes}}1  {÷}{{\textdiv}}1
     {±}{{\textpm}}1     {≠}{{$\neq$}}1
     {≤}{{$\leq$}}1      {≥}{{$\geq$}}1
-    {∞}{{$\infty$}}1     {π}{{$\pi$}}1
+    {∞}{{$\infty$}}1    {π}{{$\pi$}}1
     {→}{{$\rightarrow$}}1 {←}{{$\leftarrow$}}1
-    {⟨}{{$\langle$}}1    {⟩}{{$\rangle$}}1
-    {λ}{{$\lambda$}}1    {α}{{$\alpha$}}1
-    {β}{{$\beta$}}1      {γ}{{$\gamma$}}1
-    {δ}{{$\delta$}}1     {ε}{{$\varepsilon$}}1
-    {θ}{{$\theta$}}1     {σ}{{$\sigma$}}1
-    {μ}{{$\mu$}}1        {ρ}{{$\rho$}}1
-    {τ}{{$\tau$}}1       {φ}{{$\varphi$}}1
-    {ω}{{$\omega$}}1     {Ω}{{$\Omega$}}1
-    {∈}{{$\in$}}1        {∉}{{$\notin$}}1
+    {⟨}{{$\langle$}}1   {⟩}{{$\rangle$}}1
+    {λ}{{$\lambda$}}1   {α}{{$\alpha$}}1
+    {β}{{$\beta$}}1     {γ}{{$\gamma$}}1
+    {δ}{{$\delta$}}1    {ε}{{$\varepsilon$}}1
+    {θ}{{$\theta$}}1    {σ}{{$\sigma$}}1
+    {μ}{{$\mu$}}1       {ρ}{{$\rho$}}1
+    {τ}{{$\tau$}}1      {φ}{{$\varphi$}}1
+    {ω}{{$\omega$}}1    {Ω}{{$\Omega$}}1
+    {∈}{{$\in$}}1       {∉}{{$\notin$}}1
     {⊂}{{$\subset$}}1   {∪}{{$\cup$}}1
-    {∩}{{$\cap$}}1       {∅}{{$\emptyset$}}1
-    {√}{{$\sqrt{}$}}1    {∑}{{$\sum$}}1
-    {∏}{{$\prod$}}1      {∫}{{$\int$}}1
-    {…}{{$\ldots$}}1     {·}{{$\cdot$}}1,
-  % ── Colores globales ───────────────────────────────────────────────────────
-  rulecolor=\color{CtpSurface0},
-  %backgroundcolor=\color{CtpBase},
-  backgroundcolor={},
-  basicstyle=\ttfamily\small\color{CtpText},
-  numberstyle=\tiny\color{CtpOverlay1},
-  % ── Sintaxis ───────────────────────────────────────────────────────────────
-  keywordstyle=\color{CtpMauve}\bfseries,          % [1] keywords
-  keywordstyle=[2]\color{CtpRed},                   % [2] builtins / atoms
-  keywordstyle=[3]\color{CtpPeach},                  % [3] constantes especiales
-  keywordstyle=[4]\color{CtpSky},                    % [4] operadores keyword
-  keywordstyle=[5]\color{CtpBlue},                   % [5] funciones estándar
-  keywordstyle=[6]\color{CtpYellow},                 % [6] tipos / clases
-  keywordstyle=[7]\color{CtpTeal},                   % [7] módulos / enums
-  keywordstyle=[8]\color{CtpRosewater},              % [8] macros / decoradores
-  stringstyle=\color{CtpGreen},
-  commentstyle=\color{CtpOverlay2}\itshape,
-  identifierstyle=\color{CtpText},
-  % ── Strings y comentarios genéricos ────────────────────────────────────────
-  morestring=[b][\color{CtpGreen}]",
-  morestring=[b][\color{CtpGreen}]',
+    {∩}{{$\cap$}}1      {∅}{{$\emptyset$}}1
+    {√}{{$\sqrt{}$}}1   {∑}{{$\sum$}}1
+    {∏}{{$\prod$}}1     {∫}{{$\int$}}1
+    {…}{{$\ldots$}}1    {·}{{$\cdot$}}1,
+  % ── Colores de infraestructura ─────────────────────────────────────────────
+  rulecolor=\color{code-border},
+  backgroundcolor={},                           % transparente (code-bg disponible)
+  basicstyle=\ttfamily\small\color{maintext},
+  numberstyle=\tiny\color{code-linenum},
+  identifierstyle=\color{maintext},
+  % ── Sintaxis por clase ─────────────────────────────────────────────────────
+  keywordstyle=\color{code-keyword}\bfseries,   % [1] keywords
+  keywordstyle=[2]\color{code-builtin},          % [2] builtins / atoms
+  keywordstyle=[3]\color{code-const},            % [3] constantes especiales
+  keywordstyle=[4]\color{code-operator},         % [4] operadores keyword
+  keywordstyle=[5]\color{code-fn},               % [5] funciones estándar
+  keywordstyle=[6]\color{code-type},             % [6] tipos / clases
+  keywordstyle=[7]\color{code-mod},              % [7] módulos / enums
+  keywordstyle=[8]\color{code-macro},            % [8] macros / decoradores
+  stringstyle=\color{code-string},
+  commentstyle=\color{code-comment}\itshape,
+  % ── Strings genéricos ──────────────────────────────────────────────────────
+  morestring=[b][\color{code-string}]",
+  morestring=[b][\color{code-string}]',
 }
 
-% Estilo por defecto
+% Estilo por defecto global
 \lstset{style=catppuccin-base}
 
 
@@ -109,19 +106,15 @@
 \lstdefinestyle{catppuccin-python}{
   style=catppuccin-base,
   language=Python,
-  % [1] keywords (Mauve) — control flow + structural
   morekeywords={[1]and, as, assert, async, await, break, class, continue,
     def, del, elif, else, except, finally, for, from, global, if, import,
     in, is, lambda, nonlocal, not, or, pass, raise, return, try, while,
     with, yield},
-  % [2] builtins / atoms (Red)
   morekeywords={[2]True, False, None, self, cls, NotImplemented, Ellipsis,
     __all__, __name__, __main__, __init__, __repr__, __str__, __call__,
     __enter__, __exit__, __iter__, __next__, __getitem__, __setitem__,
     __len__, __eq__, __hash__, __new__, __del__},
-  % [3] constantes (Peach)
   morekeywords={[3]POSITIVE_INFINITY, NEGATIVE_INFINITY, nan, inf},
-  % [5] funciones builtin (Blue)
   morekeywords={[5]abs, all, any, bin, bool, breakpoint, callable, chr,
     compile, complex, delattr, dict, dir, divmod, enumerate, eval, exec,
     filter, float, format, frozenset, getattr, globals, hasattr, hash, help,
@@ -130,19 +123,15 @@
     property, range, repr, reversed, round, set, setattr, slice, sorted,
     staticmethod, str, sum, super, tuple, type, vars, zip,
     classmethod, dataclass, abstractmethod},
-  % [6] tipos (Yellow)
   morekeywords={[6]int, float, str, bool, list, dict, set, tuple, bytes,
     bytearray, complex, frozenset, memoryview, range, type, object,
     Exception, ValueError, TypeError, KeyError, IndexError, AttributeError,
     RuntimeError, StopIteration, GeneratorExit, OSError, IOError},
-  % [7] módulos estándar (Teal)
   morekeywords={[7]numpy, scipy, torch, tensorflow, pandas, matplotlib,
     os, sys, math, random, itertools, functools, collections, typing,
     pathlib, json, re, abc, dataclasses, enum},
-  % [8] decoradores (Rosewater) — listings no colorea @, pero sí la palabra
   morekeywords={[8]property, staticmethod, classmethod, abstractmethod,
     dataclass, overload, override, deprecated},
-  % Comentarios
   morecomment=[l]{\#},
   morecomment=[s]{"""}{"""},
   morecomment=[s]{'''}{'''},
@@ -156,36 +145,29 @@
 \lstdefinestyle{catppuccin-c}{
   style=catppuccin-base,
   language=C,
-  % [1] keywords (Mauve)
   morekeywords={[1]auto, break, case, const, continue, default, do, else,
     enum, extern, for, goto, if, inline, register, restrict, return,
     sizeof, static, struct, switch, typedef, union, volatile, while,
     _Alignas, _Alignof, _Atomic, _Bool, _Complex, _Generic,
     _Imaginary, _Noreturn, _Static_assert, _Thread_local},
-  % [2] builtins (Red)
   morekeywords={[2]NULL, EOF, stdin, stdout, stderr, errno,
     EXIT_SUCCESS, EXIT_FAILURE, RAND_MAX, BUFSIZ},
-  % [3] constantes (Peach)
   morekeywords={[3]true, false, INFINITY, NAN, HUGE_VAL,
     INT_MAX, INT_MIN, UINT_MAX, LONG_MAX, LONG_MIN,
     FLT_MAX, FLT_MIN, DBL_MAX, DBL_MIN, SIZE_MAX},
-  % [5] funciones estándar (Blue)
   morekeywords={[5]printf, fprintf, sprintf, snprintf, scanf, fscanf,
     malloc, calloc, realloc, free, memcpy, memmove, memset, memcmp,
     strlen, strcpy, strncpy, strcat, strcmp, strncmp, strstr, strchr,
     fopen, fclose, fread, fwrite, fgets, fputs, fseek, ftell, rewind,
     abs, atoi, atof, atol, strtol, strtod, qsort, bsearch,
     assert, exit, abort, atexit, system, getenv},
-  % [6] tipos (Yellow)
   morekeywords={[6]void, char, short, int, long, float, double, signed,
     unsigned, size_t, ptrdiff_t, intptr_t, uintptr_t, FILE,
     int8_t, int16_t, int32_t, int64_t,
     uint8_t, uint16_t, uint32_t, uint64_t,
     bool, complex, imaginary},
-  % [8] preprocesador (Rosewater)
   morekeywords={[8]include, define, undef, ifdef, ifndef, endif,
     if, elif, else, pragma, error, warning, line},
-  % Comentarios
   morecomment=[l]{//},
   morecomment=[s]{/*}{*/},
 }
@@ -196,9 +178,8 @@
 % ═════════════════════════════════════════════════════════════════════════════
 
 \lstdefinestyle{catppuccin-cpp}{
-  style=catppuccin-c,  % hereda de C
+  style=catppuccin-c,
   language=C++,
-  % [1] keywords adicionales C++ (Mauve)
   morekeywords={[1]alignas, alignof, and, and_eq, bitand, bitor, catch,
     class, compl, concept, consteval, constexpr, constinit,
     co_await, co_return, co_yield, decltype, delete, dynamic_cast,
@@ -207,17 +188,13 @@
     public, reinterpret_cast, requires, static_assert, static_cast,
     template, this, throw, try, typeid, typename, using, virtual,
     xor, xor_eq},
-  % [2] builtins (Red) — adicionales a C
   morekeywords={[2]nullptr, this, std, npos},
-  % [3] constantes (Peach)
   morekeywords={[3]true, false, nullptr},
-  % [5] funciones STL (Blue)
   morekeywords={[5]make_shared, make_unique, make_pair, make_tuple,
     move, forward, swap, begin, end, size, empty, push_back,
     emplace_back, insert, erase, find, count, sort, transform,
     accumulate, reduce, for_each, copy, fill, min, max,
     cout, cin, cerr, endl, getline},
-  % [6] tipos STL (Yellow)
   morekeywords={[6]auto, string, string_view, vector, array, deque,
     list, forward_list, set, multiset, map, multimap,
     unordered_set, unordered_map, stack, queue, priority_queue,
@@ -226,7 +203,6 @@
     thread, mutex, atomic, future, promise,
     istream, ostream, fstream, stringstream, iostream,
     iterator, const_iterator, reverse_iterator},
-  % [7] namespaces (Teal)
   morekeywords={[7]std, chrono, filesystem, ranges, views,
     this_thread, regex, literals},
 }
@@ -248,19 +224,15 @@
 \lstdefinestyle{catppuccin-rust}{
   style=catppuccin-base,
   language=rust,
-  % [1] keywords (Mauve)
   morekeywords={[1]as, async, await, break, const, continue, crate, dyn,
     else, enum, extern, fn, for, if, impl, in, let, loop, match, mod,
     move, mut, pub, ref, return, self, Self, static, struct, super,
     trait, type, unsafe, use, where, while, yield,
     abstract, become, box, do, final, macro, override, priv,
     try, typeof, unsized, virtual},
-  % [2] builtins / atoms (Red)
   morekeywords={[2]true, false, Some, None, Ok, Err, self, Self},
-  % [3] constantes (Peach)
   morekeywords={[3]INFINITY, NEG_INFINITY, NAN, MAX, MIN,
     EPSILON, PI, E, TAU},
-  % [5] funciones / métodos comunes (Blue)
   morekeywords={[5]println!, print!, eprintln!, eprint!, format!,
     vec!, assert!, assert_eq!, assert_ne!, debug_assert!,
     panic!, todo!, unimplemented!, unreachable!,
@@ -268,7 +240,6 @@
     collect, iter, into_iter, enumerate, zip, fold, reduce,
     push, pop, len, is_empty, contains, insert, remove, get,
     clone, to_string, to_owned, as_ref, as_mut, into, from},
-  % [6] tipos (Yellow)
   morekeywords={[6]bool, char, f32, f64, i8, i16, i32, i64, i128, isize,
     u8, u16, u32, u64, u128, usize, str, String,
     Vec, HashMap, HashSet, BTreeMap, BTreeSet, LinkedList, VecDeque,
@@ -278,11 +249,9 @@
     From, Into, TryFrom, TryInto, AsRef, AsMut,
     Default, PartialEq, Eq, PartialOrd, Ord, Hash,
     Cow, Pin, Future, Stream, Error},
-  % [7] módulos / crates (Teal)
   morekeywords={[7]std, core, alloc, collections, fmt, io, fs, net,
     path, env, thread, sync, cell, mem, ptr, ops, iter,
     serde, tokio, rayon, anyhow, thiserror, clap, log, tracing},
-  % [8] macros / atributos (Rosewater)
   morekeywords={[8]derive, cfg, test, allow, warn, deny, forbid,
     inline, must_use, deprecated, doc, feature,
     macro_rules!, macro_export, proc_macro, proc_macro_derive},
@@ -305,25 +274,19 @@
 \lstdefinestyle{catppuccin-go}{
   style=catppuccin-base,
   language=go,
-  % [1] keywords (Mauve)
   morekeywords={[1]break, case, chan, const, continue, default, defer,
     else, fallthrough, for, func, go, goto, if, import, interface,
     map, package, range, return, select, struct, switch, type, var},
-  % [2] builtins / atoms (Red)
   morekeywords={[2]true, false, nil, iota},
-  % [3] constantes (Peach)
   morekeywords={[3]MaxFloat32, MaxFloat64, MaxInt, MinInt,
     MaxInt8, MaxInt16, MaxInt32, MaxInt64,
     MaxUint, MaxUint8, MaxUint16, MaxUint32, MaxUint64},
-  % [5] funciones builtin (Blue)
   morekeywords={[5]append, cap, clear, close, complex, copy, delete,
     imag, len, make, max, min, new, panic, print, println,
     real, recover},
-  % [6] tipos (Yellow)
   morekeywords={[6]bool, byte, complex64, complex128, error, float32,
     float64, int, int8, int16, int32, int64, rune, string,
     uint, uint8, uint16, uint32, uint64, uintptr, any, comparable},
-  % [7] paquetes estándar (Teal)
   morekeywords={[7]fmt, io, os, net, http, json, strings, strconv,
     math, sync, context, time, errors, log, testing, reflect,
     sort, bytes, bufio, regexp, encoding, crypto, filepath},
@@ -346,17 +309,13 @@
 \lstdefinestyle{catppuccin-julia}{
   style=catppuccin-base,
   language=julia,
-  % [1] keywords (Mauve)
   morekeywords={[1]abstract, baremodule, begin, break, catch, const,
     continue, do, else, elseif, end, export, finally, for, function,
     global, if, import, let, local, macro, module, mutable, new,
     primitive, quote, return, struct, try, type, using, while, where},
-  % [2] atoms (Red)
   morekeywords={[2]true, false, nothing, missing, undef, Inf, NaN},
-  % [3] constantes (Peach)
   morekeywords={[3]pi, π, ℯ, im, Inf, Inf16, Inf32, Inf64,
     NaN, NaN16, NaN32, NaN64, ARGS, PROGRAM_FILE, DEPOT_PATH},
-  % [5] funciones comunes (Blue)
   morekeywords={[5]println, print, show, display, repr, string, sizeof,
     length, size, ndims, eltype, typeof, isa, convert, promote,
     push!, pop!, append!, insert!, deleteat!, splice!, empty!,
@@ -366,7 +325,6 @@
     parse, tryparse, read, readline, write, open, close,
     rand, randn, zeros, ones, fill, fill!, copy, deepcopy,
     error, throw, rethrow, @assert, @show, @info, @warn, @error},
-  % [6] tipos (Yellow)
   morekeywords={[6]Any, Union, Nothing, Missing, UndefInitializer,
     Number, Real, Integer, AbstractFloat, Rational, Complex,
     Bool, Int, Int8, Int16, Int32, Int64, Int128, BigInt,
@@ -382,13 +340,11 @@
     Exception, ErrorException, ArgumentError, BoundsError,
     DomainError, InexactError, MethodError, OverflowError,
     TypeError, UndefVarError, DivideError, StackOverflowError},
-  % [7] módulos / paquetes (Teal)
   morekeywords={[7]Base, Core, Main, LinearAlgebra, SparseArrays,
     Statistics, Random, Distributed, SharedArrays, Threads,
     Pkg, Test, Logging, Printf, Dates, REPL, InteractiveUtils,
     Plots, Makie, DifferentialEquations, Flux, Zygote, Optim,
     DataFrames, CSV, JuMP, ForwardDiff, ReverseDiff},
-  % [8] macros (Rosewater)
   morekeywords={[8]@time, @elapsed, @allocated, @benchmark,
     @show, @assert, @info, @warn, @error, @debug,
     @inline, @noinline, @simd, @threads, @spawn, @async,
@@ -405,17 +361,13 @@
 \lstdefinestyle{catppuccin-matlab}{
   style=catppuccin-base,
   language=Matlab,
-  % [1] keywords (Mauve)
   morekeywords={[1]break, case, catch, classdef, continue, else, elseif,
     end, enumeration, events, for, function, global, if, methods,
     otherwise, parfor, persistent, properties, return, spmd, switch,
     try, while, arguments},
-  % [2] builtins / atoms (Red)
   morekeywords={[2]true, false, inf, Inf, nan, NaN, eps, pi, i, j,
     end, nargin, nargout, varargin, varargout, ans},
-  % [3] constantes (Peach)
   morekeywords={[3]eps, realmin, realmax, intmax, intmin, flintmax},
-  % [5] funciones comunes (Blue)
   morekeywords={[5]abs, acos, acosh, asin, asinh, atan, atan2, atanh,
     ceil, cos, cosh, exp, floor, log, log2, log10, mod, rem,
     round, sin, sinh, sqrt, tan, tanh, sign, power, fix,
@@ -435,30 +387,25 @@
     strcmp, strcat, strsplit, strtrim, num2str, str2num, str2double,
     class, isa, isnumeric, ischar, islogical, isempty, isequal,
     deal, nargchk, inputParser, addRequired, addOptional, parse},
-  % [6] tipos (Yellow)
   morekeywords={[6]double, single, int8, int16, int32, int64,
     uint8, uint16, uint32, uint64, logical, char, string,
     cell, struct, table, timetable, categorical, datetime, duration,
     function_handle, containers.Map, gpuArray, sparse, tall},
-  % [7] toolboxes (Teal)
   morekeywords={[7]Simulink, Control, Signal, Image, Statistics,
     Optimization, Symbolic, Parallel, DeepLearning},
-  % Comentarios Matlab
   morecomment=[l]{\%},
   morecomment=[s]{\%\{}{\%\}},
 }
 
 
 % ═════════════════════════════════════════════════════════════════════════════
-%  FORTRAN (moderno: F90/F95/2003/2008/2018)
+%  FORTRAN (F90/F95/2003/2008/2018)
 % ═════════════════════════════════════════════════════════════════════════════
 
 \lstdefinestyle{catppuccin-fortran}{
   style=catppuccin-base,
   language=[08]Fortran,
-  % Fortran es case-insensitive
   sensitive=false,
-  % [1] keywords (Mauve)
   morekeywords={[1]program, end, subroutine, function, module, submodule,
     use, only, implicit, none, contains, interface, abstract, procedure,
     call, return, stop, error, if, then, else, elseif, endif,
@@ -471,45 +418,32 @@
     pass, nopass, final, enum, enumerator, bind, value, volatile,
     asynchronous, contiguous, codimension, concurrent, sync,
     pure, elemental, impure, recursive, result},
-  % [2] builtins / intrinsics (Red)
   morekeywords={[2].true., .false., .and., .or., .not., .eqv., .neqv.,
     .eq., .ne., .lt., .le., .gt., .ge.},
-  % [3] constantes (Peach)
   morekeywords={[3]huge, tiny, epsilon, radix, precision, range,
     maxexponent, minexponent, kind},
-  % [5] funciones intrínsecas (Blue)
-  morekeywords={[5]abs, acos, aimag, aint, alog, alog10, amax0, amax1,
-    amin0, amin1, amod, anint, asin, atan, atan2, cos, cosh, dble,
-    dim, dprod, exp, float, iabs, ichar, idim, idint, ifix, index,
-    int, isign, len, lge, lgt, lle, llt, log, log10, max, max0,
-    max1, min, min0, min1, mod, nint, real, sign, sin, sinh,
-    sngl, sqrt, tan, tanh, char, cmplx, conjg, dcos, dsin, dexp,
-    dlog, dmax1, dmin1, dsqrt, dabs, datan, datan2, dcosh, dsinh,
-    dtanh, iachar, ibits, ibset, ibclr, ieor, ior, iand, ishft,
-    ishftc, mvbits, not, btest, transfer, logical,
+  morekeywords={[5]abs, acos, aimag, aint, asin, atan, atan2, cos, cosh,
+    dble, exp, int, log, log10, max, min, mod, nint, real, sign,
+    sin, sinh, sqrt, tan, tanh, char, cmplx, conjg,
     matmul, dot_product, transpose, reshape, shape, size, lbound,
     ubound, maxval, minval, sum, product, count, any, all, merge,
-    pack, unpack, spread, cshift, eoshift, maxloc, minloc, trim,
-    adjustl, adjustr, len_trim, repeat, scan, verify, selected_int_kind,
-    selected_real_kind, allocated, associated, present, null, move_alloc,
-    command_argument_count, get_command_argument, get_environment_variable,
-    cpu_time, system_clock, date_and_time, random_number, random_seed},
-  % [6] tipos (Yellow)
+    pack, unpack, spread, maxloc, minloc, trim,
+    adjustl, adjustr, len_trim, repeat, scan, verify,
+    selected_int_kind, selected_real_kind, allocated, associated,
+    present, null, move_alloc, cpu_time, system_clock,
+    date_and_time, random_number, random_seed},
   morekeywords={[6]integer, real, double, precision, complex, character,
     logical, type, class, dimension, allocatable, pointer, target,
     intent, in, out, inout, optional, parameter, external, intrinsic},
-  % [7] módulos estándar (Teal)
   morekeywords={[7]iso_fortran_env, iso_c_binding, ieee_arithmetic,
     ieee_exceptions, ieee_features, omp_lib, mpi, mpi_f08},
-  % [8] directivas / pragmas (Rosewater)
   morekeywords={[8]!$omp, !$acc, !DEC$, !DIR$, !GCC$},
-  % Comentarios Fortran moderno
   morecomment=[l]{!},
 }
 
 
 % ═════════════════════════════════════════════════════════════════════════════
-%  ASSEMBLER (x86 / x86-64, sintaxis Intel)
+%  ASSEMBLER (x86-64, sintaxis Intel / NASM)
 % ═════════════════════════════════════════════════════════════════════════════
 
 \lstdefinelanguage{x86asm}{
@@ -522,7 +456,6 @@
 \lstdefinestyle{catppuccin-asm}{
   style=catppuccin-base,
   language=x86asm,
-  % [1] instrucciones comunes (Mauve)
   morekeywords={[1]mov, movzx, movsx, movsxd, lea, push, pop, pushf, popf,
     add, sub, mul, imul, div, idiv, inc, dec, neg, adc, sbb,
     and, or, xor, not, shl, shr, sar, sal, rol, ror, rcl, rcr,
@@ -538,7 +471,6 @@
     cbw, cwde, cdqe, cwd, cdq, cqo,
     movs, stos, lods, cmps, scas,
     in, out, cli, sti, clc, stc, cmc, cld, std},
-  % [2] instrucciones SSE/AVX (Red)
   morekeywords={[2]movss, movsd, movaps, movups, movapd, movupd, movdqa,
     addss, addsd, addps, addpd, subss, subsd, subps, subpd,
     mulss, mulsd, mulps, mulpd, divss, divsd, divps, divpd,
@@ -548,13 +480,11 @@
     shufps, shufpd, unpckhps, unpcklps, blendps, blendpd,
     vaddps, vaddpd, vmulps, vmulpd, vsubps, vsubpd, vdivps, vdivpd,
     vfmadd132ps, vfmadd213ps, vfmadd231ps},
-  % [5] directivas (Blue)
   morekeywords={[5]section, segment, global, extern, default, align,
     db, dw, dd, dq, dt, do, dy, dz,
     resb, resw, resd, resq, rest, reso, resy, resz,
     equ, times, incbin, org, bits, use16, use32, use64,
     .text, .data, .bss, .rodata, .section},
-  % [6] registros (Yellow)
   morekeywords={[6]rax, rbx, rcx, rdx, rsi, rdi, rbp, rsp,
     r8, r9, r10, r11, r12, r13, r14, r15,
     eax, ebx, ecx, edx, esi, edi, ebp, esp,
@@ -570,7 +500,6 @@
     ymm8, ymm9, ymm10, ymm11, ymm12, ymm13, ymm14, ymm15,
     zmm0, zmm1, zmm2, zmm3, zmm4, zmm5, zmm6, zmm7,
     cr0, cr2, cr3, cr4, dr0, dr1, dr2, dr3, dr6, dr7},
-  % [8] macros NASM (Rosewater)
   morekeywords={[8]macro, endmacro, %macro, %endmacro, %define, %undef,
     %ifdef, %ifndef, %endif, %elif, %else, %if, %assign, %rep, %endrep,
     %include, %push, %pop, %repl, %error, %warning, struc, endstruc,
@@ -592,7 +521,6 @@
 \lstdefinestyle{catppuccin-mathematica}{
   style=catppuccin-base,
   language=mathematica,
-  % [1] keywords (Mauve)
   morekeywords={[1]Module, Block, With, Do, For, While, If, Which, Switch,
     Return, Break, Continue, Goto, Label, Throw, Catch, Check,
     CompoundExpression, Set, SetDelayed, Rule, RuleDelayed,
@@ -602,15 +530,12 @@
     Condition, PatternTest, Alternatives, Repeated, Except, Blank,
     BlankSequence, BlankNullSequence, Optional, Default, Pattern,
     Begin, End, BeginPackage, EndPackage, Needs, Get},
-  % [2] builtins / atoms (Red)
   morekeywords={[2]True, False, Null, None, All, Full, Automatic,
     Infinity, DirectedInfinity, Indeterminate, Undefined,
     $Failed, $Aborted, $MachineEpsilon, $MachinePrecision,
     $Context, $ContextPath, $Path, $Version},
-  % [3] constantes (Peach)
   morekeywords={[3]Pi, E, I, Degree, EulerGamma, GoldenRatio,
     Catalan, Glaisher, Khinchin, MachinePrecision, MachineEpsilon},
-  % [5] funciones (Blue) — selección de las más usadas
   morekeywords={[5]Print, Echo, Assert, Abort, Quit, Exit,
     Plus, Times, Power, Sqrt, Exp, Log, Sin, Cos, Tan,
     ArcSin, ArcCos, ArcTan, Sinh, Cosh, Tanh,
@@ -631,13 +556,11 @@
     Import, Export, ReadList, WriteString, OpenRead, OpenWrite, Close,
     StringJoin, StringReplace, StringSplit, StringQ, NumberQ, IntegerQ,
     Head, MatchQ, FreeQ, MemberQ, DeleteCases, Replace, ReplaceAll},
-  % [6] tipos / dominios (Yellow)
   morekeywords={[6]Integer, Real, Rational, Complex, String, Symbol,
     List, Association, SparseArray, NumericArray,
     Graph, Region, MeshRegion, BooleanRegion,
     Integers, Reals, Rationals, Complexes, Booleans, Primes,
     Algebraics, PositiveReals, NonNegativeReals, PositiveIntegers},
-  % [7] contextos / paquetes (Teal)
   morekeywords={[7]System, Global, Internal, Developer, Experimental,
     GeneralUtilities, Notation, CCompilerDriver, NeuralNetworks,
     MachineLearning, ResourceFunction},
@@ -647,9 +570,6 @@
 % ═════════════════════════════════════════════════════════════════════════════
 % ALIASES DE CONVENIENCIA
 % ═════════════════════════════════════════════════════════════════════════════
-% Para usar: \lstinputlisting[style=python]{archivo.py}
-% o bien:    \begin{lstlisting}[style=python] ... \end{lstlisting}
-%
 \lstdefinestyle{python}{style=catppuccin-python}
 \lstdefinestyle{c}{style=catppuccin-c}
 \lstdefinestyle{cpp}{style=catppuccin-cpp}
@@ -660,3 +580,127 @@
 \lstdefinestyle{fortran}{style=catppuccin-fortran}
 \lstdefinestyle{asm}{style=catppuccin-asm}
 \lstdefinestyle{mathematica}{style=catppuccin-mathematica}
+
+
+% ═════════════════════════════════════════════════════════════════════════════
+%  LATEX / TEX
+% ═════════════════════════════════════════════════════════════════════════════
+% NOTA CRÍTICA: ningún keyword puede llevar backslash dentro de morekeywords
+% ni de texcs. Los comandos \par, \vspace, \noindent, etc. son primitivas
+% activas que LaTeX ejecuta al parsear el argumento — causa errores de
+% compilación ("Paragraph ended before...", "Illegal unit of measure", etc.)
+%
+% texcs acepta nombres SIN backslash: listings añade el \ al colorear.
+% morekeywords[2..6] también usan nombres sin backslash.
+%
+% Mapa semántico:
+%   texcs   Estructura      begin end chapter section label cite input ...
+%   [2]     Definición      newcommand renewcommand DeclareMathOperator ...
+%   [3]     Formato         textbf textit emph centering medskip ...
+%   [4]     Matemáticas     frac sqrt sum int mathbb hat alpha ...
+%   [5]     Paquetes        amsmath tikz tcolorbox biblatex ...
+%   [6]     Especiales      LaTeX TeX today toprule captionof ...
+
+\lstdefinestyle{catppuccin-latex}{
+  style        = catppuccin-base,
+  language     = [LaTeX]TeX,
+  % ── Estructura (texcs: sin backslash, listings añade \) ───────────────────
+  texcs        = {
+    begin, end,
+    chapter, section, subsection, subsubsection, paragraph, subparagraph,
+    label, ref, cref, Cref, crefrange,
+    cite, citet, citep, footcite, nocite,
+    input, include, includeonly, usepackage,
+    documentclass, maketitle, makeatletter, makeatother,
+    tableofcontents, listoffigures, listoftables,
+    appendix, printbibliography, addbibresource, bibliography,
+    part, frontmatter, mainmatter, backmatter,
+    addcontentsline, phantomsection,
+  },
+  % ── Definición de comandos (sin backslash) ─────────────────────────────────
+  morekeywords = {[2]
+    newcommand, renewcommand, providecommand,
+    newenvironment, renewenvironment,
+    newcounter, setcounter, addtocounter, refstepcounter,
+    DeclareMathOperator,
+    DeclareRobustCommand,
+    NewDocumentCommand, NewDocumentEnvironment,
+    colorlet, definecolor,
+    tcbset, tcolorboxenvironment,
+    pgfplotsset, pgfplotscreateplotcyclelist,
+    usetikzlibrary, tikzset,
+    lstdefinestyle, lstdefinelanguage, lstset,
+    SetKwSty, SetArgSty, SetCommentSty, SetNlSty,
+    geometry, hypersetup, sisetup,
+    setlength, addtolength,
+    pagestyle, fancyhf, fancyhead, fancyfoot, fancypagestyle,
+    crearEntorno, createback, addplot,
+  },
+  % ── Formato de texto (sin backslash) ──────────────────────────────────────
+  morekeywords = {[3]
+    textbf, textit, texttt, textrm, textsf,
+    emph, underline, textcolor, color,
+    textsc, textsuperscript, textsubscript,
+    small, footnotesize, scriptsize, tiny,
+    large, Large, LARGE, huge, Huge, normalsize,
+    bfseries, itshape, ttfamily, rmfamily, sffamily,
+    centering, raggedright, raggedleft,
+    medskip, bigskip, smallskip, vfill, hfill,
+  },
+  % ── Matemáticas (sin backslash) ────────────────────────────────────────────
+  morekeywords = {[4]
+    frac, dfrac, tfrac, cfrac,
+    sqrt, sum, prod, int, oint, iint, iiint,
+    lim, sup, inf, max, min,
+    left, right, mleft, mright,
+    mathbb, mathcal, mathscr, mathbf, mathit,
+    mathrm, mathfrak, mathsf,
+    hat, bar, tilde, vec, dot, ddot, widehat,
+    partial, nabla, forall, exists,
+    leq, geq, neq, approx, equiv, sim,
+    cdot, times, otimes, oplus,
+    ldots, cdots, vdots, ddots,
+    binom, text, operatorname,
+    alpha, beta, gamma, delta, epsilon, varepsilon,
+    theta, lambda, mu, pi, sigma, tau, phi, omega,
+    Gamma, Delta, Theta, Lambda, Pi, Sigma, Omega,
+  },
+  % ── Paquetes (sin backslash) ───────────────────────────────────────────────
+  morekeywords = {[5]
+    amsmath, amssymb, amsthm, mathtools,
+    physics, bm, cancel, nicematrix, stmaryrd,
+    tikz, pgfplots, tcolorbox, listings,
+    hyperref, cleveref, biblatex,
+    booktabs, tabularx, array, colortbl,
+    graphicx, caption, subcaption, float,
+    enumitem, xcolor, microtype,
+    algorithm2e, many, babel,
+    siunitx, pgfplotstable, forest, qtree,
+    titlesec, fancyhdr, setspace, parskip,
+    appendix, footmisc, etoolbox, textpos,
+    catppuccinpalette, mathrsfs, mleftright,
+  },
+  % ── Especiales (sin backslash) ─────────────────────────────────────────────
+  morekeywords = {[6]
+    LaTeX, LaTeXe, TeX, BibTeX, BibLaTeX,
+    today, thepage, thechapter, thesection,
+    hline, toprule, midrule, bottomrule, cmidrule,
+    rowcolor, cellcolor, arrayrulecolor,
+    caption, captionof, includegraphics,
+    scalebox, resizebox, textbackslash,
+    texorpdfstring,
+    dificultad, headerrow, thead,
+    eqop, eqfn, eqdm, eqdom, equ, eqk, eqcon, eqvec, eqten,
+  },
+  % ── Colores por clase ──────────────────────────────────────────────────────
+  texcsstyle   = {\color{code-keyword}\bfseries},  % estructura
+  keywordstyle = {[2]\color{code-fn}},              % definición
+  keywordstyle = {[3]\color{code-operator}},        % formato
+  keywordstyle = {[4]\color{code-macro}},           % matemáticas
+  keywordstyle = {[5]\color{code-mod}},             % paquetes
+  keywordstyle = {[6]\color{code-builtin}},         % especiales
+  morecomment  = [l]{\%},
+}
+
+\lstdefinestyle{latex}{style=catppuccin-latex}
+\lstdefinestyle{tex}{style=catppuccin-latex}

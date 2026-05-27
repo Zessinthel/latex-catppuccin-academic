@@ -1,74 +1,116 @@
-% =============================================================================
-% PACKAGES.TEX — Paquetes para texto académico de física computacional
-% =============================================================================
-% Orden de carga importa. Agrupados por función; las dependencias de orden
-% están indicadas con (→ debe ir después de X).
-% =============================================================================
+%───────────────────────────────────────────────────────────────────────────────
+% PACKAGES.TEX — Carga de paquetes
+%───────────────────────────────────────────────────────────────────────────────
+%
+% REGLA DE ESTE ARCHIVO:
+%   Solo carga paquetes y declara opciones de carga.
+%   La configuración de cada paquete vive en su archivo de config/ respectivo.
+%   Excepción: \sisetup y \pgfplotsset{compat} que son inicialización
+%   inmediata post-carga, no configuración de dominio.
+%
+% ORDEN DE CARGA:
+%   El orden importa. Las dependencias están marcadas con (→ después de X).
+%   Regla fija: hyperref penúltimo, cleveref último.
+%
+% MOTOR:
+%   Este template requiere LuaLaTeX (catppuccinpalette + listings UTF-8).
+%   inputenc NO se carga: LuaLaTeX maneja UTF-8 nativamente.
+%   fontenc[T1] se mantiene para fuentes TeX clásicas (Latin Modern).
+%   Migración futura opcional: reemplazar fontenc + inconsolata por
+%   \usepackage{fontspec} + \setmonofont{Inconsolata}.
+%───────────────────────────────────────────────────────────────────────────────
+
 
 % ─── Encoding y lenguaje ─────────────────────────────────────────────────────
-\usepackage[utf8]{inputenc}
+% inputenc eliminado: LuaLaTeX maneja UTF-8 de forma nativa.
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-noshorthands]{babel}
 \deactivatequoting
-\usepackage{csquotes}              % comillas correctas con babel
-
+\usepackage{csquotes}                      % comillas correctas con babel
 
 
 % ─── Tipografía ──────────────────────────────────────────────────────────────
 \usepackage{microtype}
-\usepackage{inconsolata}           % fuente mono para listings
+\usepackage{inconsolata}                   % fuente mono para listings
+
+
+% ─── Color (→ antes de colortbl y cualquier paquete que use color) ───────────
+\usepackage{xcolor}                        % carga explícita: evita conflictos
+                                           % de opciones cuando tcolorbox o
+                                           % tikz lo cargan implícitamente
+
+
+% ─── Layout de página (→ antes de fancyhdr) ──────────────────────────────────
+\usepackage{geometry}                      % (config en config/geometry.tex)
+
 
 % ─── Matemáticas ─────────────────────────────────────────────────────────────
 \usepackage{amsmath, amssymb, amsthm, mathtools}
-\usepackage{bm}
-\usepackage{physics}               % \abs, \norm, \tr, \grad, \div, \curl,
-                                   % \laplacian, \dv, \pdv, \bra, \ket, etc.
-\usepackage{cancel}                % cancelar términos en derivaciones
-% \usepackage{tensor}              % descomentar si se usa notación indicial
-\usepackage{stmaryrd}
-\usepackage{qtree}
-\usepackage{forest}
+\usepackage{bm}                            % bold math (\bm)
+\usepackage{mathrsfs}                      % \mathscr: ℋ, ℱ, ℒ (distinto de \mathcal)
+\usepackage{physics}                       % \abs, \norm, \tr, \grad, \curl,
+                                           % \laplacian, \dv, \pdv, \bra, \ket
+                                           % NOTA: redefine \div — ver notation.tex
+\usepackage{cancel}                        % cancelar términos en derivaciones
+\usepackage{mleftright}                    % \mleft \mright: corrige espaciado de
+                                           % delimitadores en ciertos contextos
+\usepackage{nicematrix}                    % matrices con coloreado, bloques y
+                                           % notación avanzada (ML, álgebra lineal)
+% \usepackage{tensor}                      % notación indicial (descomentar si se usa)
+\usepackage{stmaryrd}                      % \llbracket, \rrbracket, etc.
+
 
 % ─── Unidades y números ──────────────────────────────────────────────────────
 \usepackage{siunitx}
 \sisetup{
-  output-decimal-marker = {,},     % separador decimal = coma (español)
-  per-mode              = symbol,  % m/s en lugar de m s^{-1}
-  separate-uncertainty  = true,    % ±
-  group-minimum-digits  = 4,       % 1000 sin separador, 10 000 con
+  output-decimal-marker = {,},            % separador decimal = coma (español)
+  per-mode              = symbol,         % m/s en lugar de m·s⁻¹
+  separate-uncertainty  = true,           % valor ± incertidumbre
+  group-minimum-digits  = 4,             % 1000 sin separador; 10 000 con
 }
 
-% ─── Tablas ──────────────────────────────────────────────────────────────────
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{tabularx}
-\usepackage{longtable}
-\usepackage{multirow}
-\usepackage{colortbl}              % \rowcolor, \cellcolor, \arrayrulecolor
+
+% ─── Tablas (→ después de xcolor) ────────────────────────────────────────────
+\usepackage{booktabs}                      % \toprule, \midrule, \bottomrule
+\usepackage{array}                         % tipos de columna extendidos
+\usepackage{tabularx}                      % columnas X de ancho proporcional
+\usepackage{longtable}                     % tablas multipágina
+\usepackage{multirow}                      % celdas multifila
+\usepackage{colortbl}                      % \rowcolor, \cellcolor, \arrayrulecolor
+\usepackage{pgfplotstable}                 % carga datos desde .csv a tablas y plots
+
 
 % ─── Figuras y flotantes ─────────────────────────────────────────────────────
-\usepackage{graphicx}              % \includegraphics (png, jpg, pdf)
-\usepackage{caption}
-\usepackage{subcaption}            % subfiguras
-\usepackage{float}                 % posicionamiento [H]
-\usepackage{wrapfig}               % figuras embebidas en texto
-\usepackage{placeins}              % \FloatBarrier
+\usepackage{graphicx}                      % \includegraphics
+\usepackage{caption}                       % (config en config/captions.tex)
+\usepackage{subcaption}                    % subfiguras
+\usepackage{float}                         % posicionamiento [H]
+\usepackage{wrapfig}                       % figuras embebidas en texto
+\usepackage{placeins}                      % \FloatBarrier
+
 
 % ─── Listas ──────────────────────────────────────────────────────────────────
-\usepackage{enumitem}
-\usepackage{pifont}
+\usepackage{enumitem}                      % control de listas
+\usepackage{pifont}                        % símbolos Zapf Dingbats (\ding)
+
 
 % ─── Código fuente ───────────────────────────────────────────────────────────
-\usepackage{listings}              % (configuración en listings-catppuccin.tex)
+\usepackage{listings}                      % (config en config/listings.tex)
+
 
 % ─── Algoritmos ──────────────────────────────────────────────────────────────
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+                                           % (config en config/algorithms.tex)
+
 
 % ─── Cajas decorativas ───────────────────────────────────────────────────────
-\usepackage[many]{tcolorbox}
-\tcbuselibrary{theorems, breakable, skins, hooks}
+% [many] incluye: theorems, breakable, skins, hooks, listings, xparse y más.
+% No se necesita \tcbuselibrary adicional.
+\usepackage[many]{tcolorbox}               % (config en config/tcolorbox.tex)
 
-% ─── TikZ y diagramas ───────────────────────────────────────────────────────
+
+% ─── TikZ y diagramas ────────────────────────────────────────────────────────
+% pgffor NO se carga explícitamente — tikz lo carga como dependencia interna.
 \usepackage{tikz}
 \usetikzlibrary{
   arrows.meta,
@@ -82,45 +124,61 @@
   patterns,
   matrix,
 }
-\usepackage{pgffor}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
-\usepackage{tikz-cd}
+\usepackage{tikz-cd}                       % diagramas conmutativos
+\usepackage{pgfplots}                      % (config en config/pgfplots.tex)
+\pgfplotsset{compat=1.18}                  % declaración de versión: va aquí,
+                                           % inmediatamente después de cargar
+\usepackage{qtree}                         % árboles sintácticos simples
+\usepackage{forest}                        % árboles con mayor control
 
-% ─── Espaciado y layout ─────────────────────────────────────────────────────
-\usepackage{parskip}
-\usepackage{setspace}
-\usepackage{fancyhdr}
+
+% ─── Espaciado y layout ──────────────────────────────────────────────────────
+\usepackage{parskip}                       % párrafos sin sangría, con espacio
+\usepackage{setspace}                      % \onehalfspacing, \doublespacing
+\usepackage{fancyhdr}                      % encabezados y pies de página
+\usepackage{titlesec}                      % (config en config/titles.tex)
 
 
 % ─── Bibliografía ────────────────────────────────────────────────────────────
-\usepackage[backend=biber,
-            style=numeric,           % estilo numérico (como plainnat)
-            sorting=none,            % orden de aparición
-            refsection=chapter,      % bibliografía independiente por capítulo
-            natbib=true,             % compatibilidad con comandos \citet, \citep
-            hyperref=true,
-            backref=true,            % opcional: muestra página de cita
-            ]{biblatex}
+\usepackage[
+  backend    = biber,
+  style      = numeric,                    % [1], [2], ... por orden de aparición
+  sorting    = none,
+  refsection = chapter,                    % bibliografía independiente por capítulo
+  natbib     = true,                       % compatibilidad \citet, \citep
+  hyperref   = true,
+  backref    = true,                       % muestra página de cita
+]{biblatex}
 
 
 % ─── Notas al pie ────────────────────────────────────────────────────────────
 \usepackage[bottom, hang]{footmisc}
 
+
 % ─── Estructura del documento ────────────────────────────────────────────────
 \usepackage{appendix}
 \usepackage{pdfpages}
+\usepackage[absolute,overlay]{textpos}  % posicionamiento absoluto en página
+                                        % absolute: coords relativas a la esquina
+                                        % superior izquierda del papel
+                                        % overlay:  no afecta el flujo normal
+
 
 % ─── Programación LaTeX ──────────────────────────────────────────────────────
 \usepackage{etoolbox}
-\usepackage{xparse}
+% xparse NO se carga: integrado al kernel LaTeX ≥ 2020.
 
-% ─── Hipervínculos (cargar PENÚLTIMO) ────────────────────────────────────────
+
+% ─── Hipervínculos (→ PENÚLTIMO) ─────────────────────────────────────────────
 \usepackage{hyperref}
-\usepackage{bookmark}              % (→ después de hyperref)
+\usepackage{bookmark}                      % (→ después de hyperref)
+                                           % (config en config/hyperref.tex)
 
-% ─── Referencias inteligentes (cargar ÚLTIMO) ────────────────────────────────
-\usepackage[spanish,noabbrev]{cleveref}
+
+% ─── Referencias inteligentes (→ ÚLTIMO) ─────────────────────────────────────
+\usepackage[spanish, noabbrev]{cleveref}
+
+% Flotantes estándar
 \crefname{equation}{ec.}{ecs.}
 \Crefname{equation}{Ecuación}{Ecuaciones}
 \crefname{figure}{fig.}{figs.}
@@ -135,3 +193,20 @@
 \Crefname{algorithm}{Algoritmo}{Algoritmos}
 \crefname{appendix}{ap.}{aps.}
 \Crefname{appendix}{Apéndice}{Apéndices}
+\crefname{listing}{cód.}{códs.}
+\Crefname{listing}{Código}{Códigos}
+
+% Entornos teoremáticos propios (definidos en environments/instances.tex)
+% El contador se llama {nombre}counter por convención de generator.tex
+\crefname{definicioncounter}{def.}{defs.}
+\Crefname{definicioncounter}{Definición}{Definiciones}
+\crefname{teoremacounter}{teo.}{teos.}
+\Crefname{teoremacounter}{Teorema}{Teoremas}
+\crefname{proposicioncounter}{prop.}{props.}
+\Crefname{proposicioncounter}{Proposición}{Proposiciones}
+\crefname{ejemplocounter}{ej.}{ejs.}
+\Crefname{ejemplocounter}{Ejemplo}{Ejemplos}
+\crefname{estrellacount}{★}{★}
+\Crefname{estrellacount}{Estrella Polar}{Estrellas Polares}
+\crefname{ejerciciocompcounter}{ej. comp.}{ejs. comp.}
+\Crefname{ejerciciocompcounter}{Ejercicio Computacional}{Ejercicios Computacionales}

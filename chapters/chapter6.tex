@@ -1,0 +1,416 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Tablas}
+\label{ch:tablas}
+%───────────────────────────────────────────────────────────────────────────────
+
+Una tabla bien diseñada comunica estructura antes de que el lector lea un
+solo número. El template construye tablas sobre tres principios del paquete
+\texttt{booktabs}~\cite{booktabs2020}: nunca líneas verticales, reglas
+horizontales con grosor diferenciado, y espacio generoso entre filas. El
+coloreado de \texttt{catppuccin-palette.tex} se aplica como capa semántica
+encima de esa estructura, no como sustituto de ella.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Anatomía de una tabla}
+\label{sec:tabla-anatomia}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Reglas de booktabs}
+\label{def:booktabs}
+\texttt{booktabs}~\cite{booktabs2020} define tres reglas horizontales con
+grosor decreciente. \texttt{\textbackslash toprule} abre la tabla (0.08em),
+\texttt{\textbackslash midrule} separa el encabezado del cuerpo (0.05em),
+y \texttt{\textbackslash bottomrule} la cierra (0.08em). Las reglas
+intermedias parciales usan \texttt{\textbackslash cmidrule\{i-j\}}.
+Nunca se usan líneas verticales (\texttt{|} en el preámbulo de columnas).
+\end{definicion}
+
+La estructura canónica de cualquier tabla del template es:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{acadtable}[H]{tab:etiqueta}{Caption descriptivo}
+  \begin{tabularx}{\textwidth}{l Y Z}
+    \toprule
+    \headerrow
+    \thead{Col A} & \thead{Col B} & \thead{Col C} \\
+    \midrule
+    dato          & dato          & dato          \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+\end{lstlisting}
+
+Tres comandos propios del template:
+\texttt{\textbackslash headerrow} aplica \texttt{\textbackslash rowcolor\{table-head\}}
+a la fila del encabezado.
+\texttt{\textbackslash thead\{\}} pone el texto en bold con color
+\texttt{table-head-text}.
+\texttt{\textbackslash tablenote\{a\}\{texto\}} añade una nota al pie.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Tipos de columna}
+\label{sec:tipos-columna}
+%───────────────────────────────────────────────────────────────────────────────
+
+\texttt{config/tables.tex} define tipos de columna complementarios a los
+estándar de \LaTeX\ y \texttt{tabularx}~\cite{tabularx1999}:
+
+\begin{acadtable}[H]{tab:col-tipos}{Tipos de columna disponibles}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Tipo} & \thead{Definición} & \thead{Uso} \\
+    \midrule
+    \texttt{l}, \texttt{c}, \texttt{r}
+      & Estándar \LaTeX
+      & Ancho fijo por contenido, sin wrapping \\
+    \texttt{X}
+      & \texttt{tabularx}
+      & Proporcional, izquierda, wrapping \\
+    \texttt{Y}
+      & \texttt{tabularx}
+      & Proporcional, centrada, wrapping \\
+    \texttt{Z}
+      & \texttt{tabularx}
+      & Proporcional, derecha, wrapping \\
+    \texttt{L\{ancho\}}
+      & \texttt{array}
+      & Ancho fijo, izquierda, wrapping \\
+    \texttt{C\{ancho\}}
+      & \texttt{array}
+      & Ancho fijo, centrada, wrapping \\
+    \texttt{R\{ancho\}}
+      & \texttt{array}
+      & Ancho fijo, derecha, wrapping \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\begin{observacion}{Columnas proporcionales X/Y/Z}
+Las columnas \texttt{X}, \texttt{Y}, \texttt{Z} solo funcionan dentro de
+\texttt{tabularx}. Distribuyen el espacio sobrante de \texttt{\textbackslash textwidth}
+(o \texttt{\textbackslash linewidth} dentro de tcolorbox) entre todas las
+columnas de ese tipo de forma proporcional. Una tabla con columnas \texttt{lYY}
+tiene una columna de ancho natural a la izquierda y dos columnas de igual
+ancho proporcional. Todas usan centrado vertical (\texttt{m\{\}}) para
+alinear celdas con distinto número de líneas.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos de tabla}
+\label{sec:entornos-tabla}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{acadtable — tabla flotante}
+\label{subsec:acadtable}
+
+\texttt{acadtable} es un wrapper de \texttt{table} con caption y label
+integrados. Es el entorno por defecto para tablas en flujo normal de texto:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Placement por defecto: [htbp]
+\begin{acadtable}{tab:label}{Caption del flotante}
+  \begin{tabularx}{\textwidth}{...} ... \end{tabularx}
+\end{acadtable}
+
+% Placement forzado: usa [H] cuando la tabla es parte del argumento
+\begin{acadtable}[H]{tab:label}{Caption}
+  ...
+\end{acadtable}
+\end{lstlisting}
+
+\subsection{boxtab — tabla no-flotante dentro de tcolorbox}
+\label{subsec:boxtab}
+
+Dentro de cualquier entorno basado en \texttt{tcolorbox} (\texttt{definicion},
+\texttt{ejemplo}, etc.), los flotantes no están permitidos. El entorno
+\texttt{boxtab} resuelve esto:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{ejemplo}{Tabla dentro de un entorno}
+  \begin{boxtab}{tab:label}{Caption de la tabla}
+    \begin{tabularx}{\linewidth}{l Y}   % linewidth, no textwidth
+      ...
+    \end{tabularx}
+  \end{boxtab}
+\end{ejemplo}
+\end{lstlisting}
+
+\subsection{fittable — reescalado automático}
+\label{subsec:fittable}
+
+Para tablas con muchas columnas que exceden el ancho disponible,
+\texttt{fittable} reescala el contenido hasta que quepa:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{fittable}
+  \begin{tabular}{llllllll}
+    % tabla muy ancha que desbordaria la pagina
+  \end{tabular}
+\end{fittable}
+\end{lstlisting}
+
+\begin{observacion}{fittable y legibilidad}
+\texttt{fittable} es un recurso de último recurso, no el primer intento.
+Antes de usarlo, verificar si la tabla puede restructurarse: eliminar
+columnas redundantes, dividir en dos tablas, o usar \texttt{longtable}
+para tablas altas. Un texto reescalado al 60\% de su tamaño original
+suele ser ilegible en impresión.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Coloreado semántico}
+\label{sec:tabla-color}
+%───────────────────────────────────────────────────────────────────────────────
+
+Los aliases del dominio \texttt{table-*} en la paleta controlan todos los
+colores de tablas:
+
+\begin{acadtable}[H]{tab:table-aliases}{Aliases de color para tablas}
+  \begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \headerrow
+    \thead{Alias} & \thead{Color Ctp} & \thead{Aplicación} \\
+    \midrule
+    \texttt{table-head}      & Blue!12   & Fondo del encabezado (\texttt{\textbackslash headerrow}) \\
+    \texttt{table-head-text} & Text      & Texto del encabezado (\texttt{\textbackslash thead}) \\
+    \texttt{table-row-alt}   & Surface0!30 & Filas alternadas (\texttt{\textbackslash rowcolor}) \\
+    \texttt{table-rule}      & Overlay0!50 & Color de todas las reglas booktabs \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+Para filas alternadas, \texttt{\textbackslash rowcolor\{table-row-alt\}} se
+aplica manualmente en las filas pares. Cuando la tabla tiene muchas filas,
+el paquete \texttt{colortbl} permite automatizarlo con
+\texttt{\textbackslash rowcolors}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Alternar colores desde la fila 2 (la primera es el encabezado)
+\rowcolors{2}{table-row-alt}{white}
+\begin{tabularx}{\textwidth}{l Y}
+  \toprule
+  \headerrow
+  \thead{Col A} & \thead{Col B} \\
+  \midrule
+  dato 1 & valor 1 \\
+  dato 2 & valor 2 \\
+  dato 3 & valor 3 \\
+  \bottomrule
+\end{tabularx}
+\rowcolors{1}{}{}   % resetear para no afectar tablas posteriores
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Datos numéricos con siunitx}
+\label{sec:tabla-siunitx}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{Columna \texttt{S} de siunitx}
+\label{def:columna-s}
+El paquete \texttt{siunitx}~\cite{siunitx2023} provee el tipo de columna
+\texttt{S} que alinea números por el punto decimal, redondea al número de
+dígitos especificado, y formatea incertidumbres. Es el tipo correcto para
+cualquier columna de datos numéricos con unidades o cifras significativas.
+\end{definicion}
+
+\begin{acadtable}[H]{tab:convergencia}{Convergencia del método de Runge-Kutta 4 para $\equ{y}' = \eqop{-}\eqk{\lambda}\equ{y}$}
+  \begin{tabularx}{\textwidth}{Y S[table-format=1.2e-1] S[table-format=1.4e-2] S[table-format=1.2]}
+    \toprule
+    \headerrow
+    \multicolumn{1}{Y}{\thead{$\eqk{h}$}} &
+    \multicolumn{1}{c}{\thead{Error $\|\equ{e}\|_\infty$}} &
+    \multicolumn{1}{c}{\thead{Razón $\equ{e}_n/\equ{e}_{n-1}$}} &
+    \multicolumn{1}{c}{\thead{Orden emp.}} \\
+    \midrule
+    $1/4$   & 2.31e-3  & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} \\
+    $1/8$   & 1.48e-4  & 0.0641 & 3.96 \\
+    $1/16$  & 9.33e-6  & 0.0630 & 3.99 \\
+    $1/32$  & 5.84e-7  & 0.0626 & 4.00 \\
+    $1/64$  & 3.65e-8  & 0.0625 & 4.00 \\
+    \bottomrule
+  \end{tabularx}
+  \tablenote{*}{$\eqk{\lambda} = 1$, $\equ{y}(0) = 1$, integración en $\eqdom{[0,1]}$.
+  El orden empírico confirma la convergencia $\mathcal{O}(\eqk{h}^4)$ teórica.}
+\end{acadtable}
+
+\begin{observacion}{Celdas especiales en columna S}
+Cuando una celda de una columna \texttt{S} contiene texto en lugar de un
+número (como las entradas \texttt{---} de la primera fila), debe encerrarse
+entre llaves: \texttt{\{---\}}. De otro modo \texttt{siunitx} intenta
+parsearla como número y produce un error.
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Tablas con estructura compleja}
+\label{sec:tabla-compleja}
+%───────────────────────────────────────────────────────────────────────────────
+
+\subsection{Celdas multifila y multicolumna}
+\label{subsec:multirow}
+
+Para tablas donde las categorías abarcan varias filas, el paquete
+\texttt{multirow}~\cite{multirow2021} provee \texttt{\textbackslash multirow}
+y \LaTeX\ provee \texttt{\textbackslash multicolumn}:
+
+\begin{acadtable}[H]{tab:hiperparametros}{Comparación de hiperparámetros por arquitectura}
+  \begin{tabularx}{\textwidth}{l l Y S[table-format=2.2] S[table-format=1.4]}
+    \toprule
+    \headerrow
+    \thead{Modelo} & \thead{Optimizador} & \thead{Regularización} &
+    \multicolumn{1}{c}{\thead{Acc. (\%)}} &
+    \multicolumn{1}{c}{\thead{Loss}} \\
+    \midrule
+    \multirow{3}{*}{\textbf{ResNet-18}}
+      & SGD       & Weight decay $10^{-4}$ & 93.12 & 0.2341 \\
+      & Adam      & Dropout 0.3            & 92.87 & 0.2418 \\
+      & AdamW     & Weight decay $10^{-3}$ & 93.54 & 0.2289 \\
+    \midrule
+    \multirow{2}{*}{\textbf{MobileNetV3}}
+      & Adam      & Dropout 0.2            & 90.23 & 0.3102 \\
+      & AdamW     & Weight decay $10^{-3}$ & 91.05 & 0.2987 \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\subsection{Cmidrule para separadores parciales}
+\label{subsec:cmidrule}
+
+\texttt{\textbackslash cmidrule\{i-j\}} dibuja una regla horizontal entre
+las columnas $i$ y $j$, útil para separar grupos dentro de una tabla sin
+usar \texttt{\textbackslash midrule} completo:
+
+\begin{acadtable}[H]{tab:metodos-numericos}{Métodos numéricos para EDOs: orden y estabilidad}
+  \begin{tabularx}{\textwidth}{l l C{2cm} X}
+    \toprule
+    \headerrow
+    \thead{Familia} & \thead{Método} & \thead{Orden} & \thead{Observaciones} \\
+    \midrule
+    \multirow{3}{*}{Explícitos}
+      & Euler         & 1 & Primer orden; inestable para $\eqk{\lambda h} > 2$ \\
+      & Heun          & 2 & Predictor-corrector; región de estabilidad mayor \\
+      & RK4           & 4 & Estándar en precisión; $4$ evaluaciones por paso \\
+    \cmidrule{2-4}
+    \multirow{2}{*}{Implícitos}
+      & Euler implícito & 1 & A-estable; requiere resolver sistema no lineal \\
+      & Crank-Nicolson  & 2 & A-estable; exacto para osciladores armónicos \\
+    \cmidrule{2-4}
+    \multirow{2}{*}{Multipaso}
+      & Adams-Bashforth & 4 & Explícito; reutiliza evaluaciones anteriores \\
+      & Adams-Moulton   & 5 & Implícito; par con Adams-Bashforth en PECE \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Tablas dentro de entornos tcolorbox}
+\label{sec:tabla-en-caja}
+%───────────────────────────────────────────────────────────────────────────────
+
+Como se explicó en la \cref{def:no-floats}, dentro de entornos
+\texttt{tcolorbox} los flotantes no son permitidos. El entorno \texttt{boxtab}
+y el ancho \texttt{\textbackslash linewidth} resuelven esto:
+
+\begin{definicion}{Propiedades de la distribución normal multivariante}
+\label{def:normal-mv}
+Sea $\equ{\mathbf{x}} \sim \mathcal{N}(\eqk{\boldsymbol{\mu}},
+\eqten{\boldsymbol{\Sigma}})$ con
+$\eqten{\boldsymbol{\Sigma}} \in \eqdom{\mathbb{R}^{d\times d}}$ SPD.
+
+\begin{boxtab}{tab:normal-props}{Propiedades principales}
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Propiedad} & \thead{Expresión} \\
+    \midrule
+    Media
+      & $\eqop{\mathbb{E}}[\equ{\mathbf{x}}] = \eqk{\boldsymbol{\mu}}$ \\
+    Covarianza
+      & $\eqop{\mathrm{Cov}}[\equ{\mathbf{x}}] = \eqten{\boldsymbol{\Sigma}}$ \\
+    Entropía
+      & $H = \tfrac{1}{2}\ln\det(2\eqcon{\pi e}\,\eqten{\boldsymbol{\Sigma}})$ \\
+    Marginalización
+      & Toda marginal es normal; $\equ{x}_i \sim \mathcal{N}(\eqk{\mu_i}, \eqten{\Sigma_{ii}})$ \\
+    Transformación lineal
+      & $\eqten{A}\equ{\mathbf{x}} + \eqk{\mathbf{b}} \sim
+        \mathcal{N}(\eqten{A}\eqk{\boldsymbol{\mu}} + \eqk{\mathbf{b}},\,
+        \eqten{A}\eqten{\boldsymbol{\Sigma}}\eqten{A}^\top)$ \\
+    \bottomrule
+  \end{tabularx}
+\end{boxtab}
+
+La densidad de probabilidad es
+$\eqfn{p}(\equ{\mathbf{x}}) = (2\eqcon{\pi})^{-d/2}
+\det(\eqten{\boldsymbol{\Sigma}})^{-1/2}
+\exp\!\left(-\tfrac{1}{2}(\equ{\mathbf{x}}-\eqk{\boldsymbol{\mu}})^\top
+\eqten{\boldsymbol{\Sigma}}^{-1}(\equ{\mathbf{x}}-\eqk{\boldsymbol{\mu}})\right)$.
+\end{definicion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Importar datos desde CSV con pgfplotstable}
+\label{sec:pgfplotstable}
+%───────────────────────────────────────────────────────────────────────────────
+
+\begin{definicion}{pgfplotstable}
+\label{def:pgfplotstable}
+El paquete \texttt{pgfplotstable}~\cite{pgfplotstable2023}, incluido en la
+distribución de \texttt{pgfplots}, permite cargar archivos \texttt{.csv}
+directamente y renderizarlos como tablas \LaTeX\ con formato automático
+de números, redondeo y unidades.
+\end{definicion}
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+% Cargar el archivo una vez (en el preambulo o en el capitulo)
+\pgfplotstableread[col sep=comma]{data/resultados.csv}\datatable
+
+% Renderizar como tabla con formato automatico
+\pgfplotstabletypeset[
+  columns        = {h, error, ratio, order},
+  columns/h/.style      = {column name={$h$}},
+  columns/error/.style  = {sci, sci e, precision=2,
+                            column name={Error $\|\mathbf{e}\|_\infty$}},
+  columns/ratio/.style  = {fixed, precision=4,
+                            column name={Razon}},
+  columns/order/.style  = {fixed, precision=2,
+                            column name={Orden emp.}},
+  every head row/.style = {before row=\toprule, after row=\midrule},
+  every last row/.style = {after row=\bottomrule},
+  col sep=comma,
+]{\datatable}
+\end{lstlisting}
+
+\begin{observacion}{Formato del CSV}
+\texttt{pgfplotstable} espera que la primera fila del CSV contenga los
+nombres de las columnas sin espacios. Los números deben usar punto decimal
+(no coma), independientemente de la configuración de \texttt{siunitx}.
+El separador puede ser coma (\texttt{col sep=comma}), tabulador
+(\texttt{col sep=tab}) o espacio (\texttt{col sep=space}).
+\end{observacion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Nota al pie de tabla}
+\label{sec:tablenote}
+%───────────────────────────────────────────────────────────────────────────────
+
+El comando \texttt{\textbackslash tablenote\{marca\}\{texto\}} añade una
+nota inmediatamente debajo de la tabla. No usa \texttt{\textbackslash footnote}
+(que envía la nota al pie de página) sino texto inline en tamaño
+\texttt{\textbackslash footnotesize}:
+
+\begin{lstlisting}[style=latex, frame=none, numbers=none]
+\begin{acadtable}[H]{tab:label}{Caption}
+  \begin{tabularx}{\textwidth}{l Y}
+    ...
+    \bottomrule
+  \end{tabularx}
+  \tablenote{*}{Resultados promediados sobre 5 semillas aleatorias.}
+  \tablenote{\dag}{Modelo pre-entrenado en ImageNet; fine-tuning 50 epochs.}
+\end{acadtable}
+\end{lstlisting}
+
+Varias llamadas a \texttt{\textbackslash tablenote} se apilan verticalmente.
+La marca puede ser cualquier texto: \texttt{*}, \texttt{\dag},
+\texttt{a}, \texttt{1}, etc.
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]
