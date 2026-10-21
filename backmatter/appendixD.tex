@@ -1,0 +1,674 @@
+%───────────────────────────────────────────────────────────────────────────────
+\chapter{Galería de referencia implementada}
+\label{ch:galeria}
+%───────────────────────────────────────────────────────────────────────────────
+
+% INSTRUCCIÓN PARA LA IA QUE LEE ESTE CAPÍTULO:
+% Este capítulo es tu referencia de implementación. Cada sección muestra
+% un elemento del template implementado correctamente con coloreado semántico,
+% theming correcto y citas bibliográficas reales. Úsalo como fuente de
+% copy-paste y como verificación antes de generar cualquier contenido.
+%
+% REGLAS ABSOLUTAS que este capítulo ejemplifica:
+%   1. Nunca Ctp* fuera de catppuccin-palette.tex — todos los colores
+%      usan aliases semánticos (env-*, tikz-*, plot-*, eq-*, etc.)
+%   2. Las macros \eqop, \equ, \eqk, etc. SIEMPRE dentro de modo matemático
+%   3. Cada capítulo termina con \printbibliography[heading=subbibliography]
+%   4. Los flotantes (figure, acadtable) NO van dentro de tcolorbox —
+%      usar boxfig y boxtab en su lugar
+
+Este capítulo documenta cada elemento del template con ejemplos
+funcionales, coloreado correcto y referencias bibliográficas reales.
+Está diseñado para ser usado directamente como referencia de implementación.
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Entornos teoremáticos}
+\label{sec:gal:entornos}
+%───────────────────────────────────────────────────────────────────────────────
+
+% Los ocho entornos tienen firma uniforme:
+%   \begin{nombre}{Título de esta instancia}
+%   \label{tipo:etiqueta}
+%   Contenido con ecuaciones coloreadas...
+%   \end{nombre}
+%
+% NUNCA uses un entorno en lugar de otro por estética.
+% Cada uno tiene un rol epistémico preciso — ver README.md.
+
+\subsection{Nivel 1 — Fundamentos}
+
+\begin{definicion}{Espacio de Hilbert}
+\label{def:gal:hilbert}
+Un \textbf{espacio de Hilbert}~\cite{reed1980}
+$(\eqdom{\mathcal{H}}, \langle\cdot,\cdot\rangle)$ es un espacio vectorial
+sobre $\mathbb{K}$ con producto interior
+$\langle \cdot, \cdot \rangle : \eqdom{\mathcal{H}} \times \eqdom{\mathcal{H}}
+\to \mathbb{K}$ tal que la norma inducida
+$\|\equ{x}\| = \sqrt{\langle \equ{x}, \equ{x} \rangle}$
+hace a $\eqdom{\mathcal{H}}$ completo.
+\end{definicion}
+
+\begin{teorema}{Teorema de representación de Riesz~\cite{reed1980}}
+\label{thm:gal:riesz}
+Sea $\eqdom{\mathcal{H}}$ un espacio de Hilbert y
+$\eqfn{\varphi} : \eqdom{\mathcal{H}} \to \mathbb{K}$ un funcional lineal
+continuo. Existe un único $\eqk{y} \in \eqdom{\mathcal{H}}$ tal que
+\[
+  \eqfn{\varphi}(\equ{x}) = \langle \equ{x}, \eqk{y} \rangle
+  \qquad \forall\, \equ{x} \in \eqdom{\mathcal{H}}.
+\]
+Además $\|\eqfn{\varphi}\| = \|\eqk{y}\|$.
+\end{teorema}
+
+\begin{proposicion}{Identidad de polarización}
+\label{prop:gal:polarizacion}
+En un espacio de Hilbert real~\cite{munkres2000}, el producto interior
+se recupera de la norma:
+\[
+  \langle \eqk{x}, \eqk{y} \rangle
+  = \frac{1}{4}\left(\|\eqk{x}+\eqk{y}\|^2 - \|\eqk{x}-\eqk{y}\|^2\right).
+\]
+\end{proposicion}
+
+\subsection{Nivel 2 — Apoyo}
+
+\begin{ejemplo}{$\ell^2$ como espacio de Hilbert}
+\label{ex:gal:l2}
+El espacio $\eqdom{\ell^2} = \{(\equ{x}_n) \subset \mathbb{R} \mid
+\eqop{\sum}_n \equ{x}_n^2 < \infty\}$ con producto interior
+$\langle \equ{x}, \equ{y} \rangle = \eqop{\sum}_{n=1}^\infty \equ{x}_n \equ{y}_n$
+es un espacio de Hilbert separable~\cite{reed1980}. La base ortonormal
+canónica $\{\eqk{e}_n\}$ es una base de Schauder pero no algebraica (Hamel).
+\end{ejemplo}
+
+\begin{observacion}{Completitud es indispensable}
+El espacio $C[0,1]$ con la norma $\eqdom{L^2}$ tiene producto interior pero
+\textit{no} es de Hilbert — su completación es $\eqdom{L^2[0,1]}$.
+La convergencia débil $\eqk{e}_n \rightharpoonup 0$ en $\eqdom{\ell^2}$
+no implica convergencia en norma: $\|\eqk{e}_n\| = 1$ para todo $n$.
+Este fenómeno~\cite{reed1980} es fuente frecuente de errores en argumentos
+de compacidad en espacios de dimensión infinita.
+\end{observacion}
+
+\begin{fisicaconexion}{Estados cuánticos y espacios de Hilbert~\cite{griffiths2018}}
+Los estados de un sistema cuántico son vectores en
+$\eqdom{\mathcal{H}} = \eqdom{L^2(\mathbb{R}^3)}$.
+La norma $\|\equ{\psi}\|^2 = \eqop{\int}_{\eqdom{\mathbb{R}^3}}
+|\equ{\psi}(\eqvec{\mathbf{r}})|^2 \eqdm{d^3r} = 1$
+es la condición de normalización. La evolución temporal
+$\equ{\psi}(t) = e^{-\eqcon{i}\eqop{\hat{H}}t/\eqcon{\hbar}}\eqk{\psi_0}$
+es un operador unitario sobre $\eqdom{\mathcal{H}}$.
+\end{fisicaconexion}
+
+\subsection{Nivel 3 — Especiales}
+
+\begin{estrella}{Teorema espectral para operadores autoadjuntos}
+\label{star:gal:espectral}
+Sea $\eqop{A} : \eqdom{\mathcal{H}} \to \eqdom{\mathcal{H}}$ autoadjunto
+acotado~\cite{reed1980}. Existe una medida espectral única
+$\eqfn{E} : \mathcal{B}(\mathbb{R}) \to \mathcal{L}(\eqdom{\mathcal{H}})$
+tal que
+\[
+  \eqop{A} = \eqop{\int}_{\sigma(\eqop{A})} \equ{\lambda}\,
+  \eqdm{dE}(\equ{\lambda}),
+\]
+y $\eqfn{f}(\eqop{A}) = \eqop{\int} \eqfn{f}(\equ{\lambda})\,
+\eqdm{dE}(\equ{\lambda})$ define un cálculo funcional consistente.
+\end{estrella}
+
+\begin{ejerciciocomp}{Verificación numérica del método de potencias}
+\label{comp:gal:potencias}
+Implementa la iteración de potencias para hallar el eigenvalor dominante
+$\equ{\lambda_{\max}}$ de una matriz $\eqten{A} \in \eqdom{\mathbb{R}^{n\times n}}$
+SPD aleatoria. Verifica que $|\equ{\lambda}_k - \equ{\lambda_{\max}}|$
+converge con tasa $|\eqk{\lambda_2}/\eqk{\lambda_1}|^k$
+comparando con los eigenvalores exactos de \texttt{np.linalg.eigh}.
+Usa $\eqk{n} \in \{50, 200, 500\}$ y reporta la convergencia en una tabla.
+\end{ejerciciocomp}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Matemáticas semánticas}
+\label{sec:gal:ecuaciones}
+%───────────────────────────────────────────────────────────────────────────────
+
+% REGLA CRÍTICA PARA LA IA:
+% Las macros \eqop, \equ, \eqk, \eqfn, \eqdm, \eqdom, \eqvec, \eqten, \eqcon
+% SOLO funcionan dentro de modo matemático: $...$, \[...\], equation, align.
+% Fuera de modo matemático el color no se aplica — error frecuente de IA.
+
+\dificultad{4}{5}
+
+\subsection{Los tres ejes combinados: Schrödinger}
+
+% Eje 1 (sintáctico): \eqop para operadores, \eqfn para funciones, \eqdm para medidas
+% Eje 2 (epistémico): \equ para incógnitas, \eqk para datos, \eqcon para constantes
+% Eje 3 (tipo): \eqvec para vectores, \eqten para tensores
+\begin{equation}
+\label{eq:gal:schrodinger}
+\eqop{i}\eqcon{\hbar}\,\eqop{\frac{\partial}{\partial t}}\equ{\Psi}
+= \eqop{\hat{H}}\equ{\Psi}
+= \left(\eqop{-}\frac{\eqcon{\hbar}^2}{2\eqk{m}}\eqop{\nabla}^2
+  + \eqfn{V}(\eqvec{\mathbf{r}},t)\right)\equ{\Psi}.
+\end{equation}
+
+El hamiltoniano $\eqop{\hat{H}}$ y $\eqop{\nabla}^2$ son operadores~\cite{griffiths2018}.
+$\equ{\Psi}$ es la incógnita. $\eqfn{V}$ es el potencial (función conocida del
+sistema). $\eqcon{\hbar}$ y $\eqk{m}$ son constante y parámetro respectivamente.
+
+\subsection{Dualidad epistémica: física vs. ML}
+
+% Esta es la demostración canónica del eje epistémico.
+% La estructura algebraica es idéntica; solo el color cambia.
+\textbf{Lectura física}~\cite{griffiths2018} —
+parámetros $\eqk{\theta}$ conocidos, estado $\equ{x}$ buscado:
+\begin{equation}
+\label{eq:gal:physics-reading}
+\equ{x^*} = \eqop{\argmin}_{\equ{x}}\;
+\eqfn{\mathcal{L}}\!\left(\eqfn{f}(\equ{x};\,\eqk{\theta}),\; \eqk{y}\right).
+\end{equation}
+
+\textbf{Lectura ML}~\cite{goodfellow2016} —
+dato $\eqk{x}$ conocido, parámetros $\equ{\theta}$ aprendidos:
+\begin{equation}
+\label{eq:gal:ml-reading}
+\equ{\theta^*} = \eqop{\argmin}_{\equ{\theta}}\;
+\eqfn{\mathcal{L}}\!\left(\eqfn{f}(\eqk{x};\,\equ{\theta}),\; \eqk{y}\right).
+\end{equation}
+
+\subsection{Ecuaciones de Maxwell (eje de tipo)}
+
+\begin{align}
+\eqop{\nabla \cdot} \eqvec{\mathbf{E}}
+  &= \frac{\eqk{\rho}}{\eqcon{\varepsilon_0}},
+  \label{eq:gal:gauss-e}\\
+\eqop{\nabla \times} \eqvec{\mathbf{E}}
+  &= \eqop{-}\eqop{\frac{\partial}{\partial t}}\eqvec{\mathbf{B}},
+  \label{eq:gal:faraday}\\
+\eqop{\nabla \cdot} \eqvec{\mathbf{B}}
+  &= 0,
+  \label{eq:gal:gauss-b}\\
+\eqop{\nabla \times} \eqvec{\mathbf{B}}
+  &= \eqcon{\mu_0}\!\left(\eqvec{\mathbf{J}}
+    + \eqcon{\varepsilon_0}\eqop{\frac{\partial}{\partial t}}\eqvec{\mathbf{E}}\right).
+  \label{eq:gal:ampere}
+\end{align}
+
+Los campos $\eqvec{\mathbf{E}}$, $\eqvec{\mathbf{B}}$, $\eqvec{\mathbf{J}}$
+usan \texttt{\textbackslash eqvec}~\cite{jackson1999}. Las constantes
+$\eqcon{\varepsilon_0}$, $\eqcon{\mu_0}$ usan \texttt{\textbackslash eqcon}.
+La fuente $\eqk{\rho}$ es un dato del problema (\texttt{\textbackslash eqk}).
+
+\subsection{Macros compuestos}
+
+Proceso de Ornstein-Uhlenbeck~\cite{oksendal2003}:
+\begin{equation}
+\label{eq:gal:ou}
+\eqSDE{X_t}{-\eqk{\theta}\equ{X_t}}{\eqk{\sigma}}.
+\end{equation}
+
+Fokker-Planck para la densidad $\equ{p}(\eqvec{\mathbf{x}},t)$~\cite{oksendal2003}:
+\begin{equation}
+\label{eq:gal:fokker-planck}
+\eqpdv{p}{t}
+= \eqop{-}\eqop{\nabla_x \cdot}\!\left(\eqfn{f}\,\equ{p}\right)
++ \frac{\eqk{\sigma}^2}{2}\,\eqop{\nabla_x^2}\,\equ{p}.
+\end{equation}
+
+Score matching~\cite{hyvarinen2005} (ML — $\equ{\theta}$ es la incógnita):
+\begin{equation}
+\label{eq:gal:score}
+\eqfn{\mathcal{L}}(\equ{\theta})
+= \eqcon{\tfrac{1}{2}}\,
+  \eqop{\mathbb{E}}_{\eqk{x} \sim \eqdom{p_{\text{data}}}}
+  \left[
+    \norm{\eqfn{s}_{\equ{\theta}}(\eqk{x})
+    - \eqop{\nabla}_{\eqk{x}} \log \eqk{p}(\eqk{x})}^2
+  \right].
+\end{equation}
+
+Tensor de Einstein ($\eqten{g_{\mu\nu}}$ es el tensor métrico):
+\begin{equation}
+\label{eq:gal:einstein}
+\equ{R_{\mu\nu}} - \eqcon{\tfrac{1}{2}}\eqten{g_{\mu\nu}}\equ{R}
++ \eqcon{\Lambda}\eqten{g_{\mu\nu}}
+= \eqcon{\frac{8\pi G}{c^4}}\eqk{T_{\mu\nu}}.
+\end{equation}
+
+\subsection{Toggle B/N — versión impresión}
+
+% \eqcolorsfalse desactiva todo el coloreado
+% Las macros se vuelven transparentes — no hay que editar ninguna ecuación
+{%
+\eqcolorsfalse
+\begin{equation}
+\eqop{i}\eqcon{\hbar}\,\eqop{\frac{\partial}{\partial t}}\equ{\Psi}
+= \left(\eqop{-}\frac{\eqcon{\hbar}^2}{2\eqk{m}}\eqop{\nabla}^2
+  + \eqfn{V}\right)\equ{\Psi}.
+\tag{\ref{eq:gal:schrodinger}$'$}
+\end{equation}
+}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Algoritmos con coloreado semántico}
+\label{sec:gal:algoritmos}
+%───────────────────────────────────────────────────────────────────────────────
+
+% Los algoritmos NO están envueltos en tcolorbox — eso rompe el paginado.
+% Las expresiones matemáticas dentro del algoritmo usan coloreado semántico normal.
+
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Entrada}\SetKwInOut{Output}{Salida}
+  \Input{$\eqfn{f}:\eqdom{\mathbb{R}^n}\to\mathbb{R}$,
+         $\eqop{\nabla}\eqfn{f}$,
+         $\eqk{x_0}$, $\eqk{\eta}$, $\eqk{\varepsilon}$}
+  \Output{Mínimo aproximado $\equ{x^*}$}
+  $\equ{x} \gets \eqk{x_0}$\;
+  \While{$\|\eqop{\nabla}\eqfn{f}(\equ{x})\| > \eqk{\varepsilon}$}{
+    $\equ{x} \gets \equ{x} - \eqk{\eta}\,\eqop{\nabla}\eqfn{f}(\equ{x})$\;
+  }
+  \Return{$\equ{x}$}
+  \caption{Descenso de gradiente~\cite{goodfellow2016}}
+  \label{alg:gal:gradient}
+\end{algorithm}
+
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Entrada}\SetKwInOut{Output}{Salida}
+  \Input{SDE $\eqdm{d}\equ{X} = \eqfn{\mu}(\equ{X},t)\eqdm{dt}
+         + \eqfn{\sigma}(\equ{X},t)\eqdm{dW}$,
+         $\eqk{X_0}$, $\eqk{\Delta t}$, $\eqk{T}$}
+  \Output{Trayectoria $\{\equ{X}_k\}_{k=0}^{\eqk{N}}$}
+  $\equ{X} \gets \eqk{X_0}$\;
+  \For{$k = 0$ \KwTo $\eqk{N}-1$}{
+    $t \gets k\,\eqk{\Delta t}$\;
+    $\equ{\xi} \gets \mathcal{N}(0,1)$\tcp*{ruido gaussiano}
+    $\equ{X} \gets \equ{X}
+      + \eqfn{\mu}(\equ{X},t)\,\eqk{\Delta t}
+      + \eqfn{\sigma}(\equ{X},t)\sqrt{\eqk{\Delta t}}\,\equ{\xi}$\;
+  }
+  \Return{trayectoria}
+  \caption{Euler-Maruyama~\cite{oksendal2003}}
+  \label{alg:gal:em}
+\end{algorithm}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Código fuente}
+\label{sec:gal:codigo}
+%───────────────────────────────────────────────────────────────────────────────
+
+% Siempre especificar style=lenguaje.
+% Para código LaTeX del template, usar style=latex.
+
+\begin{lstlisting}[style=python,
+  caption={Descenso de gradiente estocástico con momentum~\cite{goodfellow2016}},
+  label={lst:gal:sgd}]
+import numpy as np
+
+def sgd_momentum(grad_fn, theta0, lr=1e-3, beta=0.9, n_iter=1000):
+    """SGD con momentum de Polyak."""
+    theta = theta0.copy()
+    v     = np.zeros_like(theta)
+    for _ in range(n_iter):
+        g  = grad_fn(theta)
+        v  = beta * v + (1 - beta) * g
+        theta -= lr * v
+    return theta
+\end{lstlisting}
+
+\begin{lstlisting}[style=julia,
+  caption={Iteración de potencias en Julia~\cite{leveque2007}},
+  label={lst:gal:power}]
+function power_iteration(A::AbstractMatrix; tol=1e-10, maxiter=1000)
+    n      = size(A, 1)
+    v      = normalize(randn(n))
+    lambda = zero(eltype(A))
+    for _ in 1:maxiter
+        w      = A * v
+        lambda = dot(v, w)         # cociente de Rayleigh
+        v      = normalize(w)
+    end
+    return lambda, v
+end
+\end{lstlisting}
+
+\begin{lstlisting}[style=latex,
+  caption={Patrón correcto de ecuación semántica},
+  label={lst:gal:eq-pattern}]
+% Siempre dentro de modo matematico
+\[
+  \eqop{i}\eqcon{\hbar}\,\eqop{\partial_t}\equ{\Psi}
+  = \eqop{\hat{H}}\equ{\Psi}
+\]
+
+% En tabla (celda con modo matematico)
+Operador  & $\eqop{\nabla}$    & Azul     \\
+Incognita & $\equ{\psi}$       & Peach    \\
+Dato      & $\eqk{m}$          & Mauve    \\
+
+% INCORRECTO: fuera de modo matematico - no colorea
+\eqop{\nabla}
+\end{lstlisting}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Tablas}
+\label{sec:gal:tablas}
+%───────────────────────────────────────────────────────────────────────────────
+
+% acadtable: flotante en flujo normal de texto → \textwidth
+% boxtab: no-flotante dentro de tcolorbox → \linewidth
+% Columnas S de siunitx: encabezados SIEMPRE en \multicolumn{1}{c}{\thead{...}}
+% Celdas con texto en col S: \multicolumn{1}{c}{texto}
+
+\begin{acadtable}[H]{tab:gal:optimizadores}{Métodos de optimización de primer orden~\cite{goodfellow2016}}
+  \begin{tabularx}{\textwidth}{l Y Y l}
+    \toprule
+    \headerrow
+    \thead{Método} & \thead{Convergencia} & \thead{Memoria} & \thead{Hessiano} \\
+    \midrule
+    Gradiente      & $\mathcal{O}(1/k)$          & $\mathcal{O}(n)$   & No \\
+    \rowcolor{table-row-alt}
+    Momentum       & $\mathcal{O}(1/k^2)$         & $\mathcal{O}(n)$   & No \\
+    L-BFGS         & Superlineal                   & $\mathcal{O}(mn)$  & Aprox. \\
+    \rowcolor{table-row-alt}
+    Adam           & $\mathcal{O}(1/\sqrt{k})$    & $\mathcal{O}(n)$   & No \\
+    Newton         & Cuadrática                    & $\mathcal{O}(n^2)$ & Exacto \\
+    \bottomrule
+  \end{tabularx}
+\end{acadtable}
+
+\begin{acadtable}[H]{tab:gal:convergencia}{Convergencia de RK4 para $\equ{y}' = \eqop{-}\eqk{\lambda}\equ{y}$~\cite{leveque2007}}
+  \begin{tabularx}{\textwidth}{Y S[table-format=1.2e-1] S[table-format=1.4e-2] S[table-format=1.2]}
+    \toprule
+    \headerrow
+    \multicolumn{1}{Y}{\thead{$\eqk{h}$}} &
+    \multicolumn{1}{c}{\thead{$\|\equ{e}\|_\infty$}} &
+    \multicolumn{1}{c}{\thead{Razón}} &
+    \multicolumn{1}{c}{\thead{Orden emp.}} \\
+    \midrule
+    $1/4$  & 2.31e-3 & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} \\
+    $1/8$  & 1.48e-4 & 0.0641 & 3.96 \\
+    $1/16$ & 9.33e-6 & 0.0630 & 3.99 \\
+    $1/32$ & 5.84e-7 & 0.0626 & 4.00 \\
+    \bottomrule
+  \end{tabularx}
+  \tablenote{*}{$\eqk{\lambda}=1$, $\equ{y}(0)=1$, $t\in[0,1]$.}
+\end{acadtable}
+
+% boxtab dentro de un entorno tcolorbox:
+\begin{definicion}{Media y varianza muestral}
+\label{def:gal:estadisticos}
+Dado un conjunto $\{\eqk{x_i}\}_{i=1}^{\eqk{n}}$ de observaciones i.i.d.:
+\begin{boxtab}{tab:gal:stats}{Estimadores muestrales}
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    \headerrow
+    \thead{Estimador} & \thead{Fórmula} \\
+    \midrule
+    Media
+      & $\equ{\bar{x}} = \eqop{\frac{1}{\eqk{n}}}
+          \eqop{\sum}_{i=1}^{\eqk{n}} \eqk{x_i}$ \\
+    Varianza
+      & $\equ{s^2} = \eqop{\frac{1}{\eqk{n}-1}}
+          \eqop{\sum}_{i=1}^{\eqk{n}} (\eqk{x_i} - \equ{\bar{x}})^2$ \\
+    Error estándar
+      & $\equ{\text{SE}} = \equ{s}/\sqrt{\eqk{n}}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{boxtab}
+El estimador $\equ{s^2}$ es insesgado: $\eqop{\mathbb{E}}[\equ{s^2}] = \eqk{\sigma^2}$.
+\end{definicion}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Figuras y gráficas}
+\label{sec:gal:figuras}
+%───────────────────────────────────────────────────────────────────────────────
+
+% CRÍTICO: nunca Ctp* en pgfplots — usar plot-series-N, plot-axis, etc.
+% Estilos: catppuccin-clean, catppuccin-filled
+% Cycle list: catppuccin (8 series, plot-series-1..8)
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      catppuccin-clean,
+      width=0.85\textwidth, height=6cm,
+      xlabel={Época},
+      ylabel={Pérdida $\eqfn{\mathcal{L}}(\equ{\theta})$},
+      title={Convergencia de optimizadores~\cite{goodfellow2016}},
+      ymode=log, xmin=0, xmax=100,
+      legend pos=north east, no markers,
+    ]
+      \addplot+[thick, domain=0:100, samples=80]
+        {2*exp(-0.02*x)+0.10}; \addlegendentry{SGD}
+      \addplot+[thick, domain=0:100, samples=80]
+        {2*exp(-0.04*x)+0.05}; \addlegendentry{Momentum}
+      \addplot+[thick, domain=0:100, samples=80]
+        {2*exp(-0.07*x)+0.02}; \addlegendentry{Adam}
+      \addplot+[thick, domain=0:100, samples=80]
+        {2*exp(-0.05*x)+0.03}; \addlegendentry{RMSprop}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Pérdida $\eqfn{\mathcal{L}}(\equ{\theta})$ por épocas.
+           Colores del cycle list \texttt{catppuccin} (aliases
+           \texttt{plot-series-1..4}, sin \texttt{Ctp*}).}
+  \label{fig:gal:optimizers}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{loglogaxis}[
+      catppuccin-clean,
+      width=0.85\textwidth, height=6cm,
+      xlabel={Paso de malla $\eqk{h}$},
+      ylabel={Error $\|\equ{u}_h - \eqk{u}\|_2$},
+      title={Convergencia FD centradas~\cite{leveque2007}},
+      legend pos=north west,
+      xtick={0.0625,0.125,0.25,0.5},
+      xticklabels={$1/16$,$1/8$,$1/4$,$1/2$},
+    ]
+      \addplot[plot-series-1, mark=*] coordinates {
+        (0.5,1.2e-2)(0.25,3.1e-3)(0.125,7.8e-4)(0.0625,1.9e-4)};
+        \addlegendentry{FD centradas}
+      \addplot[plot-series-5, dashed, no markers]
+        coordinates {(0.5,1.2e-2)(0.0625,1.9e-4)};
+        \addlegendentry{$\mathcal{O}(\eqk{h}^2)$}
+    \end{loglogaxis}
+  \end{tikzpicture}
+  \caption{Convergencia $\mathcal{O}(\eqk{h}^2)$ del esquema de FD centradas
+           para la ecuación de Poisson 1D.}
+  \label{fig:gal:fd}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      catppuccin-clean,
+      width=0.85\textwidth, height=5.5cm,
+      xlabel={$\equ{x}$},
+      ylabel={$\equ{\psi}_n(\equ{x})$},
+      title={Eigenfunciones del oscilador armónico~\cite{griffiths2018}},
+      domain=-4:4, samples=150, ymin=-1.2, ymax=1.5,
+      no markers, legend pos=south east,
+    ]
+      \addplot+[thick] {0.7511*exp(-x^2/2)};
+        \addlegendentry{$\equ{\psi_0}$}
+      \addplot+[thick] {0.5311*2*x*exp(-x^2/2)};
+        \addlegendentry{$\equ{\psi_1}$}
+      \addplot+[thick] {0.2659*(4*x^2-2)*exp(-x^2/2)};
+        \addlegendentry{$\equ{\psi_2}$}
+      \addplot+[thick] {0.1083*(8*x^3-12*x)*exp(-x^2/2)};
+        \addlegendentry{$\equ{\psi_3}$}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Primeras eigenfunciones $\equ{\psi}_n = H_n e^{-\equ{x}^2/2}$
+           del oscilador armónico cuántico.}
+  \label{fig:gal:harmonic}
+\end{figure}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Diagramas TikZ}
+\label{sec:gal:diagramas}
+%───────────────────────────────────────────────────────────────────────────────
+
+% CRÍTICO: nunca Ctp* en TikZ — usar tikz-*, env-*, fb-*, eq-* según el rol.
+% tikz-initial (Blue): estado/nodo inicial
+% tikz-accept (Green): estado aceptador / nodo destino
+% tikz-node-border / background / maintext: nodo genérico
+% eq-known (Mauve): pesos de aristas (datos conocidos del problema)
+% env-phys (Sapphire): caja de función / transformación
+
+\subsection{Autómata finito determinista}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    shorten >=1pt, node distance=2.5cm, on grid, auto, thick,
+    state/.style={circle, draw=tikz-node-border, fill=background,
+                  text=maintext, minimum size=1cm},
+    every edge/.style={draw=tikz-edge, ->, >=latex},
+  ]
+    \node[state, initial, initial text={}, draw=tikz-initial]
+      (A) {$\eqk{A}$};
+    \node[state, right=of A] (B) {$\eqk{B}$};
+    \node[state, right=of B] (C) {$\eqk{C}$};
+    \node[state, accepting, draw=tikz-accept, right=of C]
+      (D) {$\eqk{D}$};
+    \path[->]
+      (A) edge[loop above] node {$\eqk{a}$} (A)
+          edge              node {$\eqk{b}$} (B)
+      (B) edge[loop above] node {$\eqk{b}$} (B)
+          edge              node {$\eqk{a}$} (C)
+      (C) edge              node {$\eqk{b}$} (D)
+          edge[bend left]   node[swap] {$\eqk{a}$} (A)
+      (D) edge[loop right]  node {$\eqk{a},\eqk{b}$} (D);
+  \end{tikzpicture}
+  \caption{DFA para $L = \{\eqvec{w} \in \eqdom{\{a,b\}^*} \mid
+           \eqvec{w}$ contiene $\eqk{ab}\}$~\cite{sipser2012}.
+           Estado inicial \texttt{tikz-initial} (azul);
+           aceptador \texttt{tikz-accept} (verde).}
+  \label{fig:gal:dfa}
+\end{figure}
+
+\subsection{Grafo dirigido ponderado}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=2.5cm,
+    vertex/.style={circle, draw=tikz-node-border, fill=tikz-node-bg,
+                   text=maintext, minimum size=0.9cm, thick},
+    every edge/.style={draw=tikz-edge, ->, >=latex, thick},
+    wlabel/.style={text=eq-known, font=\small},
+  ]
+    \node[vertex, draw=tikz-initial, fill=tikz-initial!15] (s) {$\eqk{s}$};
+    \node[vertex, right=of s]  (u) {$\eqk{u}$};
+    \node[vertex, right=of u]  (v) {$\eqk{v}$};
+    \node[vertex, below=of u]  (x) {$\eqk{x}$};
+    \node[vertex, draw=tikz-accept, fill=tikz-accept!15,
+          right=of x]          (t) {$\eqk{t}$};
+    \path[->]
+      (s) edge node[above, wlabel] {$\eqk{6}$} (u)
+      (s) edge node[left,  wlabel] {$\eqk{7}$} (x)
+      (u) edge node[above, wlabel] {$\eqk{5}$} (v)
+      (u) edge node[right, wlabel] {$\eqk{-4}$}(t)
+      (x) edge node[below, wlabel] {$\eqk{7}$} (t)
+      (v) edge node[right, wlabel] {$\eqk{-2}$}(t);
+  \end{tikzpicture}
+  \caption{Grafo ponderado~\cite{cormen2022}: pesos en \texttt{eq-known} (malva)
+           porque son datos del problema de camino mínimo.}
+  \label{fig:gal:grafo}
+\end{figure}
+
+\subsection{Tabla hash con separate chaining}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[font=\small,
+    cell/.style  = {draw=tikz-node-border, minimum width=1.3cm,
+                    minimum height=0.65cm},
+    occ/.style   = {cell, fill=tikz-accept,  text=background},
+    empty/.style = {cell, fill=tikz-node-bg, text=maintext},
+    fn/.style    = {draw=tikz-node-border, fill=env-phys, text=background,
+                    minimum width=1.2cm, minimum height=3.2cm, align=center},
+    key/.style   = {cell, fill=tikz-initial, text=background,
+                    minimum width=2cm},
+    arr/.style   = {draw=tikz-edge, ->, >=latex, thick},
+  ]
+    \node[key] (k1) at (-4.5, 0.9) {\texttt{k1}};
+    \node[key] (k2) at (-4.5, 0.0) {\texttt{k2}};
+    \node[key] (k3) at (-4.5,-0.9) {\texttt{k3}};
+    \node[fn]  (hf) at (-2.4, 0)   {$\eqop{h}$};
+    \foreach \i in {0,...,4} {
+      \node[empty] (b\i) at (0.5, {0.9 - \i*0.65}) {};
+      \node[left=0.1cm of b\i, text=tikz-label, font=\scriptsize] {$\i$};
+    }
+    \node[occ] at (b1) {\texttt{k1}};
+    \node[occ] at (b3) {\texttt{k2}};
+    \node[occ] (c1) at (2.1, {0.9 - 1*0.65}) {\texttt{k3}};
+    \draw[arr] (b1) -- (c1);
+    \draw[arr] (k1) -- (hf);
+    \draw[arr] (k2) -- (hf);
+    \draw[arr] (k3) -- (hf);
+    \draw[arr] (hf.east) to[out=0,in=180] (b1.west);
+    \draw[arr] (hf.east) to[out=0,in=180] (b3.west);
+    \node[above=0.3cm of k1, text=maintext, font=\small] {\textbf{Claves}};
+    \node[above=0.3cm of hf, text=maintext, font=\small] {\textbf{Hash}};
+    \node[above=0.3cm of b0, text=maintext, font=\small] {\textbf{Buckets}};
+  \end{tikzpicture}
+  \caption{Separate chaining~\cite{cormen2022}: función hash $\eqop{h}$
+           (\texttt{env-phys}, sapphire) mapea claves (\texttt{tikz-initial},
+           azul) a buckets (verde=ocupado, gris=libre).}
+  \label{fig:gal:hashing}
+\end{figure}
+
+\subsection{Diagrama conmutativo}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzcd}[
+    every arrow/.append style={draw=tikz-edge, thick},
+  ]
+    \eqdom{G}
+      \arrow[r, "\eqop{\varphi}"]
+      \arrow[d, "\eqop{\pi}"', two heads]
+    & \eqdom{H} \\
+    \eqdom{G}\,\eqop{/}\,\eqdom{\ker\varphi}
+      \arrow[ur, dashed, "\eqop{\tilde{\varphi}}"', "\sim"']
+  \end{tikzcd}
+  \caption{Primer teorema de isomorfismo~\cite{mac1998}:
+           $\eqdom{G}/\eqdom{\ker\varphi} \cong \eqop{\mathrm{im}}(\eqop{\varphi})$.}
+  \label{fig:gal:isomorfismo}
+\end{figure}
+
+%───────────────────────────────────────────────────────────────────────────────
+\section{Elementos auxiliares}
+\label{sec:gal:auxiliares}
+%───────────────────────────────────────────────────────────────────────────────
+
+\dificultad{3}{4}
+
+\begin{ejercicio}
+Demuestre que la pérdida MSE para regresión lineal conduce a las ecuaciones
+normales $\eqten{X}^\top\eqten{X}\equ{\hat{\beta}} = \eqten{X}^\top\eqk{y}$.
+\end{ejercicio}
+
+\begin{ejercicio}
+Sea $\eqfn{f}(\equ{x}) = e^{-\equ{x}^2}$. Calcule la transformada de
+Fourier $\eqop{\mathcal{F}}[\eqfn{f}]$ y verifique que es un punto fijo
+de $\eqop{\mathcal{F}}$ (salvo escala).
+\end{ejercicio}
+
+\begin{notasbib}
+La teoría de espacios de Hilbert y el análisis funcional riguroso siguen
+a Reed y Simon~\cite{reed1980}. Los métodos de score matching y su variante
+denoising~\cite{hyvarinen2005,vincent2011} son fundamentales en los
+modelos de difusión modernos. La formulación variacional de EDPs y los
+métodos de diferencias finitas se tratan en~\cite{leveque2007}.
+\end{notasbib}
+
+%───────────────────────────────────────────────────────────────────────────────
+\printbibliography[heading=subbibliography]
