@@ -1,0 +1,6 @@
+name: latex-catppuccin-academic
+kind: latex-template
+provides:
+  mode: path
+  path: "."
+  env: TEXINPUTS
